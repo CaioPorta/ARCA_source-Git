@@ -1,0 +1,6 @@
+Copiar e colar o arquivo MonkeyThinking.ani na pasta C:\Windows\Cursors
+Ir em configurações do mouse -> opções adicionais de mouse -> ponteiros
+Clique em "Ocupado" e clique em "Procurar", selecione o arquivo MonkeyThinking.ani
+Ok, Ok
+
+Pronto! Seu cursor de "Ocupado" já é um macaco pensante!

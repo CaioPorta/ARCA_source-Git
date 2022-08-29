@@ -1,0 +1,164 @@
+# Isso não é um programa
+
+
+
+
+
+
+                                                                                comandos mais usados
+
+self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20, Qt.AlignTop |
+                                                            Qt.AlignBottom |
+                                                            Qt.AlignLeft |
+                                                            Qt.AlignRight |
+                                                            Qt.AlignCenter |
+                                                            Qt.AlignVCenter |
+                                                            Qt.AlignHCenter)
+
+HMI.F_GLayout.append(QGridLayout()) # Adiciona um sub-GridLayout no Grid Principal
+HMI.GCount += 1
+HMI.GLayout.addLayout(HMI.F_GLayout[HMI.GCount-1], 1, 0, 1, 20)
+
+############################################################################### Button
+
+self.Button_ShowHideValues = QPushButton()
+self.Button_ShowHideValues.pressed.connect(lambda: self.OnButtonPressed('ShowHideValues'))
+self.Button_ShowHideValues.setFixedSize(40,40)
+self.Button_ShowHideValues.setIconSize(QSize(35, 35))
+self.Button_ShowHideValues.setCursor(QCursor(Qt.PointingHandCursor))
+self.Button_ShowHideValues.setStyleSheet("background-color: "+Header_Background)
+self.Button_ShowHideValues.setIcon(QIcon("./images/iconClosedEye.png"))
+self.Button_ShowHideValues.setToolTip('This is an example button')
+
+############################################################################### Label
+
+self.Background_Header_ = QLabel()
+Background_Header_ = 'rgb(20, 20, 40)'
+self.Background_Header_.setStyleSheet("background-color: "+Background_Header_)
+self.Background_Header_.setFixedHeight(50)
+self.Background_Header_.setFixedWidth(50)
+self.Label_Patrimonio.setStyleSheet('color: white')
+self.Label_Patrimonio.setFont(self.font14)
+self.Label_Patrimonio.setAlignment(Qt.AlignCenter)
+
+############################################################################### Gif
+
+self.Gif_InformarOPCripto = QLabel()
+self.Movie_InformarOPCripto = QMovie("./images/Loading4.gif")
+self.Movie_InformarOPCripto.setScaledSize(QSize().scaled(self.frameGeometry().width()*2/4*.80,self.frameGeometry().height()/5*.95, Qt.KeepAspectRatio))
+self.Gif_InformarOPCripto.setMovie(self.Movie_InformarOPCripto)
+self.Movie_InformarOPCripto.start()
+self.Gif_InformarOPCripto.setCursor(QCursor(Qt.PointingHandCursor))
+
+############################################################################### TextBox
+
+self.TextBox_Rendimento = QLineEdit()
+self.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Header_Background+'; color: green; border: 1px solid '+Header_Background+'}')
+self.TextBox_Rendimento.setFont(self.font14)
+self.TextBox_Rendimento.setEnabled(False)
+self.TextBox_Rendimento.setAlignment(Qt.AlignCenter)
+self.TextBox_Rendimento.setFixedWidth(self.frameGeometry().width()/3)
+self.TextBox_Rendimento.setText(str(self.Calcular.RendimentoGlobal())+'%')
+if self.ShowValues: self.TextBox_Rendimento.setEchoMode(QLineEdit.Normal)
+else: self.TextBox_Rendimento.setEchoMode(QLineEdit.Password)
+
+############################################################################### ComboBox
+
+self.ComboBox_Corretoras = QComboBox()
+self.ComboBox_Corretoras.setFont(self.font16)
+self.ComboBox_Corretoras.setCursor(QCursor(Qt.PointingHandCursor))
+self.ComboBox_Corretoras.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(255, 255, 255);")
+self.ComboBox_Corretoras.activated[str].connect(lambda pct: self.AtualizarPagina())
+for idx, corretora in enumerate(self.DBManager.GetCorretorasBolsa()):
+    self.ComboBox_Corretoras.addItem(corretora)
+    try:
+        if corretora == self.NovaCorretora_textbox.text(): self.idxCorretora = idx
+    except: pass
+if self.idxCorretora < len(self.DBManager.GetCorretorasBolsa()):
+    self.ComboBox_Corretoras.setCurrentIndex(self.idxCorretora)
+
+############################################################################### MessageBox
+https://coderslegacy.com/python/pyqt5-qmessagebox/
+https://www.techwithtim.net/tutorials/pyqt5-tutorial/messageboxes/
+
+MessageBox_Msg1 = QMessageBox()
+MessageBox_Msg1.setWindowTitle("Message Box")
+MessageBox_Msg1.setText("This is some random text")
+MessageBox_Msg1.setIcon(QMessageBox.Question)   QMessageBox.Question
+                                    QMessageBox.Information
+                                    QMessageBox.Warning
+                                    QMessageBox.Critica
+MessageBox_Msg1.setStandardButtons(QMessageBox.Cancel | QMessageBox.Ok | QMessageBox.Retry) QMessageBox.Ok
+                                                                                QMessageBox.No
+                                                                                QMessageBox.Yes
+                                                                                QMessageBox.Cancel
+                                                                                QMessageBox.Close
+                                                                                QMessageBox.Abort
+                                                                                QMessageBox.open
+                                                                                QMessageBox.Retry
+                                                                                QMessageBox.Ignore
+                                                                                QMessageBox.Save
+                                                                                QMessageBox.Retry
+                                                                                QMessageBox.Apply
+                                                                                QMessageBox.Help
+                                                                                QMessageBox.Reset
+                                                                                QMessageBox.SaveAll
+                                                                                QMessageBox.YesToAll
+                                                                                QMessageBox.NoToAll
+MessageBox_Msg1.setInformativeText("This is some extra informative text")
+MessageBox_Msg1.setDefaultButton(QMessageBox.Cancel)
+MessageBox_Msg1.setDetailedText("Extra details.....")
+MessageBox_Msg1.buttonClicked.connect(popup)
+def popup(i):
+    print(i.text())
+returnValue = MessageBox_Msg1.exec()
+if returnValue == QMessageBox.Yes:
+    print('Encerrando conta...')
+
+############################################################################### Tabela
+
+def on_click():
+    for currentQTableWidgetItem in self.Table_DepositosESaques.selectedItems():
+        self.Button_DeleteRecord.setText('Apagar\nRegistro '+str(currentQTableWidgetItem.row()+1))
+        # print(self.DBManager.GetAllDepositosESaques(Corretora, self.BolsaOuCripto)[-currentQTableWidgetItem.row()-1],
+        #       currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text()) # Debug
+data = self.DBManager.GetAllDepositosESaques(Corretora, self.BolsaOuCripto)[::-1]
+if len(data)>0:
+    self.Table_DepositosESaques = QTableWidget()
+    self.Table_DepositosESaques.verticalHeader().hide()
+    self.Table_DepositosESaques.horizontalHeader().hide()
+    self.Table_DepositosESaques.setRowCount(len(data))
+    self.Table_DepositosESaques.setColumnCount(1)
+    VHeader = []
+    for n, item in enumerate(data):
+        VHeader.append(str(n+1))
+        self.Table_DepositosESaques.setItem(n, 0, QTableWidgetItem("R$ "+str(item)))
+    self.Table_DepositosESaques.setVerticalHeaderLabels(VHeader)
+    self.Table_DepositosESaques.setEditTriggers(QAbstractItemView.NoEditTriggers)
+    self.Table_DepositosESaques.clicked.connect(on_click)
+    self.Table_DepositosESaques.itemChanged.connect(on_click)
+    self.Table_DepositosESaques.setHorizontalHeaderLabels(['Depósitos e Saques'])
+    UmaLinhaDeTabela = 35
+    dataLinLength = len(data)
+    self.Table_DepositosESaques.resizeColumnsToContents()
+    self.Table_DepositosESaques.adjustSize()
+    width = self.Table_DepositosESaques.horizontalHeader().length()+13
+    if dataLinLength > 1: width += 13
+    if len(VHeader) > 9: width += 7
+    if dataLinLength == 1: UmaLinhaDeTabela = 45
+    self.Table_DepositosESaques.setFixedHeight(min([4*UmaLinhaDeTabela, dataLinLength*UmaLinhaDeTabela]))
+    self.Table_DepositosESaques.setFixedWidth(width)
+
+    def deleteRecord():
+        IDsToBeDeleted = []
+        for currentQTableWidgetItem in self.Table_DepositosESaques.selectedItems():
+            IDsToBeDeleted.append(-currentQTableWidgetItem.row()-1)
+        self.DBManager.DeleteDepositoOuSaque(Corretora, self.BolsaOuCripto, IDsToBeDeleted) # Send RowID from table
+        self.CreateDepositosESaquesPage()
+    self.Button_DeleteRecord = QPushButton("Apagar\nRegistro")
+    self.Button_DeleteRecord.pressed.connect(deleteRecord)
+    self.Button_DeleteRecord.setStyleSheet('QPushButton {background-color: gray; color: red;}')
+    self.Button_DeleteRecord.setFont(self.font16)
+    self.Button_DeleteRecord.setCursor(QCursor(Qt.PointingHandCursor))
+    self.GLayout.addWidget(self.Table_DepositosESaques, 7, 0, 1, 2, Qt.AlignRight)
+    self.GLayout.addWidget(self.Button_DeleteRecord, 7, 2, 1, 2, Qt.AlignLeft)

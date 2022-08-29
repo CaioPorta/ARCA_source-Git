@@ -1,0 +1,23 @@
+Instalar Anaconda3-2020.11-Windows-x86_64.exe
+Instalado automaticamente pela Anaconda: python version 3.8.0
+                                         pip install spyder==4.1.5
+
+SEM ANACONDA: 
+instalar python 3.8.0
+python -m pip install --upgrade pip
+pip install spyder==4.1.5  OU
+instalar spyder 4.1.5
+SELECIONAR PYTHON PATH INTERPRETER:1+1 C:\Users\caiop\AppData\Local\Programs\Python\Python39\python.exe
+tem que instalar o chromedriver.exe e o navegador google chrome
+
+instalar as seguintes bibliotecas:
+pip install --upgrade pip
+pip install -r requirements.txt
+
+
+Para gerar o .EXE execute num CMD(admin) o seguinte comando:
+POR EXEMPLO: 
+cd C:\Users\caiop\OneDrive\Documentos\- Projetos pessoais\- Projeto ARCA\ARCA - Git
+depois:
+pyinstaller --onefile --noconsole -i .\\logoARCA.ico ARCA.py
+pyinstaller --onefile -i .\\logoARCA.ico ARCA.py
