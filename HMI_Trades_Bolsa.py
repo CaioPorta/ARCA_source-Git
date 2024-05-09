@@ -458,7 +458,10 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_AddAtivo.setToolTip("Adicionar ativo")
         self.HMI.Button_AddAtivo.setStyleSheet("QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}")
 
+        try: self.HMI.ComboBox_Ativos.deleteLater()
+        except: pass        
         self.HMI.ComboBox_Ativos = QComboBox()
+        self.HMI.ComboBox_Ativos.setEnabled(True)
         self.HMI.ComboBox_Ativos.setFont(self.HMI.font16)
         self.HMI.ComboBox_Ativos.setCursor(QCursor(Qt.PointingHandCursor))
         self.HMI.ComboBox_Ativos.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(255, 255, 255);")
@@ -1655,9 +1658,18 @@ class HMI_Trades_Bolsa(object):
                     ano = str(data.year)
                     mes = str(data.month)
                     dia = str(data.day)
-                    hora = str(data.hour)
-                    minuto = str(data.minute)
-                    segundo = str(data.second)
+                    if data.hour < 10:
+                        hora = "0"+str(data.hour)
+                    else:
+                        hora = str(data.hour)
+                    if data.minute < 10:
+                        minuto = "0"+str(data.minute)
+                    else:
+                        minuto = str(data.minute)
+                    if data.second < 10:
+                        segundo = "0"+str(data.second)
+                    else:
+                        segundo = str(data.second)
                     Tipo = str(item[1])
                     Qqt = str(item[2])
                     Preco = str(item[3])
@@ -3101,22 +3113,25 @@ class HMI_Trades_Bolsa(object):
                 if not self.HMI.DBManager.FLAG:
                     Data = self.HMI.Selecao_Ano+'/'+self.HMI.Selecao_Mes+'/'+self.HMI.Selecao_Dia+" "+self.HMI.Selecao_Hora+":"+self.HMI.Selecao_Minuto+":"+self.HMI.Selecao_Segundo
                     Tipo = self.HMI.TipoDeOperacao
+                    if "," in self.HMI.TextBox_Qqt.text() or "." in self.HMI.TextBox_Qqt.text():
+                        raise ValueError("Valor inválido!")
                     Qqt = int(self.HMI.TextBox_Qqt.text())
-                    Preco = float(self.HMI.TextBox_Preco.text())
-                    Corretagem = float(self.HMI.TextBox_Corretagem.text())
+                    Preco = float(self.HMI.TextBox_Preco.text().replace(",","."))
+                    Corretagem = float(self.HMI.TextBox_Corretagem.text().replace(",","."))
                     if "%" in self.HMI.TextBox_TaxaB3.text():
-                        TaxaB3Per = float(self.HMI.TextBox_TaxaB3.text().replace("%",""))
-                        TaxaB3 = round(TaxaB3Per/100*int(self.HMI.TextBox_Qqt.text())*float(self.HMI.TextBox_Preco.text()),2)
+                        TaxaB3Per = float(self.HMI.TextBox_TaxaB3.text().replace("%","").replace(",","."))
+                        TaxaB3 = round(TaxaB3Per/100*Qqt*Preco,2)
                     else:
-                        TaxaB3 = float(self.HMI.TextBox_TaxaB3.text())
-                        TaxaB3Per = round(TaxaB3/int(self.HMI.TextBox_Qqt.text())/float(self.HMI.TextBox_Preco.text())*100,2)
+                        TaxaB3 = float(self.HMI.TextBox_TaxaB3.text().replace(",","."))
+                        TaxaB3Per = round(TaxaB3/Qqt/Preco*100,2)
                     Obs = self.HMI.TextBox_Obs.text().replace("ST; ","").replace("DT; ","")
                     Item = len(self.HMI.HMI_Trades.HMI_Trades_Bolsa.data_23_1)-self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes[self.HMI.HMI_Trades.HMI_Trades_Bolsa.item]-1
-
+                    
                     if self.HMI.DBManager.AlterOperacao(Item, Data, Tipo, Qqt, Preco, Corretagem, TaxaB3, TaxaB3Per, Obs):
                         if self.HMI.HMI_Trades.HMI_Trades_Bolsa.item+1 >= len(self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes):
                             self.HMI.CreatePage('23') # Última alteração da lista
-                        else: self.HMI.CreatePage('29') # Ir pra próxima alteração
+                        else:
+                            self.HMI.CreatePage('29') # Ir pra próxima alteração
                     else:
                         try: self.HMI.Label_Erro1.deleteLater()
                         except: pass

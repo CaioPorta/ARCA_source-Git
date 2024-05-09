@@ -2514,6 +2514,10 @@ class IHMmain(QWidget):
         self.OnButtonPressed('ImportFromExcel')
 
     def CreatePage9(self):
+        try:
+            self.ComboBox_Ativos.setEnabled(False)
+            self.ComboBox_Ativos.deleteLater()
+        except:pass
         self.Background_1 = QLabel()
         Background_1 = 'rgb(0, 0, 0)'
         self.Background_1.setStyleSheet("background-color: "+Background_1)
@@ -3786,10 +3790,9 @@ class IHMmain(QWidget):
                 self.HBoxLayout_Graficos_Subtipos_Invisiveis.removeItem(self.VBoxLayout_Graficos_Subtipos_EspecificaInvisiveis)
                 self.F_GLayout[0].removeItem(self.HBoxLayout_Graficos_Subtipos_Invisiveis)
             except Exception as e:print(e) # Debug
-
+            
         elif self.PageID == "23" and self.PageIDAux == '':
             try:
-                #self.ComboBox_Ativos.deleteLater()
                 self.Label_Msg2.deleteLater()
                 self.TextBox_Msg2.deleteLater()
                 self.F_GLayout[0].removeItem(self.HBoxLayout_Ativo)
@@ -4782,6 +4785,7 @@ class IHMmain(QWidget):
                         wb.Save()
                         wb.Close(True)
                         # excel.Application.Quit() # Bugado
+                        os.startfile(DB_Path+"/"+FileName)
                 except Exception as e:
                     print(e)
                     try:workbook.close()

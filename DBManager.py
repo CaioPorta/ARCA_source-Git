@@ -245,6 +245,7 @@ class DBManager(object):
 
     def ConnectToDB(self, DB):
         self.conn = sqlite3.connect(DB, check_same_thread=False)
+        # self.PersistenceDB() # ideia abandonada
 
     def Disconnect(self): # Só será desconectada se a FLAG estiver em FALSE, condição imposta lá na thread principal
         # Close connection
@@ -258,6 +259,28 @@ class DBManager(object):
 
         except: pass
         finally: return False  # Set self.LoggedIn as False
+        
+    # def PersistenceDB(self): #ideia abandonada
+    #     print("running PersistenceDB")
+    #     tabelas = pd.read_sql("SELECT name FROM sqlite_master WHERE type='table'", self.conn)['name']
+    #     df_tabelas = pd.DataFrame({'nomes':[]})
+    #     df_TabelasBrutoBolsa = pd.DataFrame({'nomes':[]})
+    #     df_TabelasBrutoCripto = pd.DataFrame({'nomes':[]})
+    #     for tabela in tabelas:
+    #         df_tabelas = df_tabelas.append({'nomes':tabela}, ignore_index=True)
+    #         if "¨Bolsa¨Bruto" in tabela:
+    #             df_TabelasBrutoBolsa=df_TabelasBrutoBolsa.append({'nomes':tabela.replace("¨Bruto","¨ST")}, ignore_index=True)
+    #             df_TabelasBrutoBolsa=df_TabelasBrutoBolsa.append({'nomes':tabela.replace("¨Bruto","¨DT")}, ignore_index=True)
+    #         elif "¨Cripto¨Bruto" in tabela:
+    #             df_TabelasBrutoCripto=df_TabelasBrutoCripto.append({'nomes':tabela.replace("¨Bruto","¨Refinado")}, ignore_index=True)
+    #     # print("df_TabelasBrutoBolsa ", df_TabelasBrutoBolsa)
+    #     # print("df_TabelasBrutoCripto ", df_TabelasBrutoCripto)
+    #     print("df_tabelas ", df_tabelas)
+        
+    #     for tabela in df_TabelasBrutoBolsa['nomes']:
+    #         #print(tabela, " is in df? ", df_tabelas['nomes'].isin([tabela]))
+    #         if df_tabelas['nomes'].isin([tabela]).all():
+    #             print(tabela, 'contém apenas valores False')
 
 #%% Adições
 
@@ -3503,6 +3526,7 @@ class DBManager(object):
         #         self.AddRowInCurrentDB(TableName+"¨ST", row)
 
     def CopiarBrutoPraDT(self, TableName):
+        self.SortByDate(TableName+"¨Bruto", "Bolsa")
         self.ModifyDB("DROP TABLE "+TableName+"¨DT") # Deleta a tabela antiga
         self.CreateTableInCurrentDB(TableName+"¨DT", [('Data', 'DATETIME'),
                                                       ('Tipo', 'TEXT'),

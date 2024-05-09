@@ -387,6 +387,19 @@ class HMI_ARCA(object):
 
         self.Thread_TextBox_Aplicar = WorkerThread('Thread_TextBox_Aplicar', self.HMI)
         self.Thread_TextBox_Aplicar.start()
+        
+        if self.HMI.ShowValues:
+            self.HMI.TextBox_Aplicar.setEchoMode(QLineEdit.Normal)
+            self.HMI.TextBox_GastoMensal.setEchoMode(QLineEdit.Normal)
+            self.HMI.TextBox_GastoMensal.setEnabled(True)
+            self.HMI.TextBox_MontanteAplicado.setEchoMode(QLineEdit.Normal)
+            self.HMI.TextBox_MontanteEmAplicacao.setEchoMode(QLineEdit.Normal)
+        else:
+            self.HMI.TextBox_Aplicar.setEchoMode(QLineEdit.Password)
+            self.HMI.TextBox_GastoMensal.setEchoMode(QLineEdit.Password)
+            self.HMI.TextBox_GastoMensal.setEnabled(False)
+            self.HMI.TextBox_MontanteAplicado.setEchoMode(QLineEdit.Password)
+            self.HMI.TextBox_MontanteEmAplicacao.setEchoMode(QLineEdit.Password)
 
         self.HMI.TextBox_MesesDeReserva.clearFocus()
 
