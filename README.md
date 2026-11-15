@@ -10,12 +10,14 @@ I've made a windows APP using Python. The software was made to assist the treatm
    ```powershell
    pip install -r "requirements.txt"
    ```
-2. Run the application from the repo root:
+2. Install chromedriver, available at src\chromedriver.exe
+3. Install Chrome, available at src\ChromeSetup.exe
+4. Run the application from the repo root:
    ```powershell
    python ARCA.py
    ```
    The launcher sets up the module path and working directory, so all asset paths (`./images`, `./sounds`) resolve correctly.
-3. On first launch, create a profile (username, password, recovery email, and database storage location).
+5. On first launch, create a profile (username, password, recovery email, and database storage location).
 
 # Project Guide
 
