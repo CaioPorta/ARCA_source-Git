@@ -1,26 +1,16 @@
 /Material de estudo
 /Tuto
-/__pycache__/BackgroundProcesses.cpython-311.pyc
-/__pycache__/Calcular.cpython-311.pyc
-/__pycache__/CalendarWindow.cpython-311.pyc
-/__pycache__/DBManager.cpython-311.pyc
-/__pycache__/HMI_ARCA.cpython-311.pyc
-/__pycache__/HMI_Desempenho.cpython-311.pyc
-/__pycache__/HMI_Mercado.cpython-311.pyc
-/__pycache__/HMI_Trades_Bolsa.cpython-311.pyc
-/__pycache__/HMI_Trades_Criptomoedas.cpython-311.pyc
-/__pycache__/HMI_Trades.cpython-311.pyc
-/__pycache__/HMI_Tributacao.cpython-311.pyc
-/__pycache__/HMI.cpython-311.pyc
-/__pycache__/LoadingWindow.cpython-311.pyc
-/__pycache__/OperacaoRegistradaComSucesso.cpython-311.pyc
-/__pycache__/RelogioWindow.cpython-311.pyc
-/__pycache__/VersionChecker.cpython-311.pyc
-/__pycache__/YahooFinance.cpython-311.pyc
-/arca/__pycache__/HMI.cpython-311.pyc
-/arca/ui/__pycache__/__init__.cpython-311.pyc
-/arca/ui/__pycache__/HMI.cpython-311.pyc
-/src/app/__pycache__/HMI.cpython-311.pyc
-/ui/__pycache__/__init__.cpython-311.pyc
-/ui/__pycache__/HMI.cpython-311.pyc
-/Users.db
+
+# Python
+__pycache__/
+*.pyc
+
+# PyInstaller
+build/
+dist/
+
+# SQLite databases
+*.db
+
+# ChromeDriver lock file
+webdriver.lock

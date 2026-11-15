@@ -3,13 +3,20 @@
 
 block_cipher = None
 
+app_modules = [
+    'HMI', 'DBManager', 'YahooFinance', 'Calcular', 'BackgroundProcesses',
+    'VersionChecker', 'LoadingWindow', 'CalendarWindow', 'RelogioWindow',
+    'OperacaoRegistradaComSucesso', 'HMI_Trades', 'HMI_Tributacao',
+    'HMI_ARCA', 'HMI_Desempenho', 'HMI_Mercado', 'HMI_Trades_Bolsa',
+    'HMI_Trades_Criptomoedas',
+]
 
 a = Analysis(
     ['ARCA.py'],
-    pathex=[],
+    pathex=['src', 'src/app'],
     binaries=[],
-    datas=[],
-    hiddenimports=[],
+    datas=[('src/assets/.', 'assets')],
+    hiddenimports=app_modules,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

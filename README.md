@@ -67,11 +67,49 @@ ARCA.py  ─────────────▶  HMI.graphical_thread()   (e
                      HMI_Trades_Bolsa · HMI_Trades_Criptomoedas
 ```
 
+### Project layout
+
+Code lives under `src/app/` (flat). Assets live under `src/assets/`. The repo root holds only the launcher, build config, and top-level files.
+
+```
+ARCA_source-Git/
+├── ARCA.py                 # Launcher: fixes sys.path + chdir into assets, then starts GUI
+├── ARCA.spec               # PyInstaller build config
+├── requirements.txt        # Python dependencies
+├── .gitignore
+├── src/
+│   ├── __init__.py
+│   ├── app/                # all application modules (flat)
+│   │   ├── __init__.py
+│   │   ├── HMI.py          # main window + page dispatcher
+│   │   ├── DBManager.py    # SQLite data layer
+│   │   ├── YahooFinance.py # market data
+│   │   ├── Calcular.py     # financial math
+│   │   ├── BackgroundProcesses.py  # threading model
+│   │   ├── VersionChecker.py
+│   │   ├── LoadingWindow.py
+│   │   ├── CalendarWindow.py
+│   │   ├── RelogioWindow.py
+│   │   ├── OperacaoRegistradaComSucesso.py
+│   │   ├── HMI_Trades.py
+│   │   ├── HMI_Tributacao.py
+│   │   ├── HMI_ARCA.py
+│   │   ├── HMI_Desempenho.py
+│   │   ├── HMI_Mercado.py
+│   │   ├── HMI_Trades_Bolsa.py
+│   │   └── HMI_Trades_Criptomoedas.py
+│   └── assets/             # images, sounds, Bonus/, chromedriver.exe
+├── dev/                    # notebook/dev copies of core modules
+└── Guia de Desenvolvimento/  # diagrams, PDFs, screenshots
+```
+
 ### Key modules
+
+All modules below live in `src/app/`. `ARCA.py` at the root is a thin launcher.
 
 | File | Responsibility |
 |------|----------------|
-| `ARCA.py` | Entry point. Spawns the GUI thread. |
+| `ARCA.py` | Launcher: adds `src/app` to `sys.path`, chdir into assets, spawns the GUI thread. |
 | `HMI.py` | Main window (`IHMmain`) and page-navigation dispatcher; holds shared app state. Also defines `graphical_thread`. |
 | `HMI_Trades.py` / `HMI_Trades_Bolsa.py` / `HMI_Trades_Criptomoedas.py` | Trade registration, broker management, operations (buy/sell), deposits/withdrawals for stocks and crypto. |
 | `HMI_Tributacao.py` | Tax calculation UI (Day Trade / Swing Trade). |
@@ -95,14 +133,15 @@ Long-running tasks (fetching tickers, updating quotes, computing taxes) run on b
 
 ## Getting Started
 
-1. Install dependencies (see `Guia de Desenvolvimento/requirements.txt`):
+1. Install dependencies (see `requirements.txt` at the repo root):
    ```powershell
-   pip install -r "Guia de Desenvolvimento/requirements.txt"
+   pip install -r "requirements.txt"
    ```
-2. Run the application:
+2. Run the application from the repo root:
    ```powershell
    python ARCA.py
    ```
+   The launcher sets up the module path and working directory, so all asset paths (`./images`, `./sounds`) resolve correctly.
 3. On first launch, create a profile (username, password, recovery email, and database storage location).
 
 ## Building an executable
@@ -115,6 +154,8 @@ This produces the distributable in `dist/`, bundled with `logoARCA.ico`.
 
 ## Development resources
 
-The `Guia de Desenvolvimento/` folder contains developer notes, sequence diagrams (`Sequencial Diagram.drawio`), DB/HMI maps (PDFs), screenshot references, and the dependency list.
+The `Guia de Desenvolvimento/` folder contains developer notes, sequence diagrams (`Sequencial Diagram.drawio`), DB/HMI maps (PDFs), and screenshot references. The dependency list now lives at the repo root as `requirements.txt`.
+
+Dev/notebook copies of core modules are kept in `dev/`: `DBManager-Cabrero-Notebook.py`, `HMI-Cabrero-Notebook.py`, `YahooFinance-Cabrero-Notebook.py`.
 
 > Note: The original README is preserved verbatim in the section above this guide.
