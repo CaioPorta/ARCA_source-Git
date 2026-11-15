@@ -18,7 +18,7 @@ yahoo-fin
 pyqtgraph
 playsound==1.2.2
 openpyxl==3.0.9
-yfinance
+yfinance==0.1.36
 Pillow
 pypiwin32
 mplfinance
