@@ -4,7 +4,7 @@ Created on Sat Sep 18 22:55:20 2021
 
 @author: caiop
 """
-from BackgroundProcesses import WorkerThread
+from core.BackgroundProcesses import WorkerThread
 
 import time
 from copy import copy

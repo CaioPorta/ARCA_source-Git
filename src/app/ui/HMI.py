@@ -36,23 +36,23 @@ from PyQt5.QtCore import *
 import _thread
 import threading
 from threading import Lock
-from BackgroundProcesses import BackgroundProcess as BP
-from BackgroundProcesses import WorkerThread
+from core.BackgroundProcesses import BackgroundProcess as BP
+from core.BackgroundProcesses import WorkerThread
 
-import HMI_Trades
-import HMI_Tributacao
-import HMI_ARCA
-import HMI_Desempenho
-import HMI_Mercado
-import DBManager
-import YahooFinance
-import Calcular
-import LoadingWindow
-import VersionChecker
+import ui.HMI_Trades_page as HMI_Trades_page
+import ui.HMI_Tributacao_page as HMI_Tributacao_page
+import ui.HMI_ARCA_page as HMI_ARCA_page
+import ui.HMI_Desempenho_page as HMI_Desempenho_page
+import ui.HMI_Mercado_page as HMI_Mercado_page
+import core.DBManager as DBManager
+import core.YahooFinance as YahooFinance
+import core.Calcular as Calcular
+import ui.popup.LoadingWindow as LoadingWindow
+import core.VersionChecker as VersionChecker
 
-from CalendarWindow import CalendarWindow as Calendario
-from RelogioWindow import RelogioWindow as Relogio
-import OperacaoRegistradaComSucesso
+from ui.popup.CalendarWindow import CalendarWindow as Calendario
+from ui.popup.RelogioWindow import RelogioWindow as Relogio
+import ui.popup.OperacaoRegistradaComSucesso as OperacaoRegistradaComSucesso
 
 class IHMmain(QWidget):
     #%% Init
@@ -151,11 +151,11 @@ class IHMmain(QWidget):
 
         self.DBManager.Disconnect()
 
-        self.HMI_Trades = HMI_Trades.HMI_Trades(self)
-        self.HMI_Tributacao = HMI_Tributacao.HMI_Tributacao(self)
-        self.HMI_ARCA = HMI_ARCA.HMI_ARCA(self)
-        self.HMI_Desempenho = HMI_Desempenho.HMI_Desempenho(self)
-        self.HMI_Mercado = HMI_Mercado.HMI_Mercado(self)
+        self.HMI_Trades = HMI_Trades_page.HMI_Trades(self)
+        self.HMI_Tributacao = HMI_Tributacao_page.HMI_Tributacao(self)
+        self.HMI_ARCA = HMI_ARCA_page.HMI_ARCA(self)
+        self.HMI_Desempenho = HMI_Desempenho_page.HMI_Desempenho(self)
+        self.HMI_Mercado = HMI_Mercado_page.HMI_Mercado(self)
 
     #%% Pages Creation
     def CreatePage_Decisao(self):

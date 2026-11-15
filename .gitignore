@@ -14,3 +14,8 @@ dist/
 
 # ChromeDriver lock file
 webdriver.lock
+
+# GitHub Copilot session artifacts
+.copilot/
+.copilot-chat/
+.github/copilot-instructions/
