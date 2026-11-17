@@ -3358,11 +3358,11 @@ class HMI_ARCA(object):
 
             self.Table_ContasCorrenteHeader.adjustSize()
             self.Table_ContasCorrenteHeader.setColumnWidth(0, SizeCol0)
-            self.Table_ContasCorrenteHeader.setColumnWidth(1, SizeCol1*.98)
+            self.Table_ContasCorrenteHeader.setColumnWidth(1, int(SizeCol1*.98))
 
             self.Table_ContasCorrente.adjustSize()
             self.Table_ContasCorrente.setColumnWidth(0, SizeCol0)
-            self.Table_ContasCorrente.setColumnWidth(1, SizeCol1*.98)
+            self.Table_ContasCorrente.setColumnWidth(1, int(SizeCol1*.98))
 
         self.Thread_CreateTable_11_2 = WorkerThread('Thread_CreateTable_11_2', self.HMI)
         self.Thread_CreateTable_11_2.update_table.connect(evt_update_progress_11_2)
