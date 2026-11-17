@@ -149,7 +149,6 @@ This produces the distributable in `dist/`, bundled with `logoARCA.ico`.
 The `Guia de Desenvolvimento` folder contains developer notes, sequence diagrams (`Sequencial Diagram.drawio`), DB/HMI maps (PDFs), and screenshot references. 
 
 ## TODOs
-- Remove unused imports
 (Architecture is the most important thing to modify today, so to be easier to give maintenance to the project)
 - Mon graphical_thread crée la QApplication et lance la boucle d’événements (exec_()) dans run(). Du coup, je ne peux pas instancier la fenêtre dans un test sans bloquer. De plus, Qt exige que la QApplication et les widgets vivent dans le thread principal : lancer l’UI dans un thread secondaire est fragile.
 Je dois séparer la fenêtre du lancement
