@@ -2018,7 +2018,7 @@ class IHMmain(QWidget):
         self.ComboBox_Currency.setFont(self.font16)
         self.ComboBox_Currency.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.ComboBox_Currency.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(0, 255, 0);")
-        for idx, coin in enumerate(self.DBManager.MoedasFiatBasicas):
+        for idx, coin in enumerate(self.DBManager.series_BasicInfo_MoedasFiat):
             self.ComboBox_Currency.addItem(coin)
 
         self.Label_Path = QLabel('Local de armazenamento:')
@@ -2151,7 +2151,7 @@ class IHMmain(QWidget):
         self.ComboBox_Currency.setFont(self.font16)
         self.ComboBox_Currency.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.ComboBox_Currency.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(0, 255, 0);")
-        for idx, coin in enumerate(self.DBManager.MoedasFiatBasicas):
+        for idx, coin in enumerate(self.DBManager.series_BasicInfo_MoedasFiat):
             self.ComboBox_Currency.addItem(coin)
 
         self.Label_Path = QLabel('Local de armazenamento:')
@@ -5033,7 +5033,7 @@ class IHMmain(QWidget):
                             # Create Table MoedasFiat
                             self.DBManager.CreateTableInCurrentDB('MoedasFiat', [('MoedaFiat', 'TEXT')])
                             if "MoedasFiat" in TableNames: MoedasFiat = list(map(lambda cell: cell.value, workbook["MoedasFiat"]["A"]))[1:]
-                            else: MoedasFiat = self.DBManager.MoedasFiatBasicas
+                            else: MoedasFiat = self.DBManager.series_BasicInfo_MoedasFiat
                             for Moeda in MoedasFiat:
                                 self.DBManager.AddRowInCurrentDB('MoedasFiat', [('MoedaFiat', Moeda)])
                         except:
