@@ -4,17 +4,22 @@ Created on Fri Nov  5 12:36:00 2021
 
 @author: caiop
 """
-
 import ctypes
-
-import pandas as pd
-import numpy as np
 
 from datetime import datetime
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import (
+    QCursor, QIcon, QColor
+)
+from PyQt5.QtWidgets import (
+    QWidget, QLabel, QPushButton,
+    QHBoxLayout, QVBoxLayout,
+    QCalendarWidget
+)
+from PyQt5.QtCore import (
+    QSize, Qt, QDate
+)
+
 
 class CalendarWindow(QWidget):
     def __init__(self, HMI):
@@ -38,7 +43,7 @@ class CalendarWindow(QWidget):
         self.Label_Titulo = QLabel()
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.HMI.font22)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.Label_Titulo.setText("Selecione a data")
 
         import calendar
@@ -61,7 +66,7 @@ class CalendarWindow(QWidget):
         self.Button_Cancelar.setIconSize(QSize(int(self.HMI.frameGeometry().height()/15*0.9),int(self.HMI.frameGeometry().height()/15*0.9)))
         self.Button_Cancelar.setFixedSize(int(self.HMI.frameGeometry().width()*2/15*0.9),int(self.HMI.frameGeometry().width()*1/15*0.9))
         self.Button_Cancelar.setIcon(QIcon("./images/Voltar.png"))
-        self.Button_Cancelar.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Cancelar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Cancelar.setStyleSheet("background-color: rgb(200, 100, 100)")
 
         self.Button_SelecionarData = QPushButton('Selecionar ano,\nmês e\ndia')
@@ -70,15 +75,15 @@ class CalendarWindow(QWidget):
         self.Button_SelecionarData.setIconSize(QSize(int(self.HMI.frameGeometry().height()/15*0.9),int(self.HMI.frameGeometry().height()/15*0.9)))
         self.Button_SelecionarData.setFixedSize(int(self.HMI.frameGeometry().width()*2/15*0.9),int(self.HMI.frameGeometry().width()*1/15*0.9))
         self.Button_SelecionarData.setIcon(QIcon("./images/log_in.png"))
-        self.Button_SelecionarData.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_SelecionarData.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_SelecionarData.setStyleSheet("background-color: rgb(20, 120, 30)")
 
-        self.layout.addWidget(self.Label_Titulo, Qt.AlignHCenter | Qt.AlignTop)
-        self.layout.addWidget(self.calendar, Qt.AlignCenter)
+        self.layout.addWidget(self.Label_Titulo, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.layout.addWidget(self.calendar, Qt.AlignmentFlag.AlignCenter)
         self.layoutH = QHBoxLayout()
         self.layout.addLayout(self.layoutH)
-        self.layoutH.addWidget(self.Button_Cancelar, Qt.AlignLeft)
-        self.layoutH.addWidget(self.Button_SelecionarData, Qt.AlignRight)
+        self.layoutH.addWidget(self.Button_Cancelar, Qt.AlignmentFlag.AlignLeft)
+        self.layoutH.addWidget(self.Button_SelecionarData, Qt.AlignmentFlag.AlignRight)
 
     def Abrir(self):
         self.show()

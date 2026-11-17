@@ -23,5 +23,6 @@ Pillow
 pypiwin32
 mplfinance
 dateparser
+winshell
 python-binance
 --user gitdir

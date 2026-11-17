@@ -2,21 +2,17 @@
 """
 Created on Tue Dec  7 17:53:09 2021
 
-@author: caiop
+@author: Caio Moreira Porta
 """
-import threading
 from threading import Thread
 import time
-
-import requests
-
 from datetime import datetime
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QCursor
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
 from playsound import playsound
+
 
 class BackgroundProcess(Thread):
     def __init__(self, ThreadName, HMI, ativo = '', currency = '', Cotacoes=[]):
@@ -91,7 +87,7 @@ class BackgroundProcess(Thread):
             try:
                 playsound("./sounds/Coins Dropping.mp3")
                 self.HMI.AtualizarCotacoes_running = False
-                self.HMI.Button_AttCotacoes.setCursor(QCursor(Qt.PointingHandCursor))
+                self.HMI.Button_AttCotacoes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
             except:pass
 
 class WorkerThread(QThread):
@@ -150,7 +146,7 @@ class WorkerThread(QThread):
 
     def Thread_BuscarSetoresExistentes(self):
         try:
-            self.HMI.setCursor(Qt.WaitCursor)
+            self.HMI.setCursor(Qt.CursorShape.WaitCursor)
             Setores = self.HMI.YahooFinance.SetoresExistentes()
             if len(Setores) > 0:
                 Atualizou = self.HMI.DBManager.AlterSetores(Setores)

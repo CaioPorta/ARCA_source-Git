@@ -2,13 +2,10 @@
 """
 Created on Sat Sep 18 23:53:39 2021
 
-@author: caiop
+@author: Caio Moreira Porta
 """
-
 import decimal
 
-import pandas as pd
-import numpy as np
 
 class Calcular(object):
     def __init__(self, HMI):

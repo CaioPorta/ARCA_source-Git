@@ -11,9 +11,11 @@ import sys
 import ctypes
 import time
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import (
+    QWidget, QLabel, QVBoxLayout
+)
+from PyQt5.QtCore import Qt
 
 from core.BackgroundProcesses import WorkerThread
 
@@ -44,9 +46,9 @@ class OperacaoRegistradaComSucesso(QWidget):
         self.Label_Titulo = QLabel()
         self.Label_Titulo.setStyleSheet('color: green')
         self.Label_Titulo.setFont(self.HMI.font22)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.Label_Titulo.setText("Operação registrada com sucesso")
-        self.layout.addWidget(self.Label_Titulo, Qt.AlignHCenter | Qt.AlignTop)
+        self.layout.addWidget(self.Label_Titulo, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
         self.show()
         self.worker = WorkerThread('Thread_EsmaecerMsgSucesso', self.HMI)
         self.worker.start()

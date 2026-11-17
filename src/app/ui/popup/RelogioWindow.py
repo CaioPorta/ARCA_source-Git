@@ -14,9 +14,17 @@ import math
 import sys
 import ctypes
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import (
+    QFont, QCursor,
+    QIcon, QColor
+)
+from PyQt5.QtWidgets import (
+    QWidget, QLabel, QPushButton,
+    QHBoxLayout, QToolTip, QVBoxLayout
+)
+from PyQt5.QtCore import (
+    QSize, Qt,
+)
 
 class RelogioWindow(QWidget):
     def __init__(self, HMI):
@@ -46,7 +54,7 @@ class RelogioWindow(QWidget):
         self.Label_Titulo = QLabel()
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.HMI.font22)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.Label_Titulo.setFixedHeight(int(self.HMI.frameGeometry().width() * 1 / 15))
         self.Label_Titulo.setText("Selecione a hora, o minuto e o segundo")
 
@@ -55,13 +63,13 @@ class RelogioWindow(QWidget):
         self.Button_HoraUp.setIconSize(QSize(int(self.HMI.frameGeometry().height() / 15), int(self.HMI.frameGeometry().height() / 15)))
         self.Button_HoraUp.setFixedSize(int(self.HMI.frameGeometry().width() * 1 / 15), int(self.HMI.frameGeometry().width() * 1 / 15))
         self.Button_HoraUp.setIcon(QIcon("./images/up.png"))
-        self.Button_HoraUp.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_HoraUp.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_HoraUp.setToolTip("Aumentar 1 hora")
         self.Button_HoraUp.setStyleSheet("QPushButton {background-color: rgb(10, 40, 60); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
 
         self.Button_Hora = QPushButton(self.Selecao_Hora)
         self.Button_Hora.pressed.connect(lambda: self.OnButtonPressed("Button_Hora"))
-        self.Button_Hora.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Hora.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Hora.setFont(QFont('Times New Roman', 40))
         self.Button_Hora.setFixedSize(int(self.HMI.frameGeometry().width() * 1 / 15), int(self.HMI.frameGeometry().width() * 1 / 15))
         self.Button_Hora.setStyleSheet("background-color: rgb(10, 40, 60); color: green; border: none; outline: none;")
@@ -71,7 +79,7 @@ class RelogioWindow(QWidget):
         self.Button_HoraDown.setIconSize(QSize(int(self.HMI.frameGeometry().height() / 15), int(self.HMI.frameGeometry().height() / 15)))
         self.Button_HoraDown.setFixedSize(int(self.HMI.frameGeometry().width() * 1 / 15), int(self.HMI.frameGeometry().width() * 1 / 15))
         self.Button_HoraDown.setIcon(QIcon("./images/down.png"))
-        self.Button_HoraDown.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_HoraDown.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_HoraDown.setStyleSheet("QPushButton {background-color: rgb(10, 40, 60); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_HoraDown.setToolTip("Diminuir 1 hora")
 
@@ -80,13 +88,13 @@ class RelogioWindow(QWidget):
         self.Button_MinutoUp.setIconSize(QSize(int(self.HMI.frameGeometry().height() / 15), int(self.HMI.frameGeometry().height() / 15)))
         self.Button_MinutoUp.setFixedSize(int(self.HMI.frameGeometry().width() * 1 / 15), int(self.HMI.frameGeometry().width() * 1 / 15))
         self.Button_MinutoUp.setIcon(QIcon("./images/up.png"))
-        self.Button_MinutoUp.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_MinutoUp.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_MinutoUp.setToolTip("Aumentar 1 minuto")
         self.Button_MinutoUp.setStyleSheet("QPushButton {background-color: rgb(10, 40, 60); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
 
         self.Button_Minuto = QPushButton(self.Selecao_Minuto)
         self.Button_Minuto.pressed.connect(lambda: self.OnButtonPressed("Button_Minuto"))
-        self.Button_Minuto.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Minuto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Minuto.setFont(QFont('Times New Roman', 40))
         self.Button_Minuto.setFixedSize(int(self.HMI.frameGeometry().width() * 1 / 15), int(self.HMI.frameGeometry().width() * 1 / 15))
         self.Button_Minuto.setStyleSheet("background-color: rgb(10, 40, 60); color: white; border: none; outline: none;")
@@ -96,7 +104,7 @@ class RelogioWindow(QWidget):
         self.Button_MinutoDown.setIconSize(QSize(int(self.HMI.frameGeometry().height() / 15), int(self.HMI.frameGeometry().height() / 15)))
         self.Button_MinutoDown.setFixedSize(int(self.HMI.frameGeometry().width() * 1 / 15), int(self.HMI.frameGeometry().width() * 1 / 15))
         self.Button_MinutoDown.setIcon(QIcon("./images/down.png"))
-        self.Button_MinutoDown.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_MinutoDown.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_MinutoDown.setToolTip("Diminuir 1 minuto")
         self.Button_MinutoDown.setStyleSheet("QPushButton {background-color: rgb(10, 40, 60); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
 
@@ -105,13 +113,13 @@ class RelogioWindow(QWidget):
         self.Button_SegundoUp.setIconSize(QSize(int(self.HMI.frameGeometry().height() / 15), int(self.HMI.frameGeometry().height() / 15)))
         self.Button_SegundoUp.setFixedSize(int(self.HMI.frameGeometry().width() * 1 / 15), int(self.HMI.frameGeometry().width() * 1 / 15))
         self.Button_SegundoUp.setIcon(QIcon("./images/up.png"))
-        self.Button_SegundoUp.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_SegundoUp.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_SegundoUp.setToolTip("Aumentar 1 segundo")
         self.Button_SegundoUp.setStyleSheet("QPushButton {background-color: rgb(10, 40, 60); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
 
         self.Button_Segundo = QPushButton(self.Selecao_Segundo)
         self.Button_Segundo.pressed.connect(lambda: self.OnButtonPressed("Button_Segundo"))
-        self.Button_Segundo.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Segundo.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Segundo.setFont(QFont('Times New Roman', 40))
         self.Button_Segundo.setFixedSize(int(self.HMI.frameGeometry().width() * 1 / 15), int(self.HMI.frameGeometry().width() * 1 / 15))
         self.Button_Segundo.setStyleSheet("background-color: rgb(10, 40, 60); color: white; border: none; outline: none;")
@@ -121,7 +129,7 @@ class RelogioWindow(QWidget):
         self.Button_SegundoDown.setIconSize(QSize(int(self.HMI.frameGeometry().height() / 15), int(self.HMI.frameGeometry().height() / 15)))
         self.Button_SegundoDown.setFixedSize(int(self.HMI.frameGeometry().width() * 1 / 15), int(self.HMI.frameGeometry().width() * 1 / 15))
         self.Button_SegundoDown.setIcon(QIcon("./images/down.png"))
-        self.Button_SegundoDown.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_SegundoDown.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_SegundoDown.setToolTip("Diminuir 1 segundo")
         self.Button_SegundoDown.setStyleSheet("QPushButton {background-color: rgb(10, 40, 60); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
 
@@ -131,7 +139,7 @@ class RelogioWindow(QWidget):
         self.Button_Cancelar.setIconSize(QSize(int(self.HMI.frameGeometry().height()/15*0.9),int(self.HMI.frameGeometry().height()/15*0.9)))
         self.Button_Cancelar.setFixedSize(int(self.HMI.frameGeometry().width()*2/15*0.9),int(self.HMI.frameGeometry().width()*1/15*0.9))
         self.Button_Cancelar.setIcon(QIcon("./images/Voltar.png"))
-        self.Button_Cancelar.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Cancelar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Cancelar.setStyleSheet("background-color: rgb(200, 100, 100)")
 
         self.Button_SelecionarData = QPushButton('Selecionar')
@@ -140,29 +148,29 @@ class RelogioWindow(QWidget):
         self.Button_SelecionarData.setIconSize(QSize(int(self.HMI.frameGeometry().height()/15*0.9),int(self.HMI.frameGeometry().height()/15*0.9)))
         self.Button_SelecionarData.setFixedSize(int(self.HMI.frameGeometry().width()*2/15*0.9),int(self.HMI.frameGeometry().width()*1/15*0.9))
         self.Button_SelecionarData.setIcon(QIcon("./images/log_in.png"))
-        self.Button_SelecionarData.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_SelecionarData.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_SelecionarData.setStyleSheet("background-color: rgb(20, 120, 30)")
 
-        self.layout.addWidget(self.Label_Titulo, Qt.AlignHCenter | Qt.AlignTop)
+        self.layout.addWidget(self.Label_Titulo, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
         self.HBoxLayout_DataUp = QHBoxLayout()
-        self.HBoxLayout_DataUp.addWidget(self.Button_HoraUp, Qt.AlignCenter | Qt.AlignBottom)
-        self.HBoxLayout_DataUp.addWidget(self.Button_MinutoUp, Qt.AlignCenter | Qt.AlignBottom)
-        self.HBoxLayout_DataUp.addWidget(self.Button_SegundoUp, Qt.AlignCenter | Qt.AlignBottom)
+        self.HBoxLayout_DataUp.addWidget(self.Button_HoraUp, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HBoxLayout_DataUp.addWidget(self.Button_MinutoUp, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HBoxLayout_DataUp.addWidget(self.Button_SegundoUp, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
         self.layout.addLayout(self.HBoxLayout_DataUp)
         self.HBoxLayout_Data = QHBoxLayout()
-        self.HBoxLayout_Data.addWidget(self.Button_Hora, Qt.AlignCenter)
-        self.HBoxLayout_Data.addWidget(self.Button_Minuto, Qt.AlignCenter)
-        self.HBoxLayout_Data.addWidget(self.Button_Segundo, Qt.AlignCenter)
+        self.HBoxLayout_Data.addWidget(self.Button_Hora, Qt.AlignmentFlag.AlignCenter)
+        self.HBoxLayout_Data.addWidget(self.Button_Minuto, Qt.AlignmentFlag.AlignCenter)
+        self.HBoxLayout_Data.addWidget(self.Button_Segundo, Qt.AlignmentFlag.AlignCenter)
         self.layout.addLayout(self.HBoxLayout_Data)
         self.HBoxLayout_DataDown = QHBoxLayout()
-        self.HBoxLayout_DataDown.addWidget(self.Button_HoraDown, Qt.AlignCenter | Qt.AlignTop)
-        self.HBoxLayout_DataDown.addWidget(self.Button_MinutoDown, Qt.AlignCenter | Qt.AlignTop)
-        self.HBoxLayout_DataDown.addWidget(self.Button_SegundoDown, Qt.AlignCenter | Qt.AlignTop)
+        self.HBoxLayout_DataDown.addWidget(self.Button_HoraDown, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.HBoxLayout_DataDown.addWidget(self.Button_MinutoDown, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.HBoxLayout_DataDown.addWidget(self.Button_SegundoDown, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
         self.layout.addLayout(self.HBoxLayout_DataDown)
         self.layoutH = QHBoxLayout()
         self.layout.addLayout(self.layoutH)
-        self.layoutH.addWidget(self.Button_Cancelar, Qt.AlignLeft)
-        self.layoutH.addWidget(self.Button_SelecionarData, Qt.AlignRight)
+        self.layoutH.addWidget(self.Button_Cancelar, Qt.AlignmentFlag.AlignLeft)
+        self.layoutH.addWidget(self.Button_SelecionarData, Qt.AlignmentFlag.AlignRight)
 
     def Abrir(self):
         self.show()

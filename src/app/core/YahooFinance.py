@@ -2,14 +2,13 @@
 """
 Created on Fri Sep 17 00:16:18 2021
 
-@author: caiop
+@author: Caio Moreira Porta
 """
 from core.BackgroundProcesses import BackgroundProcess as BP
 
 import yfinance as yf # To evitando de usar essa
 from yahoo_fin.stock_info import * # Dar preferencia pra usar essa. Da menos BUG
 
-import numpy as np
 import pandas as pd
 import pandas_datareader.data as web
 
@@ -27,11 +26,7 @@ import glob
 import shutil
 
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-import codecs
-import csv
 
 import requests
 import json

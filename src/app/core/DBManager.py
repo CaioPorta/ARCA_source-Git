@@ -2,20 +2,15 @@
 """
 Created on Sun Sep  5 01:44:04 2021
 
-@author: caiop
+@author: Caio Moreira Porta
 """
 import os
 from os.path import exists
-import sys
 import copy
-import time
-from datetime import datetime
-from datetime import timedelta
-
+from datetime import datetime,timedelta
+import pandas as pd
 import sqlite3
-from sqlite3 import Error
 
-import threading
 from threading import Lock
 from core.BackgroundProcesses import BackgroundProcess as BP
 from core.BackgroundProcesses import WorkerThread
@@ -26,8 +21,6 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-import pandas as pd
-import numpy as np
 
 class DBManager(object):
     def __init__(self, HMI):

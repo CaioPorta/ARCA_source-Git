@@ -2,24 +2,30 @@
 """
 Created on Fri Oct 15 23:05:53 2021
 
-@author: caiop
+@author: Caio Moreira Porta
 """
-
-import pandas as pd
-import numpy as np
 import time
-
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-
 from datetime import datetime
 import dateutil
+
+from PyQt5.QtGui import (
+    QFont, QCursor,
+    QIcon, QColor,
+    QBrush
+)
+from PyQt5.QtWidgets import (
+    QLabel, QPushButton, QLineEdit,
+    QToolTip,
+    QTableWidget, QTableWidgetItem,
+    QAbstractScrollArea, QInputDialog
+)
+from PyQt5.QtCore import (
+    QSize, Qt
+)
 
 import tkinter
 from tkinter import filedialog
 import xlsxwriter
-from openpyxl import load_workbook
 import win32com.client as win32
 
 
@@ -40,12 +46,12 @@ class HMI_Tributacao(object):
         self.HMI.Label_Titulo = QLabel('Tributação')
         self.HMI.Label_Titulo.setStyleSheet('color: white')
         self.HMI.Label_Titulo.setFont(self.HMI.font30)
-        self.HMI.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Label_Msg2 = QLabel('Resultado geral líquido:')
         self.HMI.Label_Msg2.setStyleSheet('color: white')
         self.HMI.Label_Msg2.setFont(self.HMI.font16)
-        self.HMI.Label_Msg2.setAlignment(Qt.AlignRight)
+        self.HMI.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.HMI.TextBox_Msg2 = QLineEdit()
         self.HMI.TextBox_Msg2.setText(str(self.HMI.DBManager.GetResultadoGeralLiquido()))
@@ -57,14 +63,14 @@ class HMI_Tributacao(object):
         else: self.HMI.TextBox_Msg2.setStyleSheet('QLineEdit {background-color: black; color: red;}')
         self.HMI.TextBox_Msg2.setFont(self.HMI.font16)
         self.HMI.TextBox_Msg2.setEnabled(False)
-        self.HMI.TextBox_Msg2.setAlignment(Qt.AlignLeft)
+        self.HMI.TextBox_Msg2.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.HMI.Button_DTeST = QPushButton()
         self.HMI.Button_DTeST.pressed.connect(lambda: self.OnButtonPressed('ChangeDTeST'))
         self.HMI.Button_DTeST.setFixedSize(70*3+5,35*3+5)
         self.HMI.Button_DTeST.setIconSize(QSize(70*3, 35*3))
         self.HMI.Button_DTeST.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
-        self.HMI.Button_DTeST.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_DTeST.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.Button_DTeST.setIcon(QIcon("./images/Visualizar Day Trades e Swing Trades.png"))
         self.HMI.Button_DTeST.setToolTip("Alterar apresentação (DT e ST)")
         self.HMI.DTeST_51 = "DTeST"
@@ -74,7 +80,7 @@ class HMI_Tributacao(object):
         self.HMI.Button_CriptoeB3.setFixedSize(70*3+5,35*3+5)
         self.HMI.Button_CriptoeB3.setIconSize(QSize(70*3, 35*3))
         self.HMI.Button_CriptoeB3.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
-        self.HMI.Button_CriptoeB3.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_CriptoeB3.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.Button_CriptoeB3.setIcon(QIcon("./images/Visualizar cripto e B3.png"))
         self.HMI.Button_CriptoeB3.setToolTip("Alterar apresentação (cripto e B3)")
         self.HMI.CriptoeB3_51 = "CriptoeB3"
@@ -82,7 +88,7 @@ class HMI_Tributacao(object):
         self.HMI.Label_Msg3 = QLabel('Resultado líquido (último mês):')
         self.HMI.Label_Msg3.setStyleSheet('color: white')
         self.HMI.Label_Msg3.setFont(self.HMI.font12)
-        self.HMI.Label_Msg3.setAlignment(Qt.AlignRight)
+        self.HMI.Label_Msg3.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.HMI.TextBox_Msg3 = QLineEdit()
         self.HMI.TextBox_Msg3.setText(str(self.HMI.DBManager.GetResultadoLiquidoUltimoMes()))
@@ -94,12 +100,12 @@ class HMI_Tributacao(object):
         else: self.HMI.TextBox_Msg3.setStyleSheet('QLineEdit {background-color: black; color: red;}')
         self.HMI.TextBox_Msg3.setFont(self.HMI.font12)
         self.HMI.TextBox_Msg3.setEnabled(False)
-        self.HMI.TextBox_Msg3.setAlignment(Qt.AlignLeft)
+        self.HMI.TextBox_Msg3.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.HMI.Label_Msg4 = QLabel('Imposto de DT devido (último mês):')
         self.HMI.Label_Msg4.setStyleSheet('color: white')
         self.HMI.Label_Msg4.setFont(self.HMI.font12)
-        self.HMI.Label_Msg4.setAlignment(Qt.AlignRight)
+        self.HMI.Label_Msg4.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.HMI.TextBox_Msg4 = QLineEdit()
         self.HMI.TextBox_Msg4.setText(str(self.HMI.DBManager.GetImpostoDevidoDeDTUltimoMes()))
@@ -110,14 +116,14 @@ class HMI_Tributacao(object):
         self.HMI.TextBox_Msg4.setStyleSheet('QLineEdit {background-color: black; color: green;}')
         self.HMI.TextBox_Msg4.setFont(self.HMI.font12)
         self.HMI.TextBox_Msg4.setEnabled(False)
-        self.HMI.TextBox_Msg4.setAlignment(Qt.AlignLeft)
+        self.HMI.TextBox_Msg4.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.HMI.Button_RegistrarMudancas = QPushButton()
         self.HMI.Button_RegistrarMudancas.pressed.connect(lambda: self.OnButtonPressed('ExportIR'))
         self.HMI.Button_RegistrarMudancas.setFixedSize(40,40)
         self.HMI.Button_RegistrarMudancas.setIconSize(QSize(35, 35))
         self.HMI.Button_RegistrarMudancas.setIcon(QIcon("./images/ExportIR.png"))
-        self.HMI.Button_RegistrarMudancas.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_RegistrarMudancas.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.Button_RegistrarMudancas.setToolTip("Exportar Informe de Rendimentos")
         self.HMI.Button_RegistrarMudancas.setStyleSheet('QPushButton{background-color: gray} QToolTip {background-color: black; color: white;border: black solid 1px}')
 
@@ -126,7 +132,7 @@ class HMI_Tributacao(object):
         # self.HMI.Button_Imprimir.setFixedSize(40,40)
         # self.HMI.Button_Imprimir.setIconSize(QSize(35, 35))
         # self.HMI.Button_Imprimir.setIcon(QIcon("./images/printer.png"))
-        # self.HMI.Button_Imprimir.setCursor(QCursor(Qt.PointingHandCursor))
+        # self.HMI.Button_Imprimir.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         # self.HMI.Button_Imprimir.setStyleSheet('QPushButton {background-color: black; border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         # self.HMI.Button_Imprimir.setToolTip("Gerar Excel de Tributação")
 
@@ -139,19 +145,19 @@ class HMI_Tributacao(object):
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_1, 0, 0, 1, 10)
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_2, 1, 0, 3, 10)
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_3, 4, 0, 8, 10)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 10, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg2, 1, 1, 1, 1, Qt.AlignCenter | Qt.AlignRight)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Msg2, 1, 2, 1, 1, Qt.AlignCenter | Qt.AlignLeft)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg3, 2, 1, 1, 1, Qt.AlignCenter | Qt.AlignRight)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Msg3, 2, 2, 1, 1, Qt.AlignCenter | Qt.AlignLeft)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg4, 3, 1, 1, 1, Qt.AlignCenter | Qt.AlignRight)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Msg4, 3, 2, 1, 1, Qt.AlignCenter | Qt.AlignLeft)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_DTeST, 1, 5, 3, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_CriptoeB3, 1, 6, 3, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_RegistrarMudancas, 4, 0, 1, 10, Qt.AlignRight | Qt.AlignBottom)
-        # self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_Imprimir, 5, 0, 1, 10, Qt.AlignRight | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao_Header, 5, 0, 1, 10, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao, 6, 0, 6, 10, Qt.AlignHCenter | Qt.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 10, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg2, 1, 1, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignRight)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Msg2, 1, 2, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignLeft)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg3, 2, 1, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignRight)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Msg3, 2, 2, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignLeft)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg4, 3, 1, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignRight)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Msg4, 3, 2, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignLeft)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_DTeST, 1, 5, 3, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_CriptoeB3, 1, 6, 3, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_RegistrarMudancas, 4, 0, 1, 10, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
+        # self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_Imprimir, 5, 0, 1, 10, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao_Header, 5, 0, 1, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao, 6, 0, 6, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
     def CreateTable_51_1(self):
         if not self.HMI.DTeST_51 == "DTeST":
@@ -191,8 +197,8 @@ class HMI_Tributacao(object):
 
         for col in range(len(HHeader)):
             celula = QTableWidgetItem(str(HHeader[col]))
-            celula.setFlags(Qt.ItemFlags(Qt.ItemIsSelectable))
-            celula.setTextAlignment(Qt.AlignHCenter | Qt.AlignBottom)
+            celula.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
+            celula.setTextAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
             self.HMI.Table_Tributacao_Header.setItem(0, col, celula)
 
         self.HMI.Table_Tributacao_Header.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
@@ -271,7 +277,7 @@ class HMI_Tributacao(object):
                     elif '%' in str(item[j]): text = str(round(item[j],2))+'%'
                     else: text = str(round(abs(item[j]),2))
                     it = QTableWidgetItem(text)
-                    it.setFlags(Qt.ItemFlags(Qt.ItemIsSelectable)) # Desabilita selecionar o item
+                    it.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable)) # Desabilita selecionar o item
                     it.setFlags(it.flags() & ~Qt.ItemIsEditable) # Desabilita a edição do item
                 else:
                     # Filtrar colunas que não serão mostradas
@@ -284,13 +290,13 @@ class HMI_Tributacao(object):
                         else: text = datetime.strptime(item[j], '%Y-%m-%d %H:%M:%S').strftime('%Y-%m')
                     it = QTableWidgetItem(text)
                     # Desabilitar todos os itens
-                    it.setFlags(Qt.ItemFlags(Qt.ItemIsSelectable)) # Desabilita selecionar o item
+                    it.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable)) # Desabilita selecionar o item
                     it.setFlags(it.flags() & ~Qt.ItemIsEditable) # Desabilita a edição do item
                 if j == 0: pass
                 elif not '%' in str(item[j]) and float(item[j]) < 0: it.setForeground(QBrush(QColor('orange')))
                 else: it.setForeground(QBrush(QColor(0, 255, 0)))
 
-                it.setTextAlignment(Qt.AlignCenter)
+                it.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.HMI.Table_Tributacao.setItem(i, j, it)
 
 
@@ -642,13 +648,13 @@ class HMI_Tributacao(object):
                 self.HMI.Table_Operacoes_Realizadas_com_Ativo.deleteLater()
                 self.HMI.Table_Operacoes_Realizadas_com_Ativo = QTableWidget()
                 self.HMI.HMI_Trades.HMI_Trades_Bolsa.CreateTable_23_2()
-                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Operacoes_Realizadas_com_Ativo, 6, 0, 6, 10, Qt.AlignHCenter | Qt.AlignTop)
+                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Operacoes_Realizadas_com_Ativo, 6, 0, 6, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
             if self.HMI.PageID == '40':
                 self.HMI.Table_Operacoes_Realizadas.deleteLater()
                 self.HMI.Table_Operacoes_Realizadas = QTableWidget()
                 self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.CreateTable_40_2()
-                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Operacoes_Realizadas, 6, 0, 6, 10, Qt.AlignHCenter | Qt.AlignTop)
+                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Operacoes_Realizadas, 6, 0, 6, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
             elif self.HMI.PageID == '51':
                 if self.HMI.DTeST_51 == "DTeST": self.HMI.DTeST_51 = "ST"
@@ -664,11 +670,11 @@ class HMI_Tributacao(object):
                 self.HMI.Table_Tributacao_Header.deleteLater()
                 self.HMI.Table_Tributacao_Header = QTableWidget()
                 self.HMI.HMI_Tributacao.CreateTable_51_1()
-                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao_Header, 5, 0, 1, 10, Qt.AlignHCenter | Qt.AlignBottom)
+                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao_Header, 5, 0, 1, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
                 self.HMI.Table_Tributacao.deleteLater()
                 self.HMI.Table_Tributacao = QTableWidget()
                 self.HMI.HMI_Tributacao.CreateTable_51_2()
-                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao, 6, 0, 6, 10, Qt.AlignHCenter | Qt.AlignTop)
+                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao, 6, 0, 6, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
         elif ButtonPressed == 'ExportIR':
             def WriteHeader(worksheet, header):
@@ -699,7 +705,7 @@ class HMI_Tributacao(object):
                     root.withdraw()  # Used to hide tkinter window
                     self.HMI.filedialogIsOpen = True
                     DB_Path = filedialog.askdirectory()  # Select folder path
-                    self.HMI.setCursor(Qt.WaitCursor)
+                    self.HMI.setCursor(Qt.CursorShape.WaitCursor)
                     self.HMI.filedialogIsOpen = False
                     try:
                         if len(DB_Path) > 0:
@@ -813,11 +819,11 @@ class HMI_Tributacao(object):
                 self.HMI.Table_Tributacao_Header.deleteLater()
                 self.HMI.Table_Tributacao_Header = QTableWidget()
                 self.HMI.HMI_Tributacao.CreateTable_51_1()
-                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao_Header, 5, 0, 1, 10, Qt.AlignHCenter | Qt.AlignBottom)
+                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao_Header, 5, 0, 1, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
                 self.HMI.Table_Tributacao.deleteLater()
                 self.HMI.Table_Tributacao = QTableWidget()
                 self.HMI.HMI_Tributacao.CreateTable_51_2()
-                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao, 6, 0, 6, 10, Qt.AlignHCenter | Qt.AlignTop)
+                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao, 6, 0, 6, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
         # elif ButtonPressed == "Gerar Excel de Tributação":
         #     # MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
@@ -827,7 +833,7 @@ class HMI_Tributacao(object):
         #         root.withdraw() # Used to hide tkinter window
         #         self.filedialogIsOpen = True
         #         DB_Path = filedialog.askdirectory() # Select folder path
-        #         self.setCursor(Qt.WaitCursor)
+        #         self.setCursor(Qt.CursorShape.WaitCursor)
         #         self.filedialogIsOpen = False
         #         try:
         #             if len(DB_Path)>0:

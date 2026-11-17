@@ -1,13 +1,22 @@
+"""
+Created on Sun Sep  5 01:44:04 2021
+
+@author: Caio Moreira Porta
+"""
 from core.BackgroundProcesses import WorkerThread
 
 import os
 import re
 from pathlib import Path
-
-import requests
+import time
+import zipfile
+import shutil
+import winshell
+import win32com.client
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+
 
 class VersionChecker(object):
     def __init__(self, HMI):
@@ -179,6 +188,7 @@ class VersionChecker(object):
                 shutil.copyfile(source, destination)
                 self.Progress += passo
 
+                desktop = winshell.desktop()
                 try:
                     print("Tentando remover ARCA.exe do desktop pelo caminho: ", desktop + '/ARCA.exe')
                     os.remove(desktop + '/ARCA.exe')
@@ -187,7 +197,6 @@ class VersionChecker(object):
                 self.Progress += passo
 
                 print("Criando atalho de ARCA.exe")
-                desktop = winshell.desktop()
                 path = os.path.join(desktop, 'ARCA.lnk')
                 target = destination + "/ARCA.exe"
                 icon = destination + "/ARCA.exe"

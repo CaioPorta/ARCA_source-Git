@@ -1,3 +1,8 @@
+"""
+Created on Sun Sep  5 01:44:04 2021
+
+@author: Caio Moreira Porta
+"""
 import os
 import sys
 import ctypes
@@ -7,7 +12,6 @@ from datetime import datetime
 from datetime import timedelta
 from calendar import monthrange
 from shutil import copyfile
-from shutil import copy
 
 import tkinter
 from tkinter import filedialog
@@ -21,20 +25,25 @@ from PIL import Image
 import sqlite3
 import random
 from pathlib import Path
-import zipfile
 
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-
-import pandas as pd
-import numpy as np
-
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import (
+    QFont, QCursor, QPixmap,
+    QIcon, QColor, QMovie,
+    QBrush
+)
+from PyQt5.QtWidgets import (
+    QWidget, QLabel, QPushButton, QLineEdit,
+    QComboBox, QGridLayout, QHBoxLayout,
+    QToolTip, QMessageBox,
+    QTableWidget, QTableWidgetItem,
+    QAbstractScrollArea, QApplication
+)
+from PyQt5.QtCore import (
+    QSize, Qt,
+    QCoreApplication, QEvent
+)
 
 import _thread
-import threading
 from threading import Lock
 from core.BackgroundProcesses import BackgroundProcess as BP
 from core.BackgroundProcesses import WorkerThread
@@ -53,6 +62,7 @@ import core.VersionChecker as VersionChecker
 from ui.popup.CalendarWindow import CalendarWindow as Calendario
 from ui.popup.RelogioWindow import RelogioWindow as Relogio
 import ui.popup.OperacaoRegistradaComSucesso as OperacaoRegistradaComSucesso
+
 
 class IHMmain(QWidget):
     def __init__(self):
@@ -162,7 +172,7 @@ class IHMmain(QWidget):
         """
         if self.PageID == '26':
             if len(self.TextBox_NomeNovoAtivo.text())>0 and len(self.TextBox_NomeNovoAtivo.text())<7 and not self.TextBox_NomeNovoAtivo.text().upper() == "USD":
-                self.setCursor(Qt.WaitCursor)
+                self.setCursor(Qt.CursorShape.WaitCursor)
                 if self.TextBox_NomeNovoAtivo.text() in self.DBManager.GetAllTickers(): # Otimizador
                     IsShare, self.Cache_Cotacao = self.YahooFinance.isShare(self.TextBox_NomeNovoAtivo.text())
                     self.unsetCursor()
@@ -195,13 +205,13 @@ class IHMmain(QWidget):
                 self.Label_Erro1 = QLabel()
                 self.Label_Erro1.setStyleSheet('color: red')
                 self.Label_Erro1.setFont(self.font12)
-                self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.Label_Erro1.setText("Insira um ticker válido com até 6 caracteres.\nPara 'USD' utilize 'USDT' ou equivalente.") # Substitui a string do erro mais provável
-                self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 17, 0, 1, 3, Qt.AlignHCenter | Qt.AlignTop)
+                self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 17, 0, 1, 3, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
         elif self.PageID == '27':
             if len(self.TextBox_NovoNomeAtivo.text())>0 and len(self.TextBox_NovoNomeAtivo.text())<7 and not self.TextBox_NovoNomeAtivo.text().upper() == "USD":
-                self.setCursor(Qt.WaitCursor)
+                self.setCursor(Qt.CursorShape.WaitCursor)
                 if self.TextBox_NovoNomeAtivo.text() in self.DBManager.GetAllTickers(): # Otimizador
                     IsShare, self.Cache_Cotacao = self.YahooFinance.isShare(self.TextBox_NovoNomeAtivo.text())
                     self.unsetCursor()
@@ -234,9 +244,9 @@ class IHMmain(QWidget):
                 self.Label_Erro1 = QLabel()
                 self.Label_Erro1.setStyleSheet('color: red')
                 self.Label_Erro1.setFont(self.font12)
-                self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 self.Label_Erro1.setText("Insira um ticker válido com até 6 caracteres.\nPara 'USD' utilize 'USDT' ou equivalente.") # Substitui a string do erro mais provável
-                self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 17, 0, 1, 3, Qt.AlignHCenter | Qt.AlignTop)
+                self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 17, 0, 1, 3, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
     def CreatePage(self, PageID):
         if self.OutraJanelaAberta:
@@ -267,9 +277,9 @@ class IHMmain(QWidget):
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
-                        self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                        self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                         self.Label_Erro1.setText('O código não confere.')
-                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 1, Qt.AlignCenter)
+                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                         self.TextBox_CodigoDeConfirmacao.setFocus()
                 elif self.PageID == "1":
                     self.DBManager.Disconnect()
@@ -310,9 +320,9 @@ class IHMmain(QWidget):
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
-                            self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                            self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('As senhas digitadas não são iguais.')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 1, Qt.AlignCenter)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                             self.TextBox_NovaSenha1.setFocus()
                         elif not len(self.TextBox_NovaSenha1.text())>3:
                             try: self.Label_Erro1.deleteLater()
@@ -320,9 +330,9 @@ class IHMmain(QWidget):
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
-                            self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                            self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('A senha tem que ter pelo menos 4 caracteres.')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 1, Qt.AlignCenter)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                             self.TextBox_NovaSenha1.setFocus()
                 elif self.PageID == '8':
                     if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado: # Condições para passar pra página 1
@@ -356,9 +366,9 @@ class IHMmain(QWidget):
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
-                            self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                            self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Ocorreu um erro inesperado. Tente novamente mais tarde.')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 12, 0, 1, 2, Qt.AlignCenter)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 12, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
                             # self.TextBox_NomeDeUsuario.setFocus()
                             self.TextBox_CodigoDeConfirmacao.setFocus()
                     else:
@@ -367,9 +377,9 @@ class IHMmain(QWidget):
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
-                        self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                        self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                         self.Label_Erro1.setText('O código não confere.')
-                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 12, 0, 1, 2, Qt.AlignCenter)
+                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 12, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
                         self.TextBox_NomeDeUsuario.setFocus()
                 elif self.PageID == '0':
                     Resposta = self.DBManager.ConnectTo(self.TextBox_NomeDeUsuario.text(), self.TextBox_Senha.text())
@@ -380,9 +390,9 @@ class IHMmain(QWidget):
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
-                        self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                        self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                         self.Label_Erro1.setText('Usuário não encontrado.\nVerifique se o arquivo está no local declarado.')
-                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 2, Qt.AlignCenter)
+                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
                         self.TextBox_NomeDeUsuario.setFocus()
                     elif Resposta: # Condições para passar pra página 1
                         self.LoggedIn = True
@@ -404,9 +414,9 @@ class IHMmain(QWidget):
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
-                        self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                        self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                         self.Label_Erro1.setText('Usuário ou senha incorreto.')
-                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 2, Qt.AlignCenter)
+                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
                         self.TextBox_NomeDeUsuario.setFocus()
                 else:
                     self.ClearPage()
@@ -470,9 +480,9 @@ class IHMmain(QWidget):
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
-                        self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                        self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                         self.Label_Erro1.setText('Email não encontrado.')
-                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignCenter)
+                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                         self.TextBox_EmailOuUsuario.setFocus()
 
                 else: # Recovering By User
@@ -491,9 +501,9 @@ class IHMmain(QWidget):
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
-                        self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                        self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                         self.Label_Erro1.setText('Usuário não encontrado.')
-                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignCenter)
+                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                         self.TextBox_EmailOuUsuario.setFocus()
             elif PageID == '7':
                 if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado:
@@ -509,9 +519,9 @@ class IHMmain(QWidget):
                     self.Label_Erro1 = QLabel()
                     self.Label_Erro1.setStyleSheet('color: red')
                     self.Label_Erro1.setFont(self.font12)
-                    self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                    self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                     self.Label_Erro1.setText('Código não confere.')
-                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 2, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
                     self.TextBox_CodigoDeConfirmacao.setFocus()
             elif PageID == '8':
                 if (len(self.TextBox_NomeDeUsuario.text())>0 and
@@ -540,20 +550,20 @@ class IHMmain(QWidget):
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
-                        self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                        self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                         if not len(self.TextBox_NomeDeUsuario.text()) > 0:
                             self.Label_Erro1.setText('Insira um nome de usuário')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_NomeDeUsuario.setFocus()
                         elif ("@" in self.TextBox_NomeDeUsuario.text() or
                             "," in self.TextBox_NomeDeUsuario.text() or
                             "'\'" in self.TextBox_NomeDeUsuario.text()):
                             self.Label_Erro1.setText("@ '\' , não são permitidos\nno nome de usuário.")
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_NomeDeUsuario.setFocus()
                         elif self.DBManager.CheckIfUserExists(self.TextBox_NomeDeUsuario.text()):
                             self.Label_Erro1.setText('Esse nome de usuário já existe.')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_NomeDeUsuario.setFocus()
 
                         try: self.Label_Erro2.deleteLater()
@@ -565,11 +575,11 @@ class IHMmain(QWidget):
                             "'\'" in self.TextBox_Email.text() or
                             "," in self.TextBox_Email.text()):
                             self.Label_Erro2.setText("Confira se seu email está correto.\n@ '\' , não são permitidos.")
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro2, 8, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro2, 8, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_Email.setFocus()
                         elif self.DBManager.CheckIfEmailExists(self.TextBox_Email.text()):
                             self.Label_Erro2.setText('Esse endereço de email já possiu uma conta.')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro2, 8, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro2, 8, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_Email.setFocus()
 
                         try: self.Label_Erro3.deleteLater()
@@ -579,15 +589,15 @@ class IHMmain(QWidget):
                         self.Label_Erro3.setFont(self.font12)
                         if not self.TextBox_Senha1.text() == self.TextBox_Senha2.text():
                             self.Label_Erro3.setText('As senhas digitadas não são iguais.')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_Senha1.setFocus()
                         elif not len(self.TextBox_Senha2.text()) > 3:
                             self.Label_Erro3.setText('A senha tem que ter pelo menos 4 caracteres.')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_Senha1.setFocus()
                         elif not self.TextBox_Senha1.text().isnumeric() or not self.TextBox_Senha1.text().isalpha():
                             self.Label_Erro3.setText('A senha precisa ter pelo menos um número e uma letra ou símbolo.')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_NomeDeUsuario.setFocus()
             elif PageID == '8b':
                 if (len(self.TextBox_NomeDeUsuario.text())>0 and
@@ -616,20 +626,20 @@ class IHMmain(QWidget):
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
-                        self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                        self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                         if not len(self.TextBox_NomeDeUsuario.text()) > 0:
                             self.Label_Erro1.setText('Insira um nome de usuário')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_NomeDeUsuario.setFocus()
                         elif ("@" in self.TextBox_NomeDeUsuario.text() or
                             "," in self.TextBox_NomeDeUsuario.text() or
                             "'\'" in self.TextBox_NomeDeUsuario.text()):
                             self.Label_Erro1.setText("@ '\' , não são permitidos\nno nome de usuário.")
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_NomeDeUsuario.setFocus()
                         elif self.DBManager.CheckIfUserExists(self.TextBox_NomeDeUsuario.text()):
                             self.Label_Erro1.setText('Esse nome de usuário já existe.')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_NomeDeUsuario.setFocus()
 
                         try: self.Label_Erro2.deleteLater()
@@ -641,11 +651,11 @@ class IHMmain(QWidget):
                             "'\'" in self.TextBox_Email.text() or
                             "," in self.TextBox_Email.text()):
                             self.Label_Erro2.setText("Confira se seu email está correto.\n@ '\' , não são permitidos.")
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro2, 8, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro2, 8, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_Email.setFocus()
                         elif self.DBManager.CheckIfEmailExists(self.TextBox_Email.text()):
                             self.Label_Erro2.setText('Esse endereço de email já possiu uma conta.')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro2, 8, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro2, 8, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_Email.setFocus()
 
                         try: self.Label_Erro3.deleteLater()
@@ -655,15 +665,15 @@ class IHMmain(QWidget):
                         self.Label_Erro3.setFont(self.font12)
                         if not self.TextBox_Senha1.text() == self.TextBox_Senha2.text():
                             self.Label_Erro3.setText('As senhas digitadas não são iguais.')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_Senha1.setFocus()
                         elif not len(self.TextBox_Senha2.text()) > 3:
                             self.Label_Erro3.setText('A senha tem que ter pelo menos 4 caracteres.')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_Senha1.setFocus()
                         elif not self.TextBox_Senha1.text().isnumeric() or not self.TextBox_Senha1.text().isalpha():
                             self.Label_Erro3.setText('A senha precisa ter pelo menos um número e uma letra ou símbolo.')
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignLeft)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_NomeDeUsuario.setFocus()
             elif PageID == 'ImportFromExcel':
                 if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado: # Condições para passar pra página 1
@@ -680,9 +690,9 @@ class IHMmain(QWidget):
                     self.Label_Erro1 = QLabel()
                     self.Label_Erro1.setStyleSheet('color: red')
                     self.Label_Erro1.setFont(self.font12)
-                    self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                    self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                     self.Label_Erro1.setText('O código não confere.')
-                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 12, 0, 1, 2, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 12, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
                     self.TextBox_CodigoDeConfirmacao.setFocus()
             elif PageID in ['9', '9_']: # Perfil, Tem ID especial
                 if PageID == '9_':
@@ -702,9 +712,9 @@ class IHMmain(QWidget):
                                     self.Label_Erro1 = QLabel()
                                     self.Label_Erro1.setStyleSheet('color: red')
                                     self.Label_Erro1.setFont(self.font12)
-                                    self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                                    self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                                     self.Label_Erro1.setText('As senhas digitadas não são iguais.' if not self.TextBox_Senha1.text() == self.TextBox_Senha2.text() else "A senha tem que ter pelo menos 4 caracteres,\nter pelo menos um número e uma letra ou símbolo.")
-                                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 1, Qt.AlignCenter)
+                                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                                     self.TextBox_Senha2.setFocus()
                             else:
                                 try: self.Label_Erro1.deleteLater()
@@ -712,9 +722,9 @@ class IHMmain(QWidget):
                                 self.Label_Erro1 = QLabel()
                                 self.Label_Erro1.setStyleSheet('color: red')
                                 self.Label_Erro1.setFont(self.font12)
-                                self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                                self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                                 self.Label_Erro1.setText('Senha atual não confere.')
-                                self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 1, Qt.AlignCenter)
+                                self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                                 self.TextBox_SenhaAtual.setFocus()
                         else:
                             MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
@@ -736,9 +746,9 @@ class IHMmain(QWidget):
                                 self.Label_Erro1 = QLabel()
                                 self.Label_Erro1.setStyleSheet('color: red')
                                 self.Label_Erro1.setFont(self.font12)
-                                self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                                self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                                 self.Label_Erro1.setText('O código não confere.')
-                                self.F_GLayout[self.GCount - 1].addWidget(self.Label_Erro1, 12, 0, 1, 2, Qt.AlignCenter)
+                                self.F_GLayout[self.GCount - 1].addWidget(self.Label_Erro1, 12, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
                                 self.TextBox_NomeDeUsuario.setFocus()
                         else:
                             MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
@@ -828,9 +838,9 @@ class IHMmain(QWidget):
                                     self.Label_Erro1 = QLabel()
                                     self.Label_Erro1.setStyleSheet('color: red')
                                     self.Label_Erro1.setFont(self.font12)
-                                    self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                                    self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                                     self.Label_Erro1.setText('Corretora já existe.') # Substitui a string do erro mais provável
-                                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignCenter)
+                                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                             else:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
                         else:
@@ -839,9 +849,9 @@ class IHMmain(QWidget):
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
-                            self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                            self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Insira um nome válido com até 8 caracteres.') # Substitui a string do erro mais provável
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignCenter)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                     elif self.PageID == '22':
                         if len(self.TextBox_NovoNomeCorretora.text())>0 and len(self.TextBox_NovoNomeCorretora.text())<9:
                             if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
@@ -859,9 +869,9 @@ class IHMmain(QWidget):
                                      self.Label_Erro1 = QLabel()
                                      self.Label_Erro1.setStyleSheet('color: red')
                                      self.Label_Erro1.setFont(self.font12)
-                                     self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                                     self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                                      self.Label_Erro1.setText('Corretora já existe.') # Substitui a string do erro mais provável
-                                     self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignCenter)
+                                     self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                             else:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                         else:
@@ -870,9 +880,9 @@ class IHMmain(QWidget):
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
-                            self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                            self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Insira um nome válido com até 8 caracteres.') # Substitui a string do erro mais provável
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignCenter)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                     elif self.PageID == '25':
                         try:
                             if not self.DBManager.FLAG:
@@ -891,9 +901,9 @@ class IHMmain(QWidget):
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
-                            self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                            self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Insira um valor válido.') # Substitui a string do erro mais provável
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 4, 1, 1, 1, Qt.AlignCenter)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 4, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
                 else:
                     self.ClearPage()
                     self.PageID = '18'
@@ -919,9 +929,9 @@ class IHMmain(QWidget):
                                     self.Label_Erro1 = QLabel()
                                     self.Label_Erro1.setStyleSheet('color: red')
                                     self.Label_Erro1.setFont(self.font12)
-                                    self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                                    self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                                     self.Label_Erro1.setText('Corretora já existe.') # Substitui a string do erro mais provável
-                                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 14, 0, 1, 1, Qt.AlignCenter)
+                                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 14, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                             else:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
                         else:
@@ -930,9 +940,9 @@ class IHMmain(QWidget):
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
-                            self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                            self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Insira um nome válido com até 11 caracteres.') # Substitui a string do erro mais provável
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 14, 0, 1, 1, Qt.AlignCenter)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 14, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                     elif self.PageID == '39':
                         if len(self.TextBox_NovoNomeCorretora.text())>0 and len(self.TextBox_NovoNomeCorretora.text())<12:
                             if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
@@ -949,9 +959,9 @@ class IHMmain(QWidget):
                                      self.Label_Erro1 = QLabel()
                                      self.Label_Erro1.setStyleSheet('color: red')
                                      self.Label_Erro1.setFont(self.font12)
-                                     self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                                     self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                                      self.Label_Erro1.setText('Corretora já existe.') # Substitui a string do erro mais provável
-                                     self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignCenter)
+                                     self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                             else:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                         else:
@@ -960,9 +970,9 @@ class IHMmain(QWidget):
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
-                            self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                            self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Insira um nome válido com até 11 caracteres.') # Substitui a string do erro mais provável
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignCenter)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                 else:
                     self.ClearPage()
                     self.PageID = '19'
@@ -988,9 +998,9 @@ class IHMmain(QWidget):
                                     self.Label_Erro1 = QLabel()
                                     self.Label_Erro1.setStyleSheet('color: red')
                                     self.Label_Erro1.setFont(self.font12)
-                                    self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                                    self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                                     self.Label_Erro1.setText('Banco já existe.') # Substitui a string do erro mais provável
-                                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 14, 0, 1, 1, Qt.AlignCenter)
+                                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 14, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                             else:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
                         else:
@@ -999,9 +1009,9 @@ class IHMmain(QWidget):
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
-                            self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                            self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Insira um nome válido com até 11 caracteres.') # Substitui a string do erro mais provável
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 14, 0, 1, 1, Qt.AlignCenter)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 14, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                     elif self.PageID == 'BancosRename':
                         if len(self.TextBox_NovoNomeBanco.text())>0 and len(self.TextBox_NovoNomeBanco.text())<12:
                             if not self.DBManager.FLAG:
@@ -1019,9 +1029,9 @@ class IHMmain(QWidget):
                                      self.Label_Erro1 = QLabel()
                                      self.Label_Erro1.setStyleSheet('color: red')
                                      self.Label_Erro1.setFont(self.font12)
-                                     self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                                     self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                                      self.Label_Erro1.setText('Banco já existe.') # Substitui a string do erro mais provável
-                                     self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignCenter)
+                                     self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                             else:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
                         else:
@@ -1030,9 +1040,9 @@ class IHMmain(QWidget):
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
-                            self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                            self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Insira um nome válido com até 11 caracteres.') # Substitui a string do erro mais provável
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignCenter)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                 else:
                     self.ClearPage()
                     self.PageID = 'Bancos'
@@ -1185,9 +1195,9 @@ class IHMmain(QWidget):
                                     self.Label_Erro1 = QLabel()
                                     self.Label_Erro1.setStyleSheet('color: red')
                                     self.Label_Erro1.setFont(self.font12)
-                                    self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                                    self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                                     self.Label_Erro1.setText('Data inválida.\nTalvez já tenha uma operação nesse momento.') # Substitui a string do erro mais provável
-                                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignRight)
+                                    self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignmentFlag.AlignRight)
                             else:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                         else:
@@ -1196,18 +1206,18 @@ class IHMmain(QWidget):
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
-                            self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                            self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Data inválida.') # Substitui a string do erro mais provável
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignRight)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignmentFlag.AlignRight)
                     except:
                         try: self.Label_Erro1.deleteLater()
                         except: pass
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
-                        self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                        self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                         self.Label_Erro1.setText('Confira os valores inseridos.') # Substitui a string do erro mais provável
-                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignRight)
+                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignmentFlag.AlignRight)
 
                 elif self.PageID in ['36a','36b']:
                     try: self.Label_Erro1.deleteLater()
@@ -1258,18 +1268,18 @@ class IHMmain(QWidget):
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
-                            self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                            self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Data inválida.') # Substitui a string do erro mais provável
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 5, 1, 1, Qt.AlignCenter)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 5, 1, 1, Qt.AlignmentFlag.AlignCenter)
                     except:
                         try: self.Label_Erro1.deleteLater()
                         except: pass
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
-                        self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                        self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                         self.Label_Erro1.setText('Confira os valores inseridos.') # Substitui a string do erro mais provável
-                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 5, 1, 1, Qt.AlignCenter)
+                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 5, 1, 1, Qt.AlignmentFlag.AlignCenter)
 
                 elif len(self.ComboBox_Ativos)>0:
                     self.ClearPage()
@@ -1412,9 +1422,9 @@ class IHMmain(QWidget):
                                         self.Label_Erro1 = QLabel()
                                         self.Label_Erro1.setStyleSheet('color: red')
                                         self.Label_Erro1.setFont(self.font12)
-                                        self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                                        self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                                         self.Label_Erro1.setText('Data inválida.\nTalvez já tenha uma operação nesse momento.') # Substitui a string do erro mais provável
-                                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignCenter)
+                                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignmentFlag.AlignCenter)
                                 else:
                                     MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                             else:
@@ -1423,27 +1433,27 @@ class IHMmain(QWidget):
                                 self.Label_Erro1 = QLabel()
                                 self.Label_Erro1.setStyleSheet('color: red')
                                 self.Label_Erro1.setFont(self.font12)
-                                self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                                self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                                 self.Label_Erro1.setText('As moedas devem ser declaradas.') # Substitui a string do erro mais provável
-                                self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignCenter)
+                                self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignmentFlag.AlignCenter)
                         else:
                             try: self.Label_Erro1.deleteLater()
                             except: pass
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
-                            self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                            self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('As moedas nos pares não podem ser iguais.') # Substitui a string do erro mais provável
-                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignCenter)
+                            self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignmentFlag.AlignCenter)
                     except:
                         try: self.Label_Erro1.deleteLater()
                         except: pass
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
-                        self.Label_Erro1.setAlignment(Qt.AlignCenter)
+                        self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                         self.Label_Erro1.setText('Confira os valores inseridos.') # Substitui a string do erro mais provável
-                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignCenter)
+                        self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignmentFlag.AlignCenter)
                 else:
                     self.ClearPage()
                     self.PageID = '41'
@@ -1626,14 +1636,14 @@ class IHMmain(QWidget):
         self.Button_LogIn.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_LogIn.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.Button_LogIn.setIcon(QIcon("./images/log_in.png"))
-        self.Button_LogIn.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_LogIn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_LogIn.setStyleSheet("QPushButton {background-color: rgb(20, 120, 30); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_LogIn.setToolTip("Log in")
 
         self.Button_EsqueciASenha = QPushButton("Esqueci a senha")
         self.Button_EsqueciASenha.pressed.connect(lambda: self.CreatePage('2'))
         self.Button_EsqueciASenha.setFont(self.font12)
-        self.Button_EsqueciASenha.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_EsqueciASenha.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_EsqueciASenha.setToolTip("Esqueci a senha")
         self.Button_EsqueciASenha.setStyleSheet('QToolTip {background-color: black; color: white;border: black solid 1px}')
 
@@ -1641,35 +1651,35 @@ class IHMmain(QWidget):
         self.Button_ImportarUsuario.pressed.connect(lambda: self.CreatePage('3'))
         # self.Button_ImportarUsuario.pressed.connect(lambda: self.OnButtonPressed('ImportFromDB'))
         self.Button_ImportarUsuario.setFont(self.font12)
-        self.Button_ImportarUsuario.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ImportarUsuario.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ImportarUsuario.setToolTip("Importar usuário")
         self.Button_ImportarUsuario.setStyleSheet('QToolTip {background-color: black; color: white;border: black solid 1px}')
 
         self.Button_CriarUsuario = QPushButton("Criar novo usuário")
         self.Button_CriarUsuario.pressed.connect(lambda: self.CreatePage('4'))
         self.Button_CriarUsuario.setFont(self.font12)
-        self.Button_CriarUsuario.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_CriarUsuario.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_CriarUsuario.setToolTip("Criar novo usuário")
         self.Button_CriarUsuario.setStyleSheet('QToolTip {background-color: black; color: white;border: black solid 1px}')
 
         self.Button_VersionInfo = QPushButton()
         self.Button_VersionInfo.pressed.connect(lambda: QMessageBox.about(self,'Informação', self.APPVersion))
         self.Button_VersionInfo.setIcon(QIcon("./images/Info.png"))
-        self.Button_VersionInfo.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_VersionInfo.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_VersionInfo.setStyleSheet("QPushButton {background-color: none; border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_VersionInfo.setToolTip("Versão")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_Entrar, 0, 0, 20, 2)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 5, 0, 1, 2, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_NomeDeUsuario, 7, 0, Qt.AlignLeft | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_NomeDeUsuario, 8, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha, 9, 0, Qt.AlignLeft | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha, 10, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_LogIn, 11, 0, 2, 2, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_EsqueciASenha, 17, 0, Qt.AlignLeft)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ImportarUsuario, 18, 0, Qt.AlignLeft)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_CriarUsuario, 19, 0, Qt.AlignLeft)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_VersionInfo, 19, 1, Qt.AlignRight)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 5, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_NomeDeUsuario, 7, 0, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_NomeDeUsuario, 8, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha, 9, 0, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha, 10, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_LogIn, 11, 0, 2, 2, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_EsqueciASenha, 17, 0, Qt.AlignmentFlag.AlignLeft)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ImportarUsuario, 18, 0, Qt.AlignmentFlag.AlignLeft)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_CriarUsuario, 19, 0, Qt.AlignmentFlag.AlignLeft)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_VersionInfo, 19, 1, Qt.AlignmentFlag.AlignRight)
 
         self.Gif_Mercado = QLabel()
         self.Movie_Mercado = QMovie("./images/AnaliseDoMercadoGifIcone.gif")
@@ -1681,7 +1691,7 @@ class IHMmain(QWidget):
         self.Button_MercadoInvisivel.pressed.connect(lambda: self.CreatePage('5'))
         self.Button_MercadoInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_MercadoInvisivel.setFixedSize(int(self.frameGeometry().width()*3/4*.90),int(self.frameGeometry().height()*3/4*.95))
-        self.Button_MercadoInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_MercadoInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_MercadoInvisivel.setToolTip("Ir para aba Mercado")
 
         self.Button_Mercado = QPushButton("Análise do\nMercado")
@@ -1689,13 +1699,13 @@ class IHMmain(QWidget):
         self.Button_Mercado.setFont(self.font30)
         self.Button_Mercado.setStyleSheet('QPushButton {background-color: black; color: white; border: none; outline: } QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_Mercado.setFixedSize(int(self.frameGeometry().width()*3/4*.9),int(self.frameGeometry().height()/4*.95))
-        self.Button_Mercado.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Mercado.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Mercado.setToolTip("Ir para aba Mercado")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 2, 20, 1)
-        self.F_GLayout[self.GCount-1].addWidget(self.Gif_Mercado, 0, 2, 15, 1, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_MercadoInvisivel, 0, 2, 15, 1, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_Mercado, 15, 2, 5, 1, Qt.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Gif_Mercado, 0, 2, 15, 1, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_MercadoInvisivel, 0, 2, 15, 1, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_Mercado, 15, 2, 5, 1, Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_NomeDeUsuario.setFocus()
 
@@ -1721,7 +1731,7 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Minha carteira')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Gif_Negociações = QLabel()
         self.Movie_Negociações = QMovie("./images/Trade_Icon.gif")
@@ -1734,14 +1744,14 @@ class IHMmain(QWidget):
         self.Button_Negociações.setFont(self.font24)
         self.Button_Negociações.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_Negociações.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
-        self.Button_Negociações.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Negociações.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Negociações.setToolTip("Ir para aba Negociações")
 
         self.Button_NegociaçõesInvisivel = QPushButton()
         self.Button_NegociaçõesInvisivel.pressed.connect(lambda: self.CreatePage('10'))
         self.Button_NegociaçõesInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_NegociaçõesInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-160))
-        self.Button_NegociaçõesInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_NegociaçõesInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_NegociaçõesInvisivel.setToolTip("Ir para aba Negociações")
 
         self.Gif_Tributacao = QLabel()
@@ -1755,14 +1765,14 @@ class IHMmain(QWidget):
         self.Button_Tributacao.setFont(self.font24)
         self.Button_Tributacao.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_Tributacao.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
-        self.Button_Tributacao.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Tributacao.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Tributacao.setToolTip("Ir para aba Tributação")
 
         self.Button_TributacaoInvisivel = QPushButton()
         self.Button_TributacaoInvisivel.pressed.connect(lambda: self.CreatePage('51'))
         self.Button_TributacaoInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_TributacaoInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-160))
-        self.Button_TributacaoInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_TributacaoInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_TributacaoInvisivel.setToolTip("Ir para aba Tributação")
 
         self.Gif_ARCA = QLabel()
@@ -1776,14 +1786,14 @@ class IHMmain(QWidget):
         self.Button_ARCA.setFont(self.font24)
         self.Button_ARCA.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_ARCA.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
-        self.Button_ARCA.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ARCA.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ARCA.setToolTip("IR para aba ARCA")
 
         self.Button_ARCAInvisivel = QPushButton()
         self.Button_ARCAInvisivel.pressed.connect(lambda: self.CreatePage('11'))
         self.Button_ARCAInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_ARCAInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.80),int(self.frameGeometry().height()/5*.95-20))
-        self.Button_ARCAInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ARCAInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ARCAInvisivel.setToolTip("Ir para aba ARCA")
 
         self.Gif_Desempenho = QLabel()
@@ -1797,14 +1807,14 @@ class IHMmain(QWidget):
         self.Button_Desempenho.setFont(self.font24)
         self.Button_Desempenho.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_Desempenho.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
-        self.Button_Desempenho.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Desempenho.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Desempenho.setToolTip("Ir para aba Desempenho")
 
         self.Button_DesempenhoInvisivel = QPushButton()
         self.Button_DesempenhoInvisivel.pressed.connect(lambda: self.CreatePage('12'))
         self.Button_DesempenhoInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_DesempenhoInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.80),int(self.frameGeometry().height()/5*.95-20))
-        self.Button_DesempenhoInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_DesempenhoInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_DesempenhoInvisivel.setToolTip("Ir para aba Desempenho")
 
         self.Gif_Mercado = QLabel()
@@ -1818,35 +1828,35 @@ class IHMmain(QWidget):
         self.Button_Mercado.setFont(self.font24)
         self.Button_Mercado.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_Mercado.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
-        self.Button_Mercado.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Mercado.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Mercado.setToolTip("Ir para aba Análise do Mercado")
 
         self.Button_MercadoInvisivel = QPushButton()
         self.Button_MercadoInvisivel.pressed.connect(lambda: self.CreatePage('13'))
         self.Button_MercadoInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_MercadoInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-110))
-        self.Button_MercadoInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_MercadoInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_MercadoInvisivel.setToolTip("Ir para aba Análise do Mercado")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 1, 2)
         self.F_GLayout[self.GCount-1].addWidget(self.Background_2, 0, 0, 5, 1)
         self.F_GLayout[self.GCount-1].addWidget(self.Background_3, 0, 1, 5, 1)
         self.F_GLayout[self.GCount-1].addWidget(self.Background_4, 0, 2, 5, 1)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 0, 0, 1, 2, Qt.AlignCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Gif_Negociações, 1, 0, 1, 1, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_NegociaçõesInvisivel, 1, 0, 1, 1, Qt.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 0, 0, 1, 2, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Gif_Negociações, 1, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_NegociaçõesInvisivel, 1, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
         self.F_GLayout[self.GCount-1].addWidget(self.Button_Negociações, 2, 0, 1, 1)
-        self.F_GLayout[self.GCount-1].addWidget(self.Gif_Tributacao, 3, 0, 1, 1, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_TributacaoInvisivel, 3, 0, 1, 1, Qt.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Gif_Tributacao, 3, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_TributacaoInvisivel, 3, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
         self.F_GLayout[self.GCount-1].addWidget(self.Button_Tributacao, 4, 0, 1, 1)
-        self.F_GLayout[self.GCount-1].addWidget(self.Gif_ARCA, 1, 1, 1, 1, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ARCAInvisivel, 1, 1, 1, 1, Qt.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Gif_ARCA, 1, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ARCAInvisivel, 1, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
         self.F_GLayout[self.GCount-1].addWidget(self.Button_ARCA, 2, 1, 1, 1)
-        self.F_GLayout[self.GCount-1].addWidget(self.Gif_Desempenho, 3, 1, 1, 1, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_DesempenhoInvisivel, 3, 1, 1, 1, Qt.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Gif_Desempenho, 3, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_DesempenhoInvisivel, 3, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
         self.F_GLayout[self.GCount-1].addWidget(self.Button_Desempenho, 4, 1, 1, 1)
-        self.F_GLayout[self.GCount-1].addWidget(self.Gif_Mercado, 0, 2, 4, 1, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_MercadoInvisivel, 0, 2, 4, 1, Qt.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Gif_Mercado, 0, 2, 4, 1, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_MercadoInvisivel, 0, 2, 4, 1, Qt.AlignmentFlag.AlignCenter)
         self.F_GLayout[self.GCount-1].addWidget(self.Button_Mercado, 4, 2, 1, 1)
 
     def CreatePage2(self):
@@ -1857,12 +1867,12 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Auxílio de senha')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_Msg1 = QLabel('Insira o email associado à sua conta ou o nome de usuário:')
         self.Label_Msg1.setStyleSheet('color: white')
         self.Label_Msg1.setFont(self.font16)
-        self.Label_Msg1.setAlignment(Qt.AlignCenter)
+        self.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_EmailOuUsuario = QLineEdit()
         self.TextBox_EmailOuUsuario.returnPressed.connect(lambda: self.CreatePage('6'))
@@ -1874,14 +1884,14 @@ class IHMmain(QWidget):
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.Button_ConfirmacaoDeEmail.setIcon(QIcon("./images/log_in.png"))
-        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ConfirmacaoDeEmail.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 20, 1)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 1, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 9, 0, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_EmailOuUsuario, 10, 0, 1, 1, Qt.AlignCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 12, 0, 2, 1, Qt.AlignHCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 9, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_EmailOuUsuario, 10, 0, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 12, 0, 2, 1, Qt.AlignmentFlag.AlignHCenter)
         self.TextBox_EmailOuUsuario.setFocus()
 
     def CreatePage3(self):
@@ -1904,7 +1914,7 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Importar usuário')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Button_ImportDBToExcel = QPushButton()
         self.Button_ImportDBToExcel.pressed.connect(lambda: self.CreatePage('3b'))
@@ -1912,7 +1922,7 @@ class IHMmain(QWidget):
         self.Button_ImportDBToExcel.setFixedSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height()-160))
         self.Button_ImportDBToExcel.setIconSize(QSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height())))
         self.Button_ImportDBToExcel.setIcon(QIcon("./images/import_from_excel_icon.png"))
-        self.Button_ImportDBToExcel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ImportDBToExcel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ImportDBToExcel.setToolTip(r"Importar base de dados via arquivo .xlsx")
 
         self.Button_ImportDBToDB = QPushButton()
@@ -1921,15 +1931,15 @@ class IHMmain(QWidget):
         self.Button_ImportDBToDB.setFixedSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height()-160))
         self.Button_ImportDBToDB.setIconSize(QSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height())))
         self.Button_ImportDBToDB.setIcon(QIcon("./images/import_from_db_icon.png"))
-        self.Button_ImportDBToDB.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ImportDBToDB.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ImportDBToDB.setToolTip(r"Importar base de dados via arquivo .db")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_2, 0, 0, 1, 2)
         self.F_GLayout[self.GCount-1].addWidget(self.Background_3, 0, 0, 2, 1)
         self.F_GLayout[self.GCount-1].addWidget(self.Background_4, 0, 1, 2, 1)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 0, 0, 1, 2, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ImportDBToExcel, 1, 0, 2, 1, Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ImportDBToDB, 1, 1, 2, 1, Qt.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 0, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ImportDBToExcel, 1, 0, 2, 1, Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ImportDBToDB, 1, 1, 2, 1, Qt.AlignmentFlag.AlignTop)
 
     def CreatePage3b(self):
         self.Background_1 = QLabel()
@@ -1939,12 +1949,12 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Importação de usuário')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_NomeDeUsuario = QLabel()
         self.Label_NomeDeUsuario.setStyleSheet('color: white')
         self.Label_NomeDeUsuario.setFont(self.font16)
-        self.Label_NomeDeUsuario.setAlignment(Qt.AlignCenter)
+        self.Label_NomeDeUsuario.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         minimo = 24
         maximo = 36
@@ -1960,7 +1970,7 @@ class IHMmain(QWidget):
         self.Label_Email = QLabel()
         self.Label_Email.setStyleSheet('color: white')
         self.Label_Email.setFont(self.font16)
-        self.Label_Email.setAlignment(Qt.AlignCenter)
+        self.Label_Email.setAlignment(Qt.AlignmentFlag.AlignCenter)
         minimo = 19
         maximo = 21
         a = (int(self.screen_width*0.5))/((1/minimo)-(1/maximo))
@@ -1975,7 +1985,7 @@ class IHMmain(QWidget):
         self.Label_Senha1 = QLabel()
         self.Label_Senha1.setStyleSheet('color: white')
         self.Label_Senha1.setFont(self.font16)
-        self.Label_Senha1.setAlignment(Qt.AlignLeft)
+        self.Label_Senha1.setAlignment(Qt.AlignmentFlag.AlignLeft)
         minimo = 19
         maximo = 21
         a = (int(self.screen_width*0.5))/((1/minimo)-(1/maximo))
@@ -1991,7 +2001,7 @@ class IHMmain(QWidget):
         self.Label_Senha2 = QLabel()
         self.Label_Senha2.setStyleSheet('color: white')
         self.Label_Senha2.setFont(self.font16)
-        self.Label_Senha2.setAlignment(Qt.AlignLeft)
+        self.Label_Senha2.setAlignment(Qt.AlignmentFlag.AlignLeft)
         minimo = 24
         maximo = 39
         a = (int(self.screen_width*0.5))/((1/minimo)-(1/maximo))
@@ -2006,7 +2016,7 @@ class IHMmain(QWidget):
 
         self.ComboBox_Currency = QComboBox()
         self.ComboBox_Currency.setFont(self.font16)
-        self.ComboBox_Currency.setCursor(QCursor(Qt.PointingHandCursor))
+        self.ComboBox_Currency.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.ComboBox_Currency.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(0, 255, 0);")
         for idx, coin in enumerate(self.DBManager.MoedasFiatBasicas):
             self.ComboBox_Currency.addItem(coin)
@@ -2014,26 +2024,26 @@ class IHMmain(QWidget):
         self.Label_Path = QLabel('Local de armazenamento:')
         self.Label_Path.setStyleSheet('color: white')
         self.Label_Path.setFont(self.font14)
-        self.Label_Path.setAlignment(Qt.AlignRight)
+        self.Label_Path.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Button_PathPadrao = QPushButton('PADRÃO')
         self.Button_PathPadrao.pressed.connect(lambda: self.OnButtonPressed('Path Padrão'))
         self.Button_PathPadrao.setStyleSheet("QPushButton {background-color: green; color: white;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_PathPadrao.setFont(self.font16)
-        self.Button_PathPadrao.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_PathPadrao.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_PathPadrao.setToolTip(r"Usar o caminho padrão")
 
         self.Button_PathEspecifico = QPushButton('específico')
         self.Button_PathEspecifico.pressed.connect(lambda: self.OnButtonPressed('Path Específico'))
         self.Button_PathEspecifico.setStyleSheet("QPushButton {background-color: black; color: white;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_PathEspecifico.setFont(self.font16)
-        self.Button_PathEspecifico.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_PathEspecifico.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_PathEspecifico.setToolTip(r"Informar o caminho específico")
 
         self.TextBox_Path = QLineEdit()
         self.TextBox_Path.setFixedWidth(int(self.frameGeometry().width()*0.9))
         self.TextBox_Path.setEnabled(False)
-        self.TextBox_Path.setAlignment(Qt.AlignCenter)
+        self.TextBox_Path.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.TextBox_Path.setStyleSheet("background-color: black; color: white;")
 
         self.Button_ConfirmacaoDeEmail = QPushButton()
@@ -2042,26 +2052,26 @@ class IHMmain(QWidget):
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.Button_ConfirmacaoDeEmail.setIcon(QIcon("./images/log_in.png"))
-        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ConfirmacaoDeEmail.setStyleSheet("QPushButton {background-color: rgb(20, 120, 30)} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_ConfirmacaoDeEmail.setToolTip(r"Próxima etapa")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 20, 2)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 3, 0, 1, 2, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_NomeDeUsuario, 6, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_NomeDeUsuario, 7, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Email, 8, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Email, 9, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha1, 10, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha1, 11, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha2, 12, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha2, 13, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.ComboBox_Currency, 14, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Path, 15, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_PathPadrao, 16, 0, Qt.AlignRight)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_PathEspecifico, 16, 1, Qt.AlignLeft)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Path, 17, 0, 1, 2, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 18, 0, 2, 2, Qt.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 3, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_NomeDeUsuario, 6, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_NomeDeUsuario, 7, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Email, 8, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Email, 9, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha1, 10, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha1, 11, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha2, 12, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha2, 13, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.ComboBox_Currency, 14, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Path, 15, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_PathPadrao, 16, 0, Qt.AlignmentFlag.AlignRight)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_PathEspecifico, 16, 1, Qt.AlignmentFlag.AlignLeft)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Path, 17, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 18, 0, 2, 2, Qt.AlignmentFlag.AlignCenter)
         self.TextBox_NomeDeUsuario.setFocus()
 
     def CreatePage4(self):
@@ -2072,12 +2082,12 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Criação de usuário')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_NomeDeUsuario = QLabel()
         self.Label_NomeDeUsuario.setStyleSheet('color: white')
         self.Label_NomeDeUsuario.setFont(self.font16)
-        self.Label_NomeDeUsuario.setAlignment(Qt.AlignCenter)
+        self.Label_NomeDeUsuario.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         minimo = 24
         maximo = 36
@@ -2093,7 +2103,7 @@ class IHMmain(QWidget):
         self.Label_Email = QLabel()
         self.Label_Email.setStyleSheet('color: white')
         self.Label_Email.setFont(self.font16)
-        self.Label_Email.setAlignment(Qt.AlignCenter)
+        self.Label_Email.setAlignment(Qt.AlignmentFlag.AlignCenter)
         minimo = 19
         maximo = 21
         a = (int(self.screen_width*0.5))/((1/minimo)-(1/maximo))
@@ -2108,7 +2118,7 @@ class IHMmain(QWidget):
         self.Label_Senha1 = QLabel()
         self.Label_Senha1.setStyleSheet('color: white')
         self.Label_Senha1.setFont(self.font16)
-        self.Label_Senha1.setAlignment(Qt.AlignLeft)
+        self.Label_Senha1.setAlignment(Qt.AlignmentFlag.AlignLeft)
         minimo = 19
         maximo = 21
         a = (int(self.screen_width*0.5))/((1/minimo)-(1/maximo))
@@ -2124,7 +2134,7 @@ class IHMmain(QWidget):
         self.Label_Senha2 = QLabel()
         self.Label_Senha2.setStyleSheet('color: white')
         self.Label_Senha2.setFont(self.font16)
-        self.Label_Senha2.setAlignment(Qt.AlignLeft)
+        self.Label_Senha2.setAlignment(Qt.AlignmentFlag.AlignLeft)
         minimo = 24
         maximo = 39
         a = (int(self.screen_width*0.5))/((1/minimo)-(1/maximo))
@@ -2139,7 +2149,7 @@ class IHMmain(QWidget):
 
         self.ComboBox_Currency = QComboBox()
         self.ComboBox_Currency.setFont(self.font16)
-        self.ComboBox_Currency.setCursor(QCursor(Qt.PointingHandCursor))
+        self.ComboBox_Currency.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.ComboBox_Currency.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(0, 255, 0);")
         for idx, coin in enumerate(self.DBManager.MoedasFiatBasicas):
             self.ComboBox_Currency.addItem(coin)
@@ -2147,26 +2157,26 @@ class IHMmain(QWidget):
         self.Label_Path = QLabel('Local de armazenamento:')
         self.Label_Path.setStyleSheet('color: white')
         self.Label_Path.setFont(self.font14)
-        self.Label_Path.setAlignment(Qt.AlignRight)
+        self.Label_Path.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Button_PathPadrao = QPushButton('PADRÃO')
         self.Button_PathPadrao.pressed.connect(lambda: self.OnButtonPressed('Path Padrão'))
         self.Button_PathPadrao.setStyleSheet("QPushButton {background-color: green; color: white;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_PathPadrao.setFont(self.font16)
-        self.Button_PathPadrao.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_PathPadrao.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_PathPadrao.setToolTip(r"Usar o caminho padrão")
 
         self.Button_PathEspecifico = QPushButton('específico')
         self.Button_PathEspecifico.pressed.connect(lambda: self.OnButtonPressed('Path Específico'))
         self.Button_PathEspecifico.setStyleSheet("QPushButton {background-color: black; color: white;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_PathEspecifico.setFont(self.font16)
-        self.Button_PathEspecifico.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_PathEspecifico.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_PathEspecifico.setToolTip(r"Informar o caminho específico")
 
         self.TextBox_Path = QLineEdit()
         self.TextBox_Path.setFixedWidth(int(self.frameGeometry().width()*0.9))
         self.TextBox_Path.setEnabled(False)
-        self.TextBox_Path.setAlignment(Qt.AlignCenter)
+        self.TextBox_Path.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.TextBox_Path.setStyleSheet("background-color: black; color: white;")
 
         self.Button_ConfirmacaoDeEmail = QPushButton()
@@ -2175,31 +2185,31 @@ class IHMmain(QWidget):
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.Button_ConfirmacaoDeEmail.setIcon(QIcon("./images/log_in.png"))
-        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ConfirmacaoDeEmail.setStyleSheet("QPushButton {background-color: rgb(20, 120, 30)} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_ConfirmacaoDeEmail.setToolTip(r"Próxima etapa")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 20, 2)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 3, 0, 1, 2, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_NomeDeUsuario, 6, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_NomeDeUsuario, 7, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Email, 8, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Email, 9, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha1, 10, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha1, 11, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha2, 12, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha2, 13, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.ComboBox_Currency, 14, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Path, 15, 0, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_PathPadrao, 16, 0, Qt.AlignRight)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_PathEspecifico, 16, 1, Qt.AlignLeft)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Path, 17, 0, 1, 2, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 18, 0, 2, 2, Qt.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 3, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_NomeDeUsuario, 6, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_NomeDeUsuario, 7, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Email, 8, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Email, 9, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha1, 10, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha1, 11, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha2, 12, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha2, 13, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.ComboBox_Currency, 14, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Path, 15, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_PathPadrao, 16, 0, Qt.AlignmentFlag.AlignRight)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_PathEspecifico, 16, 1, Qt.AlignmentFlag.AlignLeft)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Path, 17, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 18, 0, 2, 2, Qt.AlignmentFlag.AlignCenter)
         self.TextBox_NomeDeUsuario.setFocus()
 
     def CreatePage6(self, Email, NomeDeUsuario):
         def Thread(threadname, parametros):
-            self.setCursor(Qt.WaitCursor)
+            self.setCursor(Qt.CursorShape.WaitCursor)
             Email, NomeDeUsuario = parametros
             # Geração do código de confirmação
             self.CodigoDeConfirmacaoGerado = str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
@@ -2215,12 +2225,12 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Confirmação de email')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_Msg1 = QLabel('Mandamos para '+Email[:3]+'***@***'+Email[-4:]+' um código de confirmação da conta.')
         self.Label_Msg1.setStyleSheet('color: white')
         self.Label_Msg1.setFont(self.font16)
-        self.Label_Msg1.setAlignment(Qt.AlignCenter)
+        self.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_CodigoDeConfirmacao = QLineEdit()
         self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage('7'))
@@ -2229,7 +2239,7 @@ class IHMmain(QWidget):
         self.Button_ResendEmail = QPushButton("Reenviar email")
         self.Button_ResendEmail.pressed.connect(lambda: _thread.start_new_thread(Thread, ('NiceThread',(Email, NomeDeUsuario))))
         self.Button_ResendEmail.setFont(self.font12)
-        self.Button_ResendEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ResendEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ResendEmail.setFixedHeight(int(self.frameGeometry().height()/10*.99))
         self.Button_ResendEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
         self.Button_ResendEmail.setToolTip(r"Clique aqui se não recebeu o email")
@@ -2241,15 +2251,15 @@ class IHMmain(QWidget):
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
         self.Button_ConfirmacaoDeEmail.setIcon(QIcon("./images/log_in.png"))
-        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ConfirmacaoDeEmail.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 20, 2)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 2, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 9, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_CodigoDeConfirmacao, 10, 0, 1, 2, Qt.AlignCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ResendEmail, 12, 0, 2, 1, Qt.AlignHCenter | Qt.AlignRight)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 12, 1, 2, 1, Qt.AlignHCenter | Qt.AlignLeft)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 9, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_CodigoDeConfirmacao, 10, 0, 1, 2, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ResendEmail, 12, 0, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignRight)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 12, 1, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignLeft)
         self.TextBox_CodigoDeConfirmacao.setFocus()
 
     def CreatePage7(self):
@@ -2260,12 +2270,12 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Alteração de senha')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_Msg1 = QLabel('Digite uma nova senha:')
         self.Label_Msg1.setStyleSheet('color: white')
         self.Label_Msg1.setFont(self.font16)
-        self.Label_Msg1.setAlignment(Qt.AlignCenter)
+        self.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_NovaSenha1 = QLineEdit()
         self.TextBox_NovaSenha1.returnPressed.connect(lambda: self.CreatePage('1'))
@@ -2275,7 +2285,7 @@ class IHMmain(QWidget):
         self.Label_Msg2 = QLabel('Digite novamente a senha:')
         self.Label_Msg2.setStyleSheet('color: white')
         self.Label_Msg2.setFont(self.font16)
-        self.Label_Msg2.setAlignment(Qt.AlignCenter)
+        self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_NovaSenha2 = QLineEdit()
         self.TextBox_NovaSenha2.returnPressed.connect(lambda: self.CreatePage('1'))
@@ -2288,16 +2298,16 @@ class IHMmain(QWidget):
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.Button_ConfirmacaoDeEmail.setIcon(QIcon("./images/log_in.png"))
-        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ConfirmacaoDeEmail.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 20, 1)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 9, 0, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_NovaSenha1, 10, 0, Qt.AlignCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg2, 11, 0, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_NovaSenha2, 12, 0, Qt.AlignCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 14, 0, Qt.AlignHCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 9, 0, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_NovaSenha1, 10, 0, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg2, 11, 0, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_NovaSenha2, 12, 0, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 14, 0, Qt.AlignmentFlag.AlignHCenter)
         self.TextBox_NovaSenha1.setFocus()
 
     def CreatePage8(self):
@@ -2306,7 +2316,7 @@ class IHMmain(QWidget):
 
         # Envio de email com o código
         def Thread(threadname, parametros):
-            self.setCursor(Qt.WaitCursor)
+            self.setCursor(Qt.CursorShape.WaitCursor)
             Email, NomeDeUsuario = parametros
             # Geração do código de confirmação
             self.CodigoDeConfirmacaoGerado = str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
@@ -2322,17 +2332,17 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Confirmação de email')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_Msg1 = QLabel('Mandamos para '+Email[:3]+'***@***'+Email[-4:]+' um código de confirmação da conta.')
         self.Label_Msg1.setStyleSheet('color: white')
         self.Label_Msg1.setFont(self.font16)
-        self.Label_Msg1.setAlignment(Qt.AlignCenter)
+        self.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_Msg2 = QLabel('Insira no campo abaixo o código de confirmação:')
         self.Label_Msg2.setStyleSheet('color: white')
         self.Label_Msg2.setFont(self.font16)
-        self.Label_Msg2.setAlignment(Qt.AlignCenter)
+        self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_CodigoDeConfirmacao = QLineEdit()
         self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage('1'))
@@ -2341,7 +2351,7 @@ class IHMmain(QWidget):
         self.Button_ResendEmail = QPushButton("Reenviar email")
         self.Button_ResendEmail.pressed.connect(lambda: _thread.start_new_thread(Thread, ('NiceThread',(Email, NomeDeUsuario))))
         self.Button_ResendEmail.setFont(self.font12)
-        self.Button_ResendEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ResendEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ResendEmail.setFixedHeight(int(self.frameGeometry().height()/10*.99))
         self.Button_ResendEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
         self.Button_ResendEmail.setToolTip(r"Clique aqui se não recebeu o email")
@@ -2353,16 +2363,16 @@ class IHMmain(QWidget):
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
         self.Button_ConfirmacaoDeEmail.setIcon(QIcon("./images/log_in.png"))
-        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ConfirmacaoDeEmail.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 20, 2)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 2, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 8, 0, 1, 2, Qt.AlignHCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg2, 10, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_CodigoDeConfirmacao, 11, 0, 1, 2, Qt.AlignCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ResendEmail, 13, 0, 2, 1, Qt.AlignHCenter | Qt.AlignRight)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 13, 1, 2, 1, Qt.AlignHCenter | Qt.AlignLeft)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 8, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg2, 10, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_CodigoDeConfirmacao, 11, 0, 1, 2, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ResendEmail, 13, 0, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignRight)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 13, 1, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignLeft)
         self.TextBox_CodigoDeConfirmacao.setFocus()
 
     def CreatePage8b(self):
@@ -2371,7 +2381,7 @@ class IHMmain(QWidget):
 
         # Envio de email com o código
         def Thread(threadname, parametros):
-            self.setCursor(Qt.WaitCursor)
+            self.setCursor(Qt.CursorShape.WaitCursor)
             Email, NomeDeUsuario = parametros
             # Geração do código de confirmação
             self.CodigoDeConfirmacaoGerado = str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
@@ -2387,17 +2397,17 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Confirmação de email')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_Msg1 = QLabel('Mandamos para '+Email[:3]+'***@***'+Email[-4:]+' um código de confirmação da conta.')
         self.Label_Msg1.setStyleSheet('color: white')
         self.Label_Msg1.setFont(self.font16)
-        self.Label_Msg1.setAlignment(Qt.AlignCenter)
+        self.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_Msg2 = QLabel('Insira no campo abaixo o código de confirmação:')
         self.Label_Msg2.setStyleSheet('color: white')
         self.Label_Msg2.setFont(self.font16)
-        self.Label_Msg2.setAlignment(Qt.AlignCenter)
+        self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_CodigoDeConfirmacao = QLineEdit()
         self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage('ImportFromExcel'))
@@ -2406,7 +2416,7 @@ class IHMmain(QWidget):
         self.Button_ResendEmail = QPushButton("Reenviar email")
         self.Button_ResendEmail.pressed.connect(lambda: _thread.start_new_thread(Thread, ('NiceThread',(Email, NomeDeUsuario))))
         self.Button_ResendEmail.setFont(self.font12)
-        self.Button_ResendEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ResendEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ResendEmail.setFixedHeight(int(self.frameGeometry().height()/10*.99))
         self.Button_ResendEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
         self.Button_ResendEmail.setToolTip(r"Clique aqui se não recebeu o email")
@@ -2418,16 +2428,16 @@ class IHMmain(QWidget):
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
         self.Button_ConfirmacaoDeEmail.setIcon(QIcon("./images/log_in.png"))
-        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ConfirmacaoDeEmail.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 20, 2)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 2, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 8, 0, 1, 2, Qt.AlignHCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg2, 10, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_CodigoDeConfirmacao, 11, 0, 1, 2, Qt.AlignCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ResendEmail, 13, 0, 2, 1, Qt.AlignHCenter | Qt.AlignRight)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 13, 1, 2, 1, Qt.AlignHCenter | Qt.AlignLeft)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 8, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg2, 10, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_CodigoDeConfirmacao, 11, 0, 1, 2, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ResendEmail, 13, 0, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignRight)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 13, 1, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignLeft)
         self.TextBox_CodigoDeConfirmacao.setFocus()
 
     def CreatePageImportFromExcel(self):
@@ -2438,10 +2448,10 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Importando dados do excel')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 20, 2)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 2, Qt.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
 
         self.OnButtonPressed('ImportFromExcel')
 
@@ -2469,7 +2479,7 @@ class IHMmain(QWidget):
         self.Label_Titulo1 = QLabel('Perfil')
         self.Label_Titulo1.setStyleSheet('color: white')
         self.Label_Titulo1.setFont(self.font30)
-        self.Label_Titulo1.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Button_ProfilePhoto = QPushButton()
         self.Button_ProfilePhoto.pressed.connect(lambda: self.OnButtonPressed("ChangeProfilePhoto"))
@@ -2479,7 +2489,7 @@ class IHMmain(QWidget):
             self.Button_ProfilePhoto.setIcon(QIcon("./images/ProfilePhoto.jpg"))
         self.Button_ProfilePhoto.setFixedSize(int(self.frameGeometry().width()/8),int(self.frameGeometry().width()/8))
         self.Button_ProfilePhoto.setIconSize(QSize(int(self.frameGeometry().width()/8*.95),int(self.frameGeometry().width()/8*.95)))
-        self.Button_ProfilePhoto.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ProfilePhoto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ProfilePhoto.setToolTip(r"Clique aqui para escolher uma foto")
         self.Button_ProfilePhoto.setStyleSheet('QToolTip {background-color: black; color: white;border: black solid 1px}')
 
@@ -2487,25 +2497,25 @@ class IHMmain(QWidget):
         self.Label_UserEmail.setText(self.User+'\n'+self.Email)
         self.Label_UserEmail.setStyleSheet('color: white')
         self.Label_UserEmail.setFont(self.font12)
-        self.Label_UserEmail.setAlignment(Qt.AlignCenter)
+        self.Label_UserEmail.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Button_MudarEmail = QPushButton("Mudar o email")
         self.Button_MudarEmail.pressed.connect(lambda: self.CreatePage('14'))
         self.Button_MudarEmail.setStyleSheet('background-color: rgb(10, 10, 20); color: white')
         self.Button_MudarEmail.setFont(self.font12)
-        self.Button_MudarEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_MudarEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.Button_MudarSenha = QPushButton("Mudar a senha")
         self.Button_MudarSenha.pressed.connect(lambda: self.CreatePage('15'))
         self.Button_MudarSenha.setStyleSheet('background-color: rgb(10, 10, 20); color: white')
         self.Button_MudarSenha.setFont(self.font12)
-        self.Button_MudarSenha.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_MudarSenha.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.Button_MudarPath = QPushButton("Mudar o caminho")
         self.Button_MudarPath.pressed.connect(lambda: self.OnButtonPressed('Change UserPath'))
         self.Button_MudarPath.setStyleSheet('background-color: rgb(10, 10, 20); color: white')
         self.Button_MudarPath.setFont(self.font12)
-        self.Button_MudarPath.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_MudarPath.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.Button_EndAccount = QPushButton('Encerrar a conta')
         self.Button_EndAccount.pressed.connect(lambda: self.CreatePage('16'))
@@ -2513,31 +2523,31 @@ class IHMmain(QWidget):
         self.Button_EndAccount.setFixedHeight(40)
         self.Button_EndAccount.setIconSize(QSize(35, 35))
         self.Button_EndAccount.setIcon(QIcon("./images/closeAccount_icon.png"))
-        self.Button_EndAccount.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_EndAccount.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.Button_VersionInfo = QPushButton()
         self.Button_VersionInfo.pressed.connect(lambda: QMessageBox.about(self,'Informação', self.APPVersion+"\n\nCaminho do usuário:\n"+self.DBManager.UserPath+"/"+self.User+".db"))
         self.Button_VersionInfo.setIcon(QIcon("./images/Info.png"))
-        self.Button_VersionInfo.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_VersionInfo.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_VersionInfo.setStyleSheet("QPushButton {background-color: black; border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_VersionInfo.setToolTip(r"Versão")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 10, 1)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo1, 0, 0, 1, 1, Qt.AlignLeft | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ProfilePhoto, 2, 0, 2, 1, Qt.AlignBottom | Qt.AlignHCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_UserEmail, 4, 0, 1, 1, Qt.AlignTop | Qt.AlignHCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_MudarEmail, 5, 0, 1, 1, Qt.AlignCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_MudarSenha, 6, 0, 1, 1, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_MudarPath, 7, 0, 1, 1, Qt.AlignCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_EndAccount, 9, 0, 1, 1, Qt.AlignBottom | Qt.AlignLeft)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_VersionInfo, 9, 0, Qt.AlignRight)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo1, 0, 0, 1, 1, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ProfilePhoto, 2, 0, 2, 1, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignHCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_UserEmail, 4, 0, 1, 1, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_MudarEmail, 5, 0, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_MudarSenha, 6, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_MudarPath, 7, 0, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_EndAccount, 9, 0, 1, 1, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignLeft)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_VersionInfo, 9, 0, Qt.AlignmentFlag.AlignRight)
 
         self.InsertGridLayout(1, 3, 1, 17)
 
         self.Label_Titulo2 = QLabel('Exportar Base de Dados')
         self.Label_Titulo2.setStyleSheet('color: white')
         self.Label_Titulo2.setFont(self.font30)
-        self.Label_Titulo2.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Button_ExportDBToExcel = QPushButton()
         self.Button_ExportDBToExcel.pressed.connect(lambda: self.OnButtonPressed('ExportToExcel'))
@@ -2545,7 +2555,7 @@ class IHMmain(QWidget):
         self.Button_ExportDBToExcel.setFixedSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height()-160))
         self.Button_ExportDBToExcel.setIconSize(QSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height())))
         self.Button_ExportDBToExcel.setIcon(QIcon("./images/export_to_excel_icon.png"))
-        self.Button_ExportDBToExcel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ExportDBToExcel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ExportDBToExcel.setToolTip(r"Exportar base de dados no formato .xlsx")
 
         self.Button_ExportDBToDB = QPushButton()
@@ -2554,15 +2564,15 @@ class IHMmain(QWidget):
         self.Button_ExportDBToDB.setFixedSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height()-160))
         self.Button_ExportDBToDB.setIconSize(QSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height())))
         self.Button_ExportDBToDB.setIcon(QIcon("./images/export_to_db_icon.png"))
-        self.Button_ExportDBToDB.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ExportDBToDB.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ExportDBToDB.setToolTip(r"Exportar base de dados no formato .db")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_2, 0, 0, 1, 2)
         self.F_GLayout[self.GCount-1].addWidget(self.Background_3, 0, 0, 2, 1)
         self.F_GLayout[self.GCount-1].addWidget(self.Background_4, 0, 1, 2, 1)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo2, 0, 0, 1, 2, Qt.AlignCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ExportDBToExcel, 1, 0, 2, 1, Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ExportDBToDB, 1, 1, 2, 1, Qt.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo2, 0, 0, 1, 2, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ExportDBToExcel, 1, 0, 2, 1, Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ExportDBToDB, 1, 1, 2, 1, Qt.AlignmentFlag.AlignTop)
 
     def CreatePage14(self):
         self.Background_1 = QLabel()
@@ -2572,17 +2582,17 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Alteração de email')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_Msg1 = QLabel('Seu email atual é o\n'+self.Email[:3]+'***@***'+self.Email[-4:])
         self.Label_Msg1.setStyleSheet('color: white')
         self.Label_Msg1.setFont(self.font16)
-        self.Label_Msg1.setAlignment(Qt.AlignCenter)
+        self.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_Msg2 = QLabel('Digite o seu novo email:')
         self.Label_Msg2.setStyleSheet('color: white')
         self.Label_Msg2.setFont(self.font16)
-        self.Label_Msg2.setAlignment(Qt.AlignCenter)
+        self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_Email = QLineEdit()
         self.TextBox_Email.returnPressed.connect(lambda: self.CreatePage('17a'))
@@ -2594,15 +2604,15 @@ class IHMmain(QWidget):
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.Button_ConfirmacaoDeEmail.setIcon(QIcon("./images/log_in.png"))
-        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ConfirmacaoDeEmail.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 20, 1)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 1, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 8, 0, 1, 1, Qt.AlignHCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg2, 9, 0, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Email, 10, 0, 1, 1, Qt.AlignCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 12, 0, 2, 1, Qt.AlignHCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 8, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg2, 9, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Email, 10, 0, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 12, 0, 2, 1, Qt.AlignmentFlag.AlignHCenter)
         self.TextBox_Email.setFocus()
 
     def CreatePage15(self):
@@ -2613,12 +2623,12 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Alteração de senha')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_SenhaAtual = QLabel()
         self.Label_SenhaAtual.setStyleSheet('color: white')
         self.Label_SenhaAtual.setFont(self.font16)
-        self.Label_SenhaAtual.setAlignment(Qt.AlignLeft)
+        self.Label_SenhaAtual.setAlignment(Qt.AlignmentFlag.AlignLeft)
         minimo = 24
         maximo = 43
         a = (int(self.screen_width*0.5))/((1/minimo)-(1/maximo))
@@ -2634,7 +2644,7 @@ class IHMmain(QWidget):
         self.Label_Senha1 = QLabel()
         self.Label_Senha1.setStyleSheet('color: white')
         self.Label_Senha1.setFont(self.font16)
-        self.Label_Senha1.setAlignment(Qt.AlignLeft)
+        self.Label_Senha1.setAlignment(Qt.AlignmentFlag.AlignLeft)
         minimo = 24
         maximo = 47
         a = (int(self.screen_width*0.5))/((1/minimo)-(1/maximo))
@@ -2650,7 +2660,7 @@ class IHMmain(QWidget):
         self.Label_Senha2 = QLabel()
         self.Label_Senha2.setStyleSheet('color: white')
         self.Label_Senha2.setFont(self.font16)
-        self.Label_Senha2.setAlignment(Qt.AlignLeft)
+        self.Label_Senha2.setAlignment(Qt.AlignmentFlag.AlignLeft)
         minimo = 23
         maximo = 43
         a = (int(self.screen_width*0.5))/((1/minimo)-(1/maximo))
@@ -2669,19 +2679,19 @@ class IHMmain(QWidget):
         self.Button_Alterar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_Alterar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.Button_Alterar.setIcon(QIcon("./images/log_in.png"))
-        self.Button_Alterar.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Alterar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Alterar.setStyleSheet("QPushButton {background-color: rgb(20, 120, 30)} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_Alterar.setToolTip(r"Alterar")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 20, 1)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 3, 0, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_SenhaAtual, 7, 0, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_SenhaAtual, 8, 0, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha1, 9, 0, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha1, 10, 0, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha2, 11, 0, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha2, 12, 0, Qt.AlignHCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_Alterar, 14, 0, 2, 1, Qt.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 3, 0, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_SenhaAtual, 7, 0, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_SenhaAtual, 8, 0, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha1, 9, 0, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha1, 10, 0, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Senha2, 11, 0, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_Senha2, 12, 0, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_Alterar, 14, 0, 2, 1, Qt.AlignmentFlag.AlignCenter)
         self.TextBox_SenhaAtual.setFocus()
 
     def CreatePage16(self):
@@ -2704,7 +2714,7 @@ class IHMmain(QWidget):
         NomeDeUsuario = self.DBManager.User
         # Envio de email com o código
         def Thread(threadname, parametros):
-            self.setCursor(Qt.WaitCursor)
+            self.setCursor(Qt.CursorShape.WaitCursor)
             Email, NomeDeUsuario = parametros
             # Geração do código de confirmação
             self.CodigoDeConfirmacaoGerado = str(random.randint(0, 9)) + str(random.randint(0, 9)) + str(random.randint(0, 9)) + str(random.randint(0, 9)) + str(random.randint(0, 9)) + str(random.randint(0, 9))
@@ -2720,17 +2730,17 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Confirmação de email')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_Msg1 = QLabel('Mandamos para '+Email+' um código de confirmação da conta.')
         self.Label_Msg1.setStyleSheet('color: white')
         self.Label_Msg1.setFont(self.font16)
-        self.Label_Msg1.setAlignment(Qt.AlignCenter)
+        self.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_Msg2 = QLabel('Insira no campo abaixo o código de confirmação:')
         self.Label_Msg2.setStyleSheet('color: white')
         self.Label_Msg2.setFont(self.font16)
-        self.Label_Msg2.setAlignment(Qt.AlignCenter)
+        self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_CodigoDeConfirmacao = QLineEdit()
         self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage('9_'))
@@ -2739,7 +2749,7 @@ class IHMmain(QWidget):
         self.Button_ResendEmail = QPushButton("Reenviar email")
         self.Button_ResendEmail.pressed.connect(lambda: _thread.start_new_thread(Thread, ('NiceThread', (Email, NomeDeUsuario))))
         self.Button_ResendEmail.setFont(self.font12)
-        self.Button_ResendEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ResendEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ResendEmail.setFixedHeight(int(self.frameGeometry().height()/10*.99))
         self.Button_ResendEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
         self.Button_ResendEmail.setToolTip(r"Clique aqui se não recebeu o email")
@@ -2751,16 +2761,16 @@ class IHMmain(QWidget):
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
         self.Button_ConfirmacaoDeEmail.setIcon(QIcon("./images/log_in.png"))
-        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ConfirmacaoDeEmail.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 20, 2)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 2, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 8, 0, 1, 2, Qt.AlignHCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg2, 10, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_CodigoDeConfirmacao, 11, 0, 1, 2, Qt.AlignCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ResendEmail, 13, 0, 2, 1, Qt.AlignHCenter | Qt.AlignRight)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 13, 1, 2, 1, Qt.AlignHCenter | Qt.AlignLeft)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 8, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg2, 10, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_CodigoDeConfirmacao, 11, 0, 1, 2, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ResendEmail, 13, 0, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignRight)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 13, 1, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignLeft)
         self.TextBox_CodigoDeConfirmacao.setFocus()
 
     def CreatePage17b(self):
@@ -2769,7 +2779,7 @@ class IHMmain(QWidget):
 
         # Envio de email com o código
         def Thread(threadname, parametros):
-            self.setCursor(Qt.WaitCursor)
+            self.setCursor(Qt.CursorShape.WaitCursor)
             Email, NomeDeUsuario = parametros
             # Geração do código de confirmação
             self.CodigoDeConfirmacaoGerado = str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
@@ -2785,17 +2795,17 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Confirmação de email')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_Msg1 = QLabel('Mandamos para '+Email[:3]+'***@***'+Email[-4:]+' um código.\nEssa etapa é só pra ter certeza que é você mesmo que está decidindo encerrar a conta.')
         self.Label_Msg1.setStyleSheet('color: white')
         self.Label_Msg1.setFont(self.font16)
-        self.Label_Msg1.setAlignment(Qt.AlignCenter)
+        self.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Label_Msg2 = QLabel('Insira no campo abaixo o código de confirmação:')
         self.Label_Msg2.setStyleSheet('color: white')
         self.Label_Msg2.setFont(self.font16)
-        self.Label_Msg2.setAlignment(Qt.AlignCenter)
+        self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_CodigoDeConfirmacao = QLineEdit()
         self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage('0'))
@@ -2804,7 +2814,7 @@ class IHMmain(QWidget):
         self.Button_ResendEmail = QPushButton("Reenviar email")
         self.Button_ResendEmail.pressed.connect(lambda: _thread.start_new_thread(Thread, ('NiceThread',(Email, NomeDeUsuario))))
         self.Button_ResendEmail.setFont(self.font12)
-        self.Button_ResendEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ResendEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ResendEmail.setFixedHeight(int(self.frameGeometry().height()/10*.99))
         self.Button_ResendEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
         self.Button_ResendEmail.setToolTip(r"Clique aqui se não recebeu o email")
@@ -2816,16 +2826,16 @@ class IHMmain(QWidget):
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
         self.Button_ConfirmacaoDeEmail.setIcon(QIcon("./images/log_in.png"))
-        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ConfirmacaoDeEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ConfirmacaoDeEmail.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 20, 2)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 2, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 8, 0, 1, 2, Qt.AlignHCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg2, 10, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_CodigoDeConfirmacao, 11, 0, 1, 2, Qt.AlignCenter | Qt.AlignTop)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ResendEmail, 13, 0, 2, 1, Qt.AlignHCenter | Qt.AlignRight)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 13, 1, 2, 1, Qt.AlignHCenter | Qt.AlignLeft)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 6, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 8, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg2, 10, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.F_GLayout[self.GCount-1].addWidget(self.TextBox_CodigoDeConfirmacao, 11, 0, 1, 2, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignTop)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ResendEmail, 13, 0, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignRight)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_ConfirmacaoDeEmail, 13, 1, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignLeft)
         self.TextBox_CodigoDeConfirmacao.setFocus()
 
     def CreatePage45(self):
@@ -2836,13 +2846,13 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Inserção das cotações manualmente')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Button_Update = QPushButton('Update')
         self.Button_Update.setFont(self.font22)
         self.Button_Update.setIconSize(QSize(int(self.frameGeometry().height() / 10 * 0.9), int(self.frameGeometry().height() / 10 * 0.9)))
         self.Button_Update.setIcon(QIcon("./images/update.png"))
-        self.Button_Update.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Update.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Update.setStyleSheet("background-color: rgb(120, 120, 120)")
         self.Button_Update.pressed.connect(lambda: self.OnButtonPressed('RemoveUnusedAtivosFromCotacoes'))
 
@@ -2850,26 +2860,26 @@ class IHMmain(QWidget):
         self.Button_Pronto.setFont(self.font22)
         self.Button_Pronto.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_Pronto.setIcon(QIcon("./images/log_in.png"))
-        self.Button_Pronto.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Pronto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Pronto.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.Button_Voltar = QPushButton('Voltar')
         self.Button_Voltar.setFont(self.font22)
         self.Button_Voltar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_Voltar.setIcon(QIcon("./images/voltar.png"))
-        self.Button_Voltar.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Voltar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Voltar.setStyleSheet("background-color: rgb(120, 20, 30)")
         self.Button_Voltar.pressed.connect(lambda: self.CreatePage(self.PageID))
 
         self.F_GLayout[self.GCount-1].addWidget(self.Background_1, 0, 0, 6, 4)
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 0, 0, 1, 4, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_Update, 1, 3, 1, 1, Qt.AlignCenter)
-        self.F_GLayout[self.GCount-1].addWidget(self.Button_Pronto, 2, 3, 2, 1, Qt.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 0, 0, 1, 4, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_Update, 1, 3, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Button_Pronto, 2, 3, 2, 1, Qt.AlignmentFlag.AlignCenter)
 
         Ativos, Datas, Valores = self.DBManager.GetCotacoesManuais()
         if len(Ativos)>0:
             self.Button_Pronto.pressed.connect(lambda: self.OnButtonPressed('Atualizar Tabela de Cotações'))
-            self.F_GLayout[self.GCount-1].addWidget(self.Button_Voltar, 4, 3, 2, 1, Qt.AlignCenter)
+            self.F_GLayout[self.GCount-1].addWidget(self.Button_Voltar, 4, 3, 2, 1, Qt.AlignmentFlag.AlignCenter)
             HHeader = ['Ativo',
                        'Última atualização',
                        'Cotação em '+self.DBManager.GetUserCoinCurrency()]
@@ -2889,16 +2899,16 @@ class IHMmain(QWidget):
             self.Table_CotaçõesManuaisHeader.horizontalHeader().hide()
 
             celula0 = QTableWidgetItem(str(HHeader[0]))
-            celula0.setFlags(Qt.ItemFlags(Qt.ItemIsSelectable))
-            celula0.setTextAlignment(Qt.AlignHCenter | Qt.AlignBottom)
+            celula0.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
+            celula0.setTextAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
             self.Table_CotaçõesManuaisHeader.setItem(0, 0, celula0)
             celula1 = QTableWidgetItem(str(HHeader[1]))
-            celula1.setFlags(Qt.ItemFlags(Qt.ItemIsSelectable))
-            celula1.setTextAlignment(Qt.AlignHCenter | Qt.AlignBottom)
+            celula1.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
+            celula1.setTextAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
             self.Table_CotaçõesManuaisHeader.setItem(0, 1, celula1)
             celula2 = QTableWidgetItem(str(HHeader[2]))
-            celula2.setFlags(Qt.ItemFlags(Qt.ItemIsSelectable))
-            celula2.setTextAlignment(Qt.AlignHCenter | Qt.AlignBottom)
+            celula2.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
+            celula2.setTextAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
             self.Table_CotaçõesManuaisHeader.setItem(0, 2, celula2)
 
             self.Table_CotaçõesManuaisHeader.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
@@ -2923,14 +2933,14 @@ class IHMmain(QWidget):
 
             for n, item in enumerate(Ativos):
                 it = QTableWidgetItem(str(item))
-                it.setFlags(Qt.ItemFlags(Qt.ItemIsSelectable))
-                it.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                it.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
+                it.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
                 self.Table_CotaçõesManuais.setItem(n, 0, it)
 
             for n, item in enumerate(Datas):
                 it = QTableWidgetItem(str(item))
-                it.setFlags(Qt.ItemFlags(Qt.ItemIsSelectable))
-                it.setTextAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                it.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
+                it.setTextAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
                 item = datetime.strptime(item, "%Y-%m-%d %H:%M:%S")
                 if datetime.now() - item <= timedelta(days=2): it.setForeground(QBrush(QColor('green')))
                 elif datetime.now() - item <= timedelta(days=5): it.setForeground(QBrush(QColor('orange')))
@@ -2939,7 +2949,7 @@ class IHMmain(QWidget):
 
             for n, item in enumerate(Valores):
                 it = QTableWidgetItem(str(item))
-                it.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+                it.setTextAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
                 if item <= 0: it.setForeground(QBrush(QColor('red')))
                 self.Table_CotaçõesManuais.setItem(n, 2, it)
 
@@ -2955,14 +2965,14 @@ class IHMmain(QWidget):
 
             self.SetTableWidth_45_1(SizeCol0, SizeCol1, SizeCol2)
 
-            self.F_GLayout[self.GCount-1].addWidget(self.Table_CotaçõesManuaisHeader, 1, 0, 1, 3, Qt.AlignHCenter | Qt.AlignBottom)
-            self.F_GLayout[self.GCount-1].addWidget(self.Table_CotaçõesManuais, 2, 0, 3, 3, Qt.AlignHCenter | Qt.AlignTop)
+            self.F_GLayout[self.GCount-1].addWidget(self.Table_CotaçõesManuaisHeader, 1, 0, 1, 3, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+            self.F_GLayout[self.GCount-1].addWidget(self.Table_CotaçõesManuais, 2, 0, 3, 3, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
         else:
             self.Label_Msg1 = QLabel('Legal!\nEstá tudo no automático pra você!\nNão há nada para fazer aqui :)')
             self.Label_Msg1.setStyleSheet('color: white')
             self.Label_Msg1.setFont(self.font24)
-            self.Label_Msg1.setAlignment(Qt.AlignCenter)
-            self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 1, 0, 2, 3, Qt.AlignCenter)
+            self.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.F_GLayout[self.GCount-1].addWidget(self.Label_Msg1, 1, 0, 2, 3, Qt.AlignmentFlag.AlignCenter)
 
             self.Button_Pronto.pressed.connect(lambda: self.CreatePage(self.PageID))
 
@@ -2972,7 +2982,7 @@ class IHMmain(QWidget):
             self.Button_Joinha.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid black} QToolTip {background-color: black; color: white;border: black solid 1px}')
             self.Button_Joinha.setIcon(QIcon("./images/Joinha.png"))
             self.Button_Joinha.setToolTip(r"Ok")
-            self.F_GLayout[self.GCount-1].addWidget(self.Button_Joinha, 3, 0, 2, 3, Qt.AlignHCenter | Qt.AlignTop)
+            self.F_GLayout[self.GCount-1].addWidget(self.Button_Joinha, 3, 0, 2, 3, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
         # self.DBManager.AtualizarCotacoes()
 
@@ -2980,19 +2990,19 @@ class IHMmain(QWidget):
         self.Label_Titulo = QLabel('Escolha a sua moeda corrente')
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.font30)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 0, 0, 1, 1, Qt.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.Label_Titulo, 0, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
 
         self.ComboBox_Currency = QComboBox()
         self.ComboBox_Currency.setFont(self.font16)
-        self.ComboBox_Currency.setCursor(QCursor(Qt.PointingHandCursor))
+        self.ComboBox_Currency.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.ComboBox_Currency.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(0, 255, 0);")
         # self.ComboBox_Currency.activated[str].connect(lambda pct: self.AtualizarPagina())
         for idx, coin in enumerate(self.DBManager.GetMoedasFiat()):
             self.ComboBox_Currency.addItem(coin)
 
-        self.F_GLayout[self.GCount-1].addWidget(self.ComboBox_Currency, 1, 0, 4, 1, Qt.AlignCenter)
+        self.F_GLayout[self.GCount-1].addWidget(self.ComboBox_Currency, 1, 0, 4, 1, Qt.AlignmentFlag.AlignCenter)
 
     def CreatePageInfo1(self): MessageBox_Msg1 = QMessageBox.about(self,'Informação','    Quando um ativo tem o modo manual ativado,\nserá solicitada a sua cotação durante procedimentos\n           que atualizam a Tabela de Cotações.')
 
@@ -3143,15 +3153,15 @@ class IHMmain(QWidget):
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page46_MainGraph_VisaoGeral()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por corretora":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page46_MainGraph_AtivoPorCorretora()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por setor":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page46_MainGraph_AtivoPorSetor()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             self.HMI_ARCA.Custo = 0
             self.HMI_ARCA.Retorno = 0
@@ -3177,22 +3187,22 @@ class IHMmain(QWidget):
                 self.TextBox_Retorno.setStyleSheet('QLineEdit {background-color: black; color: red;}')
             self.GraphWidget_Subtipos.deleteLater()
             self.GraphWidget_Subtipos = self.HMI_ARCA.CreateGraph_Page46_Subtipos()
-            self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+            self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
         elif self.PageID == '47':
             UserCoin = self.DBManager.GetUserCoinCurrency()
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page47_MainGraph_VisaoGeral()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por corretora":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page47_MainGraph_AtivoPorCorretora()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por setor":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page47_MainGraph_AtivoPorSetor()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             self.HMI_ARCA.Custo = 0
             self.HMI_ARCA.Retorno = 0
@@ -3218,22 +3228,22 @@ class IHMmain(QWidget):
                 self.TextBox_Retorno.setStyleSheet('QLineEdit {background-color: black; color: red;}')
             self.GraphWidget_Subtipos.deleteLater()
             self.GraphWidget_Subtipos = self.HMI_ARCA.CreateGraph_Page47_Subtipos()
-            self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+            self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
         elif self.PageID == '48':
             UserCoin = self.DBManager.GetUserCoinCurrency()
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page48_MainGraph_VisaoGeral()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por corretora":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page48_MainGraph_AtivoPorCorretora()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por setor":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page48_MainGraph_AtivoPorSetor()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             self.HMI_ARCA.Custo = 0
             self.HMI_ARCA.Retorno = 0
@@ -3259,22 +3269,22 @@ class IHMmain(QWidget):
                 self.TextBox_Retorno.setStyleSheet('QLineEdit {background-color: black; color: red;}')
             self.GraphWidget_Subtipos.deleteLater()
             self.GraphWidget_Subtipos = self.HMI_ARCA.CreateGraph_Page48_Subtipos()
-            self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+            self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
         elif self.PageID == '49':
             UserCoin = self.DBManager.GetUserCoinCurrency()
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page49_MainGraph_VisaoGeral()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por corretora":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page49_MainGraph_AtivoPorCorretora()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por setor":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page49_MainGraph_AtivoPorSetor()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             self.HMI_ARCA.Custo = 0
             self.HMI_ARCA.Retorno = 0
@@ -3304,22 +3314,22 @@ class IHMmain(QWidget):
                 self.TextBox_Retorno.setStyleSheet('QLineEdit {background-color: black; color: red;}')
             self.GraphWidget_Subtipos.deleteLater()
             self.GraphWidget_Subtipos = self.HMI_ARCA.CreateGraph_Page49_Subtipos()
-            self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+            self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
         elif self.PageID == '50':
             UserCoin = self.DBManager.GetUserCoinCurrency()
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page50_MainGraph_VisaoGeral()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por corretora":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page50_MainGraph_AtivoPorCorretora()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             elif self.HMI_ARCA.MainGraphIsShowing == "Total de UserCoin por corretora":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page50_MainGraph_TotalDeUserCoinPorCorretora()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
             self.HMI_ARCA.Custo = 0
             self.HMI_ARCA.Retorno = 0
@@ -3342,7 +3352,7 @@ class IHMmain(QWidget):
                 self.TextBox_Retorno.setStyleSheet('QLineEdit {background-color: black; color: red;}')
             self.GraphWidget_Distribuicao.deleteLater()
             self.GraphWidget_Distribuicao = self.HMI_ARCA.CreateGraph_Page50_Distribuicao()
-            self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Distribuicao, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+            self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Distribuicao, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
     def EnableAllButtons(self, condition = True):
         """Ferramentas"""
@@ -3607,7 +3617,7 @@ class IHMmain(QWidget):
             server.quit()
         except Exception as e:
             # print(e) # Print any error messages
-            try:server.quit()
+            try:server.quit() # type: ignore[attr-defined]
             except:pass
 
     def ClearPage(self):
@@ -3619,7 +3629,7 @@ class IHMmain(QWidget):
             MessageBox_Msg1.setIcon(QMessageBox.Warning)
             MessageBox_Msg1.setStandardButtons(QMessageBox.No | QMessageBox.Yes)
             MessageBox_Msg1.setDefaultButton(QMessageBox.Yes)
-            MessageBox_Msg1.setWindowIcon(QIcon(".\images\logoARCA.png"))
+            MessageBox_Msg1.setWindowIcon(QIcon(".\\images\\logoARCA.png"))
             returnValue = MessageBox_Msg1.exec()
             if returnValue == QMessageBox.Yes:
                 self.LW = LoadingWindow.LoadingWindow(self)
@@ -3636,7 +3646,7 @@ class IHMmain(QWidget):
             MessageBox_Msg1.setIcon(QMessageBox.Warning)
             MessageBox_Msg1.setStandardButtons(QMessageBox.OK)
             MessageBox_Msg1.setDefaultButton(QMessageBox.OK)
-            MessageBox_Msg1.setWindowIcon(QIcon(".\images\logoARCA.png"))
+            MessageBox_Msg1.setWindowIcon(QIcon(".\\images\\logoARCA.png"))
             returnValue = MessageBox_Msg1.exec()
             # Close APP
             self.DBManager.Disconnect()
@@ -3664,7 +3674,6 @@ class IHMmain(QWidget):
 
         if self.PageID == "11" and self.PageIDAux == '':
             try:
-                self.HMI_ARCA.AbortPlotings = True
                 self.Button_Msg3.deleteLater()
                 self.TextBox_MontanteEmAplicacao.deleteLater()
                 self.HBoxLayout_Montantes.removeItem(self.HBoxLayout_Montantes1)
@@ -3864,7 +3873,7 @@ class IHMmain(QWidget):
         self.Button_Return = QPushButton()
         self.Button_Return.setFixedSize(40,40)
         self.Button_Return.setIconSize(QSize(35, 35))
-        self.Button_Return.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Return.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Return.setStyleSheet("QPushButton {background-color: "+Background_Header+"; border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_Return.setIcon(QIcon("./images/return_icon.png"))
         self.Button_Return.setToolTip(r"Voltar")
@@ -3873,7 +3882,7 @@ class IHMmain(QWidget):
         self.Button_Home.pressed.connect(lambda: self.CreatePage('1'))
         self.Button_Home.setFixedSize(40,40)
         self.Button_Home.setIconSize(QSize(35, 35))
-        self.Button_Home.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Home.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Home.setStyleSheet("QPushButton {background-color: "+Background_Header+"; border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_Home.setIcon(QIcon("./images/home_icon.png"))
         self.Button_Home.setToolTip(r"Início")
@@ -3883,7 +3892,7 @@ class IHMmain(QWidget):
         self.Button_ShowHideValues.pressed.connect(lambda: self.OnButtonPressed('ShowHideValues'))
         self.Button_ShowHideValues.setFixedSize(40,40)
         self.Button_ShowHideValues.setIconSize(QSize(35, 35))
-        self.Button_ShowHideValues.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_ShowHideValues.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_ShowHideValues.setStyleSheet("QPushButton {background-color: "+Background_Header+"; border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         if not self.ShowValues: self.Button_ShowHideValues.setIcon(QIcon("./images/iconClosedEye.png"))
         else: self.Button_ShowHideValues.setIcon(QIcon("./images/iconOpenEye.png"))
@@ -3896,7 +3905,7 @@ class IHMmain(QWidget):
         self.TextBox_Patrimonio = QLineEdit()
         self.TextBox_Patrimonio.setFont(self.font14)
         self.TextBox_Patrimonio.setEnabled(False)
-        self.TextBox_Patrimonio.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.TextBox_Patrimonio.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         if isinstance(self.Patrimonio,float):
             self.TextBox_Patrimonio.setText(self.DBManager.GetUserCoinCurrency()+str(self.Patrimonio))
             self.TextBox_Patrimonio.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: green; border: 1px solid '+Background_Header+'}')
@@ -3914,7 +3923,7 @@ class IHMmain(QWidget):
         self.TextBox_Rendimento = QLineEdit()
         self.TextBox_Rendimento.setFont(self.font14)
         self.TextBox_Rendimento.setEnabled(False)
-        self.TextBox_Rendimento.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.TextBox_Rendimento.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         if isinstance(self.Rendimento, float):
             self.TextBox_Rendimento.setText(str(self.Rendimento)+'%')
             if self.Rendimento >= 0: self.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: green; border: 1px solid '+Background_Header+'}')
@@ -3928,7 +3937,7 @@ class IHMmain(QWidget):
         self.Button_Sair.pressed.connect(lambda: self.CreatePage('0'))
         self.Button_Sair.setFixedSize(40,40)
         self.Button_Sair.setIconSize(QSize(35, 35))
-        self.Button_Sair.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Sair.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Sair.setStyleSheet("QPushButton {background-color: "+Background_Header+"; border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_Sair.setIcon(QIcon("./images/exit_icon.png"))
 
@@ -3937,7 +3946,7 @@ class IHMmain(QWidget):
         self.Button_AttCotacoesManuais.pressed.connect(lambda: self.CreatePage('45'))
         self.Button_AttCotacoesManuais.setFixedSize(40,40)
         self.Button_AttCotacoesManuais.setIconSize(QSize(35, 35))
-        self.Button_AttCotacoesManuais.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_AttCotacoesManuais.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_AttCotacoesManuais.setStyleSheet("QPushButton {background-color: "+Background_Header+"; border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         self.Button_AttCotacoesManuais.setIcon(QIcon("./images/iconeAdjustDB.png"))
 
@@ -3951,18 +3960,19 @@ class IHMmain(QWidget):
         self.Button_AttCotacoes.setMovie(self.Movie_AttCotacoes)
         self.Movie_AttCotacoes.jumpToFrame(0)
         if self.AtualizarCotacoes_running: self.Movie_AttCotacoes.start()
-        else: self.Button_AttCotacoes.setCursor(QCursor(Qt.PointingHandCursor))
+        else: self.Button_AttCotacoes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.Button_Perfil = QPushButton()
         self.Button_Perfil.setToolTip(r"Perfil e ferramentas")
         self.Button_Perfil.pressed.connect(lambda: self.CreatePage('9'))
         self.Button_Perfil.setFixedSize(40,40)
         self.Button_Perfil.setIconSize(QSize(35, 35))
-        self.Button_Perfil.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Perfil.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Perfil.setStyleSheet("QPushButton {background-color: "+Background_Header+"; border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}")
         try:
-            if os.path.exists(os.getcwd()+"\\images\\ProfilePhoto_"+self.User+".jpg"):
-                self.Button_Perfil.setIcon(QIcon("./images/ProfilePhoto_"+self.User+".jpg"))
+            user = str(self.User or "")
+            if os.path.exists(os.path.join(os.getcwd(), "images", "ProfilePhoto_"+user+".jpg")):
+                self.Button_Perfil.setIcon(QIcon("./images/ProfilePhoto_"+user+".jpg"))
             else:
                 self.Button_Perfil.setIcon(QIcon("./images/ProfilePhoto.jpg"))
         except: self.Button_Perfil.setIcon(QIcon("./images/ProfilePhoto.jpg"))
@@ -3971,7 +3981,7 @@ class IHMmain(QWidget):
         self.Button_Currency.pressed.connect(lambda: self.CreatePage('ChooseCurrency'))
         self.Button_Currency.setFixedHeight(40)
         self.Button_Currency.setIconSize(QSize(35, 35))
-        self.Button_Currency.setCursor(QCursor(Qt.PointingHandCursor))
+        self.Button_Currency.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_Currency.setStyleSheet("background-color: "+Background_Header+" ; color: rgb(255, 255, 255); border: none; outline: none;")
         self.Button_Currency.setIcon(QIcon("./images/iconeAdjustDB.jpg"))
 
@@ -3986,15 +3996,15 @@ class IHMmain(QWidget):
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
             self.HMI_ARCA.Flag_RecalcularGraficos = True
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoesManuais, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoesManuais, Qt.AlignmentFlag.AlignRight)
             self.HBoxLayout_Header.addWidget(self.Button_Currency)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
@@ -4005,316 +4015,316 @@ class IHMmain(QWidget):
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
             self.HMI_ARCA.Flag_RecalcularGraficos = True
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoesManuais, Qt.AlignRight)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoesManuais, Qt.AlignmentFlag.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageIDAux in ['14', '15', '17a', '17b', 'ChooseCurrency']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('9'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoesManuais, Qt.AlignRight)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoesManuais, Qt.AlignmentFlag.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID == '2' or self.PageID == '3' or self.PageID == '4' or self.PageID == '7':
             self.Button_Return.pressed.connect(lambda: self.CreatePage('0'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
         elif self.PageID in ['3b']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('3'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
         elif self.PageID == '5':
             self.Button_Return.pressed.connect(lambda: self.CreatePage('0'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
         elif self.PageID == '6':
             self.Button_Return.pressed.connect(lambda: self.CreatePage('2'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
         elif self.PageID == '8':
             self.Button_Return.pressed.connect(lambda: self.CreatePage('4'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
         elif self.PageID == '1':
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Sair, Qt.AlignRight)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Sair, Qt.AlignmentFlag.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['11', '12']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('1'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoesManuais, Qt.AlignRight)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoesManuais, Qt.AlignmentFlag.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['46', '47', '48', '49', '50']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('11'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoesManuais, Qt.AlignRight)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoesManuais, Qt.AlignmentFlag.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['18', '19', 'Bancos']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('10'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['20', '22', '23', '24', '25']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('18'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['26', '27', '28', '29', '30']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('23'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['31a', '32a', '33a', '34a', '35a']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('26'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['36a']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('34a'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['36b']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('35a'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['31b', '32b', '33b', '34b', '35b']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('27'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['37', '39', '40']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('19'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['41', '43', '44']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('40'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['42']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('41'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['34c', '35c']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('42'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['10', '13', '51']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('1'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['BancosAdd','BancosDelete','BancosRename']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('Bancos'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Home, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_ShowHideValues, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Patrimonio)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Patrimonio, Qt.AlignmentFlag.AlignLeft)
             self.HBoxLayout_Header.addWidget(self.Label_Rendimento)
-            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignLeft)
-            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignRight)
+            self.HBoxLayout_Header.addWidget(self.TextBox_Rendimento, Qt.AlignmentFlag.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['3b']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('3'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
         elif self.PageID in ['8b']:
             self.Button_Return.pressed.connect(lambda: self.CreatePage('3b'))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
-            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
-            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignLeft)
+            self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
+            self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
     def OnButtonPressed(self, ButtonPressed):
         if ButtonPressed == "ShowHideValues":
@@ -4347,7 +4357,7 @@ class IHMmain(QWidget):
                     self.GraphWidget_Carteira.deleteLater()
                     if self.HMI_ARCA.CarteiraGraph_id == 'pie': self.GraphWidget_Carteira = self.HMI_ARCA.CreateGraph_Page11_Carteira_pie()
                     else: self.GraphWidget_Carteira = self.HMI_ARCA.CreateGraph_Page11_Carteira_bar()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Carteira, 2, 2, 2, 2, Qt.AlignHCenter | Qt.AlignBottom)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Carteira, 2, 2, 2, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
                     self.Button_CarteiraInvisivel.deleteLater()
                     self.Button_CarteiraInvisivel = QPushButton()
                     self.Button_CarteiraInvisivel.pressed.connect(lambda: self.HMI_ARCA.OnButtonPressed('Change Carteira Graph'))
@@ -4357,8 +4367,8 @@ class IHMmain(QWidget):
                     else: proporcao = 1 / 10
                     self.GraphWidget_Carteira.setFixedSize(int(self.frameGeometry().width()*proporcao),int(self.frameGeometry().width()*proporcao))
                     self.Button_CarteiraInvisivel.setFixedSize(int(self.frameGeometry().height()*proporcao),int(self.frameGeometry().height()*proporcao))
-                    self.Button_CarteiraInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
-                    self.F_GLayout[self.GCount-1].addWidget(self.Button_CarteiraInvisivel, 2, 2, 2, 2, Qt.AlignHCenter | Qt.AlignBottom)
+                    self.Button_CarteiraInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+                    self.F_GLayout[self.GCount-1].addWidget(self.Button_CarteiraInvisivel, 2, 2, 2, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
                 except: pass
                 try:
                     self.HMI_ARCA.Table_ContasCorrente.deleteLater()
@@ -4374,7 +4384,7 @@ class IHMmain(QWidget):
                                                                         QTableView::item {border-bottom: 0.5px dashed white;}''') # gridline-color: rgba(255, 255, 255, 0)
                     self.HMI_ARCA.Table_ContasCorrente.verticalHeader().hide()
                     self.HMI_ARCA.Table_ContasCorrente.horizontalHeader().hide()
-                    self.F_GLayout[self.GCount-1].addWidget(self.HMI_ARCA.Table_ContasCorrente, 3, 4, 2, 2, Qt.AlignHCenter | Qt.AlignTop)
+                    self.F_GLayout[self.GCount-1].addWidget(self.HMI_ARCA.Table_ContasCorrente, 3, 4, 2, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
                     self.HMI_ARCA.CreateTable_11_2() # Table_ContasCorrente (Criada com uma thread)
                 except: pass
 
@@ -4446,17 +4456,17 @@ class IHMmain(QWidget):
                 self.GraphWidget_MainGraph.deleteLater()
                 if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page46_MainGraph_VisaoGeral()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
                 elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por corretora":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page46_MainGraph_AtivoPorCorretora()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
                 elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por setor":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page46_MainGraph_AtivoPorSetor()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
                 self.GraphWidget_Subtipos.deleteLater()
                 self.GraphWidget_Subtipos = self.HMI_ARCA.CreateGraph_Page46_Subtipos()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
             elif self.PageID == "47":
                 if self.ShowValues:
@@ -4474,17 +4484,17 @@ class IHMmain(QWidget):
                 self.GraphWidget_MainGraph.deleteLater()
                 if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page47_MainGraph_VisaoGeral()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
                 elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por corretora":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page47_MainGraph_AtivoPorCorretora()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
                 elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por setor":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page47_MainGraph_AtivoPorSetor()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
                 self.GraphWidget_Subtipos.deleteLater()
                 self.GraphWidget_Subtipos = self.HMI_ARCA.CreateGraph_Page47_Subtipos()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
             elif self.PageID == "48":
                 if self.ShowValues:
@@ -4502,17 +4512,17 @@ class IHMmain(QWidget):
                 self.GraphWidget_MainGraph.deleteLater()
                 if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page48_MainGraph_VisaoGeral()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
                 elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por corretora":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page48_MainGraph_AtivoPorCorretora()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
                 elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por setor":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page48_MainGraph_AtivoPorSetor()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
                 self.GraphWidget_Subtipos.deleteLater()
                 self.GraphWidget_Subtipos = self.HMI_ARCA.CreateGraph_Page48_Subtipos()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
             elif self.PageID == "49":
                 if self.ShowValues:
@@ -4530,17 +4540,17 @@ class IHMmain(QWidget):
                 self.GraphWidget_MainGraph.deleteLater()
                 if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page49_MainGraph_VisaoGeral()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
                 elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por corretora":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page49_MainGraph_AtivoPorCorretora()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
                 elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por setor":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page49_MainGraph_AtivoPorSetor()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
                 self.GraphWidget_Subtipos.deleteLater()
                 self.GraphWidget_Subtipos = self.HMI_ARCA.CreateGraph_Page49_Subtipos()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
             elif self.PageID == "50":
                 if self.ShowValues:
@@ -4557,20 +4567,20 @@ class IHMmain(QWidget):
                 self.GraphWidget_MainGraph.deleteLater()
                 if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page50_MainGraph_VisaoGeral()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
                 elif self.HMI_ARCA.MainGraphIsShowing == "Ativo por corretora":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page50_MainGraph_AtivoPorCorretora()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
                 elif self.HMI_ARCA.MainGraphIsShowing == "Total de UserCoin por corretora":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page50_MainGraph_TotalDeUserCoinPorCorretora()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 2, 1, 5, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 2, 1, 5, 1, Qt.AlignmentFlag.AlignCenter)
                 elif self.HMI_ARCA.MainGraphIsShowing == "Desempenho do ativo":
                     self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page50_MainGraph_DesempenhoDoAtivo()
-                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
+                    self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
 
                 self.GraphWidget_Distribuicao.deleteLater()
                 self.GraphWidget_Distribuicao = self.HMI_ARCA.CreateGraph_Page50_Distribuicao()
-                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Distribuicao, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+                self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Distribuicao, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
             elif self.PageID == '51': # Tributação Page
                 if self.ShowValues:
@@ -4650,7 +4660,7 @@ class IHMmain(QWidget):
             if not self.filedialogIsOpen:
                 self.filedialogIsOpen = True
                 DB_Path = filedialog.askopenfilename(parent=root, title='Selecione a sua foto', filetypes=[("Arquivos JPG", ".jpg")]) # Select folder path
-                self.setCursor(Qt.WaitCursor)
+                self.setCursor(Qt.CursorShape.WaitCursor)
                 self.filedialogIsOpen = False
                 if len(DB_Path)>0:
                     try:
@@ -4674,7 +4684,7 @@ class IHMmain(QWidget):
                 root.withdraw() # Used to hide tkinter window
                 self.filedialogIsOpen = True
                 DB_Path = filedialog.askdirectory() # Select folder path
-                self.setCursor(Qt.WaitCursor)
+                self.setCursor(Qt.CursorShape.WaitCursor)
                 self.filedialogIsOpen = False
                 try:
                     if len(DB_Path)>0:

@@ -4,15 +4,17 @@ Created on Sun Oct 17 13:08:15 2021
 
 @author: caiop
 """
-
-import pandas as pd
-import numpy as np
-
 import ctypes
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import (
+    QWidget, QLabel,
+    QVBoxLayout, QProgressBar
+)
+from PyQt5.QtCore import (
+    QSize, Qt,
+)
+
 
 class LoadingWindow(QWidget):
     def __init__(self, HMI):
@@ -38,7 +40,7 @@ class LoadingWindow(QWidget):
         self.Label_Titulo = QLabel()
         self.Label_Titulo.setStyleSheet('color: white')
         self.Label_Titulo.setFont(self.HMI.font14)
-        self.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.Label_Titulo.setText("Por favor aguarde...")
 
         self.pbar = QProgressBar()

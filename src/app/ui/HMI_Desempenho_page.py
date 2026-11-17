@@ -5,15 +5,20 @@ Created on Sat Sep 18 22:55:28 2021
 Assista essa aula:
 https://www.youtube.com/watch?v=G2Tr2dcjR3U
 
-@author: caiop
+@author: Caio Moreira Porta
 """
+from PyQt5.QtGui import (
+    QFont, QCursor, QMovie,
+)
+from PyQt5.QtWidgets import (
+    QLabel,
+    QComboBox,
+    QToolTip
+)
+from PyQt5.QtCore import (
+    QSize, Qt,
+)
 
-import pandas as pd
-import numpy as np
-
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
 
 class HMI_Desempenho(object):
     def __init__(self, HMI):
@@ -37,26 +42,26 @@ class HMI_Desempenho(object):
         self.HMI.Label_Titulo = QLabel('Desempenho da Carteira')
         self.HMI.Label_Titulo.setStyleSheet('color: white')
         self.HMI.Label_Titulo.setFont(self.HMI.font30)
-        self.HMI.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Label_Msg1 = QLabel('Rentabilidade da Carteira')
         self.HMI.Label_Msg1.setStyleSheet('color: white')
         self.HMI.Label_Msg1.setFont(self.HMI.font20)
-        self.HMI.Label_Msg1.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Label_Msg2 = QLabel('Desempenho percentual')
         self.HMI.Label_Msg2.setStyleSheet('color: white')
         self.HMI.Label_Msg2.setFont(self.HMI.font16)
-        self.HMI.Label_Msg2.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Label_Msg3 = QLabel('Período: ')
         self.HMI.Label_Msg3.setStyleSheet('color: white')
         self.HMI.Label_Msg3.setFont(self.HMI.font14)
-        self.HMI.Label_Msg3.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Msg3.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.ComboBox_PeriodoDesempenhoPercentual = QComboBox()
         self.HMI.ComboBox_PeriodoDesempenhoPercentual.setFont(self.HMI.font14)
-        self.HMI.ComboBox_PeriodoDesempenhoPercentual.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.ComboBox_PeriodoDesempenhoPercentual.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.ComboBox_PeriodoDesempenhoPercentual.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(255, 255, 255);")
         for periodo in ['No mês','3 meses','1 ano','Máximo']:
             self.HMI.ComboBox_PeriodoDesempenhoPercentual.addItem(periodo)
@@ -70,16 +75,16 @@ class HMI_Desempenho(object):
         self.HMI.Label_Msg4 = QLabel('Desempenho em '+self.HMI.DBManager.GetUserCoinCurrency())
         self.HMI.Label_Msg4.setStyleSheet('color: white')
         self.HMI.Label_Msg4.setFont(self.HMI.font16)
-        self.HMI.Label_Msg4.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Msg4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Label_Msg5 = QLabel('Período: ')
         self.HMI.Label_Msg5.setStyleSheet('color: white')
         self.HMI.Label_Msg5.setFont(self.HMI.font14)
-        self.HMI.Label_Msg5.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Msg5.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.ComboBox_PeriodoDesempenhoCurrency = QComboBox()
         self.HMI.ComboBox_PeriodoDesempenhoCurrency.setFont(self.HMI.font14)
-        self.HMI.ComboBox_PeriodoDesempenhoCurrency.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.ComboBox_PeriodoDesempenhoCurrency.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.ComboBox_PeriodoDesempenhoCurrency.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(255, 255, 255);")
         for periodo in ['3 meses','1 ano']:
             self.HMI.ComboBox_PeriodoDesempenhoCurrency.addItem(periodo)
@@ -91,21 +96,21 @@ class HMI_Desempenho(object):
         self.HMI.Movie_Grafico2.start()
 
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_1, 0, 0, 1, 20)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 20, Qt.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 20, Qt.AlignmentFlag.AlignCenter)
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_2, 1, 0, 7, 20)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg1, 1, 0, 1, 3, Qt.AlignLeft)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg2, 2, 0, 1, 3, Qt.AlignLeft)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg3, 3, 0, Qt.AlignLeft)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.ComboBox_PeriodoDesempenhoPercentual, 3, 1, Qt.AlignLeft)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Gif_Grafico1, 4, 0, 1, 20, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg4, 5, 0, 1, 3, Qt.AlignLeft)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg5, 6, 0, 1, 3, Qt.AlignLeft)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.ComboBox_PeriodoDesempenhoCurrency, 6, 1, Qt.AlignLeft)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Gif_Grafico2, 7, 0, 1, 20, Qt.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg1, 1, 0, 1, 3, Qt.AlignmentFlag.AlignLeft)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg2, 2, 0, 1, 3, Qt.AlignmentFlag.AlignLeft)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg3, 3, 0, Qt.AlignmentFlag.AlignLeft)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.ComboBox_PeriodoDesempenhoPercentual, 3, 1, Qt.AlignmentFlag.AlignLeft)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Gif_Grafico1, 4, 0, 1, 20, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg4, 5, 0, 1, 3, Qt.AlignmentFlag.AlignLeft)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg5, 6, 0, 1, 3, Qt.AlignmentFlag.AlignLeft)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.ComboBox_PeriodoDesempenhoCurrency, 6, 1, Qt.AlignmentFlag.AlignLeft)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Gif_Grafico2, 7, 0, 1, 20, Qt.AlignmentFlag.AlignCenter)
 
 
         # self.HMI.GraphWidget = pg.PlotWidget()
-        # self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget, 2, 2, 2, 2, Qt.AlignHCenter | Qt.AlignBottom)
+        # self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget, 2, 2, 2, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
 
         # hour = [1,2,3,4,5,6,7,8,9,10] # Exemplo 1
         # temperature = [30,32,34,32,33,31,29,32,35,45]

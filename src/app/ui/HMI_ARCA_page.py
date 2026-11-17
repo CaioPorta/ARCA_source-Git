@@ -2,25 +2,28 @@
 """
 Created on Sat Sep 18 22:55:20 2021
 
-@author: caiop
+@author: Caio Moreira Porta
 """
 from core.BackgroundProcesses import WorkerThread
 
-import time
 from copy import copy
-
 import numpy as np
 import pandas as pd
-
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-
-import matplotlib
-from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+
+from PyQt5.QtGui import (
+    QFont, QCursor
+)
+from PyQt5.QtWidgets import (
+    QLabel, QPushButton, QLineEdit,
+    QComboBox, QHBoxLayout, QVBoxLayout,
+    QMessageBox,
+    QTableWidget, QTableWidgetItem,
+    QAbstractScrollArea
+)
+from PyQt5.QtCore import Qt
+
 
 class HMI_ARCA(object):
     def __init__(self, HMI):
@@ -44,7 +47,7 @@ class HMI_ARCA(object):
         self.HMI.Label_Titulo = QLabel('ARCA')
         self.HMI.Label_Titulo.setStyleSheet('color: white')
         self.HMI.Label_Titulo.setFont(self.HMI.font30)
-        self.HMI.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Label_Subtitulo1 = QPushButton('Ações e negócios')
         self.HMI.Label_Subtitulo1.pressed.connect(lambda: self.HMI.CreatePage('Info24'))
@@ -142,7 +145,7 @@ class HMI_ARCA(object):
         self.HMI.Button_Msg3.setFont(self.HMI.font12)
 
         self.HMI.TextBox_MontanteEmAplicacao = QLineEdit('Calculando...')
-        self.HMI.TextBox_MontanteEmAplicacao.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_MontanteEmAplicacao.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.TextBox_MontanteEmAplicacao.setFixedWidth(int(self.HMI.frameGeometry().width()/6))
         self.HMI.TextBox_MontanteEmAplicacao.setStyleSheet("background-color: black; color: orange;")
         self.HMI.TextBox_MontanteEmAplicacao.setFont(self.HMI.font12)
@@ -154,7 +157,7 @@ class HMI_ARCA(object):
         self.HMI.Button_Msg4.setFont(self.HMI.font12)
 
         self.HMI.TextBox_MontanteAplicado = QLineEdit(str('%.2f' % round(self.HMI.DBManager.GetMontanteAplicado(),2)))
-        self.HMI.TextBox_MontanteAplicado.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_MontanteAplicado.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.TextBox_MontanteAplicado.setFixedWidth(int(self.HMI.frameGeometry().width()/6))
         self.HMI.TextBox_MontanteAplicado.setStyleSheet("background-color: black; color: white;")
         self.HMI.TextBox_MontanteAplicado.setFont(self.HMI.font12)
@@ -171,7 +174,7 @@ class HMI_ARCA(object):
         self.HMI.HBoxLayout_Montantes.addLayout(self.HMI.HBoxLayout_Montantes1)
 
         if self.Flag_RecalcularGraficos:
-            self.HMI.setCursor(Qt.WaitCursor)
+            self.HMI.setCursor(Qt.CursorShape.WaitCursor)
             self.GraficoEspecifico_Name = ""
             self.loadingThread = WorkerThread('Thread_LoadingARCApage', self.HMI)
             self.loadingThread.start()
@@ -195,27 +198,27 @@ class HMI_ARCA(object):
         self.HMI.Button_AcoesENegociosInvisivel = QPushButton()
         self.HMI.Button_AcoesENegociosInvisivel.pressed.connect(lambda: self.ProximoGraficoEspecifico("Ações e Negócios"))
         self.HMI.Button_AcoesENegociosInvisivel.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
-        self.HMI.Button_AcoesENegociosInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_AcoesENegociosInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_RealEstateInvisivel = QPushButton()
         self.HMI.Button_RealEstateInvisivel.pressed.connect(lambda: self.ProximoGraficoEspecifico("Real Estate"))
         self.HMI.Button_RealEstateInvisivel.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
-        self.HMI.Button_RealEstateInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_RealEstateInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_CaixaInvisivel = QPushButton()
         self.HMI.Button_CaixaInvisivel.pressed.connect(lambda: self.ProximoGraficoEspecifico("Caixa"))
         self.HMI.Button_CaixaInvisivel.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
-        self.HMI.Button_CaixaInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_CaixaInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_AcoesInternacionaisInvisivel = QPushButton()
         self.HMI.Button_AcoesInternacionaisInvisivel.pressed.connect(lambda: self.ProximoGraficoEspecifico("Ativos Internacionais"))
         self.HMI.Button_AcoesInternacionaisInvisivel.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
-        self.HMI.Button_AcoesInternacionaisInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_AcoesInternacionaisInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_EspecificaInvisivel = QPushButton()
         self.HMI.Button_EspecificaInvisivel.pressed.connect(lambda: self.CallCreatePage())
         self.HMI.Button_EspecificaInvisivel.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
-        self.HMI.Button_EspecificaInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_EspecificaInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.HBoxLayout_Graficos_Subtipos = QHBoxLayout()
         self.HMI.VBoxLayout_Graficos_Subtipos_AcoesENegocios = QVBoxLayout()
@@ -265,7 +268,7 @@ class HMI_ARCA(object):
         self.HMI.Button_CarteiraInvisivel.pressed.connect(lambda: self.OnButtonPressed('Change Carteira Graph'))
         self.HMI.Button_CarteiraInvisivel.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
         self.HMI.Button_CarteiraInvisivel.setFixedSize(int(self.HMI.frameGeometry().height()*1/5),int(self.HMI.frameGeometry().height()*1/5))
-        self.HMI.Button_CarteiraInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_CarteiraInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_Msg1 = QPushButton('Nota de equilíbrio: ???/100')
         self.HMI.Button_Msg1.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
@@ -290,22 +293,22 @@ class HMI_ARCA(object):
         self.HMI.Label_Msg8 = QLabel('Reserva:')
         self.HMI.Label_Msg8.setStyleSheet('color: white')
         self.HMI.Label_Msg8.setFont(self.HMI.font12)
-        self.HMI.Label_Msg8.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Msg8.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Label_Msg9 = QLabel('        ') # Espaço vazio que serve para ficar centralizado o restante das informações
         self.HMI.Label_Msg9.setStyleSheet('color: white')
         self.HMI.Label_Msg9.setFont(self.HMI.font12)
-        self.HMI.Label_Msg9.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Msg9.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.TextBox_GastoMensal = QLineEdit(str('%.2f' % self.HMI.DBManager.GetGastoMensal()))
-        self.HMI.TextBox_GastoMensal.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_GastoMensal.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.TextBox_GastoMensal.setFixedWidth(int(self.HMI.frameGeometry().width()/10))
         self.HMI.TextBox_GastoMensal.setStyleSheet("background-color: black; color: white;")
         self.HMI.TextBox_GastoMensal.setFont(self.HMI.font12)
         self.HMI.TextBox_GastoMensal.returnPressed.connect(lambda: self.OnButtonPressed("TextBox_GastoMensal"))
 
         self.HMI.TextBox_MesesDeReserva = QLineEdit(str(int(self.HMI.DBManager.GetMesesDeReserva())))
-        self.HMI.TextBox_MesesDeReserva.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_MesesDeReserva.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.TextBox_MesesDeReserva.setFixedWidth(int(self.HMI.frameGeometry().width()/20))
         self.HMI.TextBox_MesesDeReserva.setStyleSheet("background-color: black; color: white;")
         self.HMI.TextBox_MesesDeReserva.setFont(self.HMI.font12)
@@ -314,7 +317,7 @@ class HMI_ARCA(object):
         self.HMI.TextBox_Aplicar = QLineEdit()
         self.HMI.TextBox_Aplicar.setStyleSheet("background-color: black; color: orange;")
         self.HMI.TextBox_Aplicar.setText('Calculando...')
-        self.HMI.TextBox_Aplicar.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_Aplicar.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.TextBox_Aplicar.setFixedWidth(int(self.HMI.frameGeometry().width()/10))
         self.HMI.TextBox_Aplicar.setFont(self.HMI.font12)
         self.HMI.TextBox_Aplicar.setEnabled(False)
@@ -357,16 +360,16 @@ class HMI_ARCA(object):
 
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_1, 0, 0, 1, 6)
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_2, 1, 0, 4, 6)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 6, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addLayout(self.HMI.HBoxLayout_Graficos_Subtipos, 1, 0, 1, 6, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addLayout(self.HMI.HBoxLayout_Graficos_Subtipos_Invisiveis, 1, 0, 1, 6, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addLayout(self.HMI.HBoxLayout_Reserva, 2, 0, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addLayout(self.HMI.HBoxLayout_Montantes, 3, 0, 2, 2, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget_Carteira, 2, 2, 2, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_CarteiraInvisivel, 2, 2, 2, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_Msg1, 4, 2, 1, 2, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.Table_ContasCorrenteHeader, 2, 4, 1, 2, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.Table_ContasCorrente, 3, 4, 2, 2, Qt.AlignHCenter | Qt.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 6, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addLayout(self.HMI.HBoxLayout_Graficos_Subtipos, 1, 0, 1, 6, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addLayout(self.HMI.HBoxLayout_Graficos_Subtipos_Invisiveis, 1, 0, 1, 6, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addLayout(self.HMI.HBoxLayout_Reserva, 2, 0, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addLayout(self.HMI.HBoxLayout_Montantes, 3, 0, 2, 2, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget_Carteira, 2, 2, 2, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_CarteiraInvisivel, 2, 2, 2, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_Msg1, 4, 2, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.Table_ContasCorrenteHeader, 2, 4, 1, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.Table_ContasCorrente, 3, 4, 2, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
         if self.HMI.frameGeometry().width()/self.HMI.frameGeometry().height() < 1.9577: proporcao = 1/6
         elif self.HMI.frameGeometry().width()/self.HMI.frameGeometry().height() < 2.6202: proporcao = 1/8
@@ -418,15 +421,15 @@ class HMI_ARCA(object):
         self.HMI.Label_Titulo = QLabel('ARCA: Ações e Negócios')
         self.HMI.Label_Titulo.setStyleSheet('color: white')
         self.HMI.Label_Titulo.setFont(self.HMI.font30)
-        self.HMI.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Label_MostrarValoresMaioresQue = QLabel('Mostrar em ' + UserCoin + '\nvalores maiores que')
-        self.HMI.Label_MostrarValoresMaioresQue.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_MostrarValoresMaioresQue.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.Label_MostrarValoresMaioresQue.setStyleSheet('color: white')
         self.HMI.Label_MostrarValoresMaioresQue.setFont(self.HMI.font12)
 
         self.HMI.TextBox_MostrarValoresMaioresQue = QLineEdit(str(self.MostrarValoresMaioresQue))
-        self.HMI.TextBox_MostrarValoresMaioresQue.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_MostrarValoresMaioresQue.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.TextBox_MostrarValoresMaioresQue.setFixedWidth(int(self.HMI.frameGeometry().width() / 20))
         self.HMI.TextBox_MostrarValoresMaioresQue.setStyleSheet("background-color: black; color: " + FontColorLineEdit + ";")
         self.HMI.TextBox_MostrarValoresMaioresQue.setFont(self.HMI.font12)
@@ -436,29 +439,29 @@ class HMI_ARCA(object):
         self.HMI.Button_VisaoGeral.pressed.connect(lambda: self.OnButtonPressed('Visão Geral'))
         self.HMI.Button_VisaoGeral.setStyleSheet("background-color: black; color: " + FontColorLineEdit + "; outline: none; border: 1px solid rgba(0, 255, 0, 1)")
         self.HMI.Button_VisaoGeral.setFont(QFont('Times New Roman', 18, QFont.Bold))
-        self.HMI.Button_VisaoGeral.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_VisaoGeral.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_AtivoPorCorretora = QPushButton('Ativo por corretora')
         self.HMI.Button_AtivoPorCorretora.pressed.connect(lambda: self.OnButtonPressed('Ativo por corretora'))
         self.HMI.Button_AtivoPorCorretora.setStyleSheet("background-color: black; color: " + FontColorLineEdit + "; outline: none;")
         self.HMI.Button_AtivoPorCorretora.setFont(self.HMI.font16)
-        self.HMI.Button_AtivoPorCorretora.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_AtivoPorCorretora.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_TotalDeUserCoinPorCorretora = QPushButton('Total de ' + UserCoin + ' por corretora')
         self.HMI.Button_TotalDeUserCoinPorCorretora.pressed.connect(lambda: self.OnButtonPressed('Total de UserCoin por corretora'))
         self.HMI.Button_TotalDeUserCoinPorCorretora.setStyleSheet("background-color: black; color: " + FontColorLineEdit + "; outline: none;")
         self.HMI.Button_TotalDeUserCoinPorCorretora.setFont(self.HMI.font16)
-        self.HMI.Button_TotalDeUserCoinPorCorretora.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_TotalDeUserCoinPorCorretora.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_Setor = QPushButton('Por setor')
         self.HMI.Button_Setor.pressed.connect(lambda: self.OnButtonPressed('Ativo por setor'))
         self.HMI.Button_Setor.setStyleSheet("background-color: black; color: " + FontColorLineEdit + "; outline: none;")
         self.HMI.Button_Setor.setFont(self.HMI.font16)
-        self.HMI.Button_Setor.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_Setor.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.ComboBox_Ativos = QComboBox()
         self.HMI.ComboBox_Ativos.setFont(self.HMI.font16)
-        self.HMI.ComboBox_Ativos.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.ComboBox_Ativos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.ComboBox_Ativos.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(255, 255, 255);")
         self.HMI.ComboBox_Ativos.activated[str].connect(lambda pct: self.HMI.UpdatePage())
         self.ativos, self.volume = self.HMI.DBManager.GetAllAtivosPorTipoDeAtivo_Bolsa(TipoDeAtivo="Ações e Negócios")
@@ -479,7 +482,7 @@ class HMI_ARCA(object):
         self.HMI.TextBox_Custo.setStyleSheet('QLineEdit {background-color: black; color: white;}')
         self.HMI.TextBox_Custo.setFont(self.HMI.font16)
         self.HMI.TextBox_Custo.setEnabled(False)
-        self.HMI.TextBox_Custo.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_Custo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if self.HMI.ShowValues:
             self.HMI.TextBox_Custo.setText('Custo: ' + UserCoin + ' ' + str(f'{round(self.Custo, 2):.2f}'))
         else:
@@ -492,7 +495,7 @@ class HMI_ARCA(object):
         self.HMI.TextBox_Retorno.setFixedWidth(int(self.HMI.frameGeometry().width() / 5 * 0.9))
         self.HMI.TextBox_Retorno.setFont(self.HMI.font16)
         self.HMI.TextBox_Retorno.setEnabled(False)
-        self.HMI.TextBox_Retorno.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_Retorno.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if self.HMI.ShowValues: self.HMI.TextBox_Retorno.setText('Retorno: ' + UserCoin + ' ' + str(f'{round(self.Retorno, 2):.2f}'))
         else: self.HMI.TextBox_Retorno.setText('Retorno: ' + str(round((self.Retorno - self.Custo) / self.Custo * 100, 1)) + '%X')
         if self.Retorno >= self.Custo: self.HMI.TextBox_Retorno.setStyleSheet('QLineEdit {background-color: black; color: green;}')
@@ -509,17 +512,17 @@ class HMI_ARCA(object):
 
         self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(Background_1, 0, 0, 1, 3)
         self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(Background_2, 1, 0, 9, 3)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 3, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Label_MostrarValoresMaioresQue, 1, 0, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_MostrarValoresMaioresQue, 2, 0, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_VisaoGeral, 4, 0, 2, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_Setor, 6, 0, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.ComboBox_Ativos, 1, 2, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_Custo, 2, 2, 1, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_Retorno, 3, 2, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_AtivoPorCorretora, 4, 2, 2, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 3, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Label_MostrarValoresMaioresQue, 1, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_MostrarValoresMaioresQue, 2, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_VisaoGeral, 4, 0, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_Setor, 6, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.ComboBox_Ativos, 1, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_Custo, 2, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_Retorno, 3, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_AtivoPorCorretora, 4, 2, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
         self.HMI.TextBox_MostrarValoresMaioresQue.clearFocus()
 
     def CreatePage47(self): # Página Real Estate
@@ -537,15 +540,15 @@ class HMI_ARCA(object):
         self.HMI.Label_Titulo = QLabel('ARCA: Real Estate')
         self.HMI.Label_Titulo.setStyleSheet('color: white')
         self.HMI.Label_Titulo.setFont(self.HMI.font30)
-        self.HMI.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Label_MostrarValoresMaioresQue = QLabel('Mostrar em ' + UserCoin + '\nvalores maiores que')
-        self.HMI.Label_MostrarValoresMaioresQue.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_MostrarValoresMaioresQue.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.Label_MostrarValoresMaioresQue.setStyleSheet('color: white')
         self.HMI.Label_MostrarValoresMaioresQue.setFont(self.HMI.font12)
 
         self.HMI.TextBox_MostrarValoresMaioresQue = QLineEdit(str(self.MostrarValoresMaioresQue))
-        self.HMI.TextBox_MostrarValoresMaioresQue.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_MostrarValoresMaioresQue.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.TextBox_MostrarValoresMaioresQue.setFixedWidth(int(self.HMI.frameGeometry().width() / 20))
         self.HMI.TextBox_MostrarValoresMaioresQue.setStyleSheet("background-color: black; color: " + FontColorLineEdit + ";")
         self.HMI.TextBox_MostrarValoresMaioresQue.setFont(self.HMI.font12)
@@ -555,29 +558,29 @@ class HMI_ARCA(object):
         self.HMI.Button_VisaoGeral.pressed.connect(lambda: self.OnButtonPressed('Visão Geral'))
         self.HMI.Button_VisaoGeral.setStyleSheet("background-color: black; color: " + FontColorLineEdit + "; outline: none; border: 1px solid rgba(0, 255, 0, 1)")
         self.HMI.Button_VisaoGeral.setFont(QFont('Times New Roman', 18, QFont.Bold))
-        self.HMI.Button_VisaoGeral.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_VisaoGeral.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_AtivoPorCorretora = QPushButton('Ativo por corretora')
         self.HMI.Button_AtivoPorCorretora.pressed.connect(lambda: self.OnButtonPressed('Ativo por corretora'))
         self.HMI.Button_AtivoPorCorretora.setStyleSheet("background-color: black; color: " + FontColorLineEdit + "; outline: none;")
         self.HMI.Button_AtivoPorCorretora.setFont(self.HMI.font16)
-        self.HMI.Button_AtivoPorCorretora.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_AtivoPorCorretora.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_TotalDeUserCoinPorCorretora = QPushButton('Total de ' + UserCoin + ' por corretora')
         self.HMI.Button_TotalDeUserCoinPorCorretora.pressed.connect(lambda: self.OnButtonPressed('Total de UserCoin por corretora'))
         self.HMI.Button_TotalDeUserCoinPorCorretora.setStyleSheet("background-color: black; color: " + FontColorLineEdit + "; outline: none;")
         self.HMI.Button_TotalDeUserCoinPorCorretora.setFont(self.HMI.font16)
-        self.HMI.Button_TotalDeUserCoinPorCorretora.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_TotalDeUserCoinPorCorretora.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_Setor = QPushButton('Por setor')
         self.HMI.Button_Setor.pressed.connect(lambda: self.OnButtonPressed('Ativo por setor'))
         self.HMI.Button_Setor.setStyleSheet("background-color: black; color: " + FontColorLineEdit + "; outline: none;")
         self.HMI.Button_Setor.setFont(self.HMI.font16)
-        self.HMI.Button_Setor.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_Setor.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.ComboBox_Ativos = QComboBox()
         self.HMI.ComboBox_Ativos.setFont(self.HMI.font16)
-        self.HMI.ComboBox_Ativos.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.ComboBox_Ativos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.ComboBox_Ativos.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(255, 255, 255);")
         self.HMI.ComboBox_Ativos.activated[str].connect(lambda pct: self.HMI.UpdatePage())
         self.ativos, self.volume = self.HMI.DBManager.GetAllAtivosPorTipoDeAtivo_Bolsa(TipoDeAtivo="Real Estate")
@@ -598,7 +601,7 @@ class HMI_ARCA(object):
         self.HMI.TextBox_Custo.setStyleSheet('QLineEdit {background-color: black; color: white;}')
         self.HMI.TextBox_Custo.setFont(self.HMI.font16)
         self.HMI.TextBox_Custo.setEnabled(False)
-        self.HMI.TextBox_Custo.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_Custo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if self.HMI.ShowValues:
             self.HMI.TextBox_Custo.setText('Custo: ' + UserCoin + ' ' + str(f'{round(self.Custo, 2):.2f}'))
         else:
@@ -611,7 +614,7 @@ class HMI_ARCA(object):
         self.HMI.TextBox_Retorno.setFixedWidth(int(self.HMI.frameGeometry().width() / 5 * 0.9))
         self.HMI.TextBox_Retorno.setFont(self.HMI.font16)
         self.HMI.TextBox_Retorno.setEnabled(False)
-        self.HMI.TextBox_Retorno.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_Retorno.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if self.HMI.ShowValues: self.HMI.TextBox_Retorno.setText('Retorno: ' + UserCoin + ' ' + str(f'{round(self.Retorno, 2):.2f}'))
         else: self.HMI.TextBox_Retorno.setText('Retorno: ' + str(round((self.Retorno - self.Custo) / self.Custo * 100, 1)) + '%X')
         if self.Retorno >= self.Custo: self.HMI.TextBox_Retorno.setStyleSheet('QLineEdit {background-color: black; color: green;}')
@@ -628,17 +631,17 @@ class HMI_ARCA(object):
 
         self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(Background_1, 0, 0, 1, 3)
         self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(Background_2, 1, 0, 9, 3)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 3, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Label_MostrarValoresMaioresQue, 1, 0, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_MostrarValoresMaioresQue, 2, 0, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_VisaoGeral, 4, 0, 2, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_Setor, 6, 0, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.ComboBox_Ativos, 1, 2, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_Custo, 2, 2, 1, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_Retorno, 3, 2, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_AtivoPorCorretora, 4, 2, 2, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 3, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Label_MostrarValoresMaioresQue, 1, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_MostrarValoresMaioresQue, 2, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_VisaoGeral, 4, 0, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_Setor, 6, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.ComboBox_Ativos, 1, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_Custo, 2, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_Retorno, 3, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_AtivoPorCorretora, 4, 2, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
         self.HMI.TextBox_MostrarValoresMaioresQue.clearFocus()
 
     def CreatePage48(self): # Página Caixa
@@ -656,15 +659,15 @@ class HMI_ARCA(object):
         self.HMI.Label_Titulo = QLabel('ARCA: Caixa')
         self.HMI.Label_Titulo.setStyleSheet('color: white')
         self.HMI.Label_Titulo.setFont(self.HMI.font30)
-        self.HMI.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Label_MostrarValoresMaioresQue = QLabel('Mostrar em ' + UserCoin + '\nvalores maiores que')
-        self.HMI.Label_MostrarValoresMaioresQue.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_MostrarValoresMaioresQue.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.Label_MostrarValoresMaioresQue.setStyleSheet('color: white')
         self.HMI.Label_MostrarValoresMaioresQue.setFont(self.HMI.font12)
 
         self.HMI.TextBox_MostrarValoresMaioresQue = QLineEdit(str(self.MostrarValoresMaioresQue))
-        self.HMI.TextBox_MostrarValoresMaioresQue.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_MostrarValoresMaioresQue.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.TextBox_MostrarValoresMaioresQue.setFixedWidth(int(self.HMI.frameGeometry().width() / 20))
         self.HMI.TextBox_MostrarValoresMaioresQue.setStyleSheet("background-color: black; color: " + FontColorLineEdit + ";")
         self.HMI.TextBox_MostrarValoresMaioresQue.setFont(self.HMI.font12)
@@ -674,29 +677,29 @@ class HMI_ARCA(object):
         self.HMI.Button_VisaoGeral.pressed.connect(lambda: self.OnButtonPressed('Visão Geral'))
         self.HMI.Button_VisaoGeral.setStyleSheet("background-color: black; color: " + FontColorLineEdit + "; outline: none; border: 1px solid rgba(0, 255, 0, 1)")
         self.HMI.Button_VisaoGeral.setFont(QFont('Times New Roman', 18, QFont.Bold))
-        self.HMI.Button_VisaoGeral.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_VisaoGeral.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_AtivoPorCorretora = QPushButton('Ativo por corretora')
         self.HMI.Button_AtivoPorCorretora.pressed.connect(lambda: self.OnButtonPressed('Ativo por corretora'))
         self.HMI.Button_AtivoPorCorretora.setStyleSheet("background-color: black; color: " + FontColorLineEdit + "; outline: none;")
         self.HMI.Button_AtivoPorCorretora.setFont(self.HMI.font16)
-        self.HMI.Button_AtivoPorCorretora.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_AtivoPorCorretora.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_TotalDeUserCoinPorCorretora = QPushButton('Total de ' + UserCoin + ' por corretora')
         self.HMI.Button_TotalDeUserCoinPorCorretora.pressed.connect(lambda: self.OnButtonPressed('Total de UserCoin por corretora'))
         self.HMI.Button_TotalDeUserCoinPorCorretora.setStyleSheet("background-color: black; color: " + FontColorLineEdit + "; outline: none;")
         self.HMI.Button_TotalDeUserCoinPorCorretora.setFont(self.HMI.font16)
-        self.HMI.Button_TotalDeUserCoinPorCorretora.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_TotalDeUserCoinPorCorretora.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_Setor = QPushButton('Por setor')
         self.HMI.Button_Setor.pressed.connect(lambda: self.OnButtonPressed('Ativo por setor'))
         self.HMI.Button_Setor.setStyleSheet("background-color: black; color: " + FontColorLineEdit + "; outline: none;")
         self.HMI.Button_Setor.setFont(self.HMI.font16)
-        self.HMI.Button_Setor.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_Setor.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.ComboBox_Ativos = QComboBox()
         self.HMI.ComboBox_Ativos.setFont(self.HMI.font16)
-        self.HMI.ComboBox_Ativos.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.ComboBox_Ativos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.ComboBox_Ativos.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(255, 255, 255);")
         self.HMI.ComboBox_Ativos.activated[str].connect(lambda pct: self.HMI.UpdatePage())
         self.ativos, self.volume = self.HMI.DBManager.GetAllAtivosPorTipoDeAtivo_Bolsa(TipoDeAtivo="Caixa")
@@ -717,7 +720,7 @@ class HMI_ARCA(object):
         self.HMI.TextBox_Custo.setStyleSheet('QLineEdit {background-color: black; color: white;}')
         self.HMI.TextBox_Custo.setFont(self.HMI.font16)
         self.HMI.TextBox_Custo.setEnabled(False)
-        self.HMI.TextBox_Custo.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_Custo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if self.HMI.ShowValues:
             self.HMI.TextBox_Custo.setText('Custo: ' + UserCoin + ' ' + str(f'{round(self.Custo, 2):.2f}'))
         else:
@@ -730,7 +733,7 @@ class HMI_ARCA(object):
         self.HMI.TextBox_Retorno.setFixedWidth(int(self.HMI.frameGeometry().width() / 5 * 0.9))
         self.HMI.TextBox_Retorno.setFont(self.HMI.font16)
         self.HMI.TextBox_Retorno.setEnabled(False)
-        self.HMI.TextBox_Retorno.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_Retorno.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if self.HMI.ShowValues: self.HMI.TextBox_Retorno.setText('Retorno: ' + UserCoin + ' ' + str(f'{round(self.Retorno, 2):.2f}'))
         else: self.HMI.TextBox_Retorno.setText('Retorno: ' + str(round((self.Retorno - self.Custo) / self.Custo * 100, 1)) + '%X')
         if self.Retorno >= self.Custo: self.HMI.TextBox_Retorno.setStyleSheet('QLineEdit {background-color: black; color: green;}')
@@ -747,17 +750,17 @@ class HMI_ARCA(object):
 
         self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(Background_1, 0, 0, 1, 3)
         self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(Background_2, 1, 0, 9, 3)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 3, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Label_MostrarValoresMaioresQue, 1, 0, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_MostrarValoresMaioresQue, 2, 0, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_VisaoGeral, 4, 0, 2, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_Setor, 6, 0, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.ComboBox_Ativos, 1, 2, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_Custo, 2, 2, 1, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_Retorno, 3, 2, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_AtivoPorCorretora, 4, 2, 2, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 3, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Label_MostrarValoresMaioresQue, 1, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_MostrarValoresMaioresQue, 2, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_VisaoGeral, 4, 0, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_Setor, 6, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.ComboBox_Ativos, 1, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_Custo, 2, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.TextBox_Retorno, 3, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.Button_AtivoPorCorretora, 4, 2, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount - 1].addWidget(self.HMI.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
         self.HMI.TextBox_MostrarValoresMaioresQue.clearFocus()
 
     def CreatePage49(self): # Página Ativos Internacionais
@@ -775,15 +778,15 @@ class HMI_ARCA(object):
         self.HMI.Label_Titulo = QLabel('ARCA: Ativos Internacionais')
         self.HMI.Label_Titulo.setStyleSheet('color: white')
         self.HMI.Label_Titulo.setFont(self.HMI.font30)
-        self.HMI.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Label_MostrarValoresMaioresQue = QLabel('Mostrar em '+UserCoin+'\nvalores maiores que')
-        self.HMI.Label_MostrarValoresMaioresQue.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_MostrarValoresMaioresQue.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.Label_MostrarValoresMaioresQue.setStyleSheet('color: white')
         self.HMI.Label_MostrarValoresMaioresQue.setFont(self.HMI.font12)
 
         self.HMI.TextBox_MostrarValoresMaioresQue = QLineEdit(str(self.MostrarValoresMaioresQue))
-        self.HMI.TextBox_MostrarValoresMaioresQue.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_MostrarValoresMaioresQue.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.TextBox_MostrarValoresMaioresQue.setFixedWidth(int(self.HMI.frameGeometry().width()/20))
         self.HMI.TextBox_MostrarValoresMaioresQue.setStyleSheet("background-color: black; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_MostrarValoresMaioresQue.setFont(self.HMI.font12)
@@ -793,29 +796,29 @@ class HMI_ARCA(object):
         self.HMI.Button_VisaoGeral.pressed.connect(lambda: self.OnButtonPressed('Visão Geral'))
         self.HMI.Button_VisaoGeral.setStyleSheet("background-color: black; color: "+FontColorLineEdit+"; outline: none; border: 1px solid rgba(0, 255, 0, 1)")
         self.HMI.Button_VisaoGeral.setFont(QFont('Times New Roman', 18, QFont.Bold))
-        self.HMI.Button_VisaoGeral.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_VisaoGeral.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_AtivoPorCorretora = QPushButton('Ativo por corretora')
         self.HMI.Button_AtivoPorCorretora.pressed.connect(lambda: self.OnButtonPressed('Ativo por corretora'))
         self.HMI.Button_AtivoPorCorretora.setStyleSheet("background-color: black; color: "+FontColorLineEdit+"; outline: none;")
         self.HMI.Button_AtivoPorCorretora.setFont(self.HMI.font16)
-        self.HMI.Button_AtivoPorCorretora.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_AtivoPorCorretora.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_TotalDeUserCoinPorCorretora = QPushButton('Total de '+UserCoin+' por corretora')
         self.HMI.Button_TotalDeUserCoinPorCorretora.pressed.connect(lambda: self.OnButtonPressed('Total de UserCoin por corretora'))
         self.HMI.Button_TotalDeUserCoinPorCorretora.setStyleSheet("background-color: black; color: "+FontColorLineEdit+"; outline: none;")
         self.HMI.Button_TotalDeUserCoinPorCorretora.setFont(self.HMI.font16)
-        self.HMI.Button_TotalDeUserCoinPorCorretora.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_TotalDeUserCoinPorCorretora.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_Setor = QPushButton('Por setor')
         self.HMI.Button_Setor.pressed.connect(lambda: self.OnButtonPressed('Ativo por setor'))
         self.HMI.Button_Setor.setStyleSheet("background-color: black; color: "+FontColorLineEdit+"; outline: none;")
         self.HMI.Button_Setor.setFont(self.HMI.font16)
-        self.HMI.Button_Setor.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_Setor.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.ComboBox_Ativos = QComboBox()
         self.HMI.ComboBox_Ativos.setFont(self.HMI.font16)
-        self.HMI.ComboBox_Ativos.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.ComboBox_Ativos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.ComboBox_Ativos.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(255, 255, 255);")
         self.HMI.ComboBox_Ativos.activated[str].connect(lambda pct: self.HMI.UpdatePage())
         self.ativos, self.volume = self.HMI.DBManager.GetAllAtivosPorTipoDeAtivo_Bolsa(TipoDeAtivo = "Ativos Internacionais")
@@ -850,7 +853,7 @@ class HMI_ARCA(object):
         self.HMI.TextBox_Custo.setStyleSheet('QLineEdit {background-color: black; color: white;}')
         self.HMI.TextBox_Custo.setFont(self.HMI.font16)
         self.HMI.TextBox_Custo.setEnabled(False)
-        self.HMI.TextBox_Custo.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_Custo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if self.HMI.ShowValues: self.HMI.TextBox_Custo.setText('Custo: '+UserCoin+' '+str(f'{round(self.Custo, 2):.2f}'))
         else: self.HMI.TextBox_Custo.setText('Custo: X')
 
@@ -862,7 +865,7 @@ class HMI_ARCA(object):
         self.HMI.TextBox_Retorno.setFixedWidth(int(self.HMI.frameGeometry().width()/5*0.9))
         self.HMI.TextBox_Retorno.setFont(self.HMI.font16)
         self.HMI.TextBox_Retorno.setEnabled(False)
-        self.HMI.TextBox_Retorno.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_Retorno.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if self.HMI.ShowValues: self.HMI.TextBox_Retorno.setText('Retorno: '+UserCoin+' '+str(f'{round(self.Retorno, 2):.2f}'))
         else: self.HMI.TextBox_Retorno.setText('Retorno: '+str(round((self.Retorno-self.Custo)/self.Custo*100,1))+'%X')
         if self.Retorno >= self.Custo: self.HMI.TextBox_Retorno.setStyleSheet('QLineEdit {background-color: black; color: green;}')
@@ -872,7 +875,7 @@ class HMI_ARCA(object):
         self.HMI.Button_VerCriptomoedas.pressed.connect(lambda: self.HMI.CreatePage('50'))
         self.HMI.Button_VerCriptomoedas.setStyleSheet("background-color: black; color: "+FontColorLineEdit+"; outline: none;")
         self.HMI.Button_VerCriptomoedas.setFont(QFont('Agency FB', 16))
-        self.HMI.Button_VerCriptomoedas.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_VerCriptomoedas.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.MainGraphIsShowing = "Visão Geral"
         self.HMI.GraphWidget_MainGraph = self.CreateGraph_Page49_MainGraph_VisaoGeral()
@@ -885,18 +888,18 @@ class HMI_ARCA(object):
 
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_1, 0, 0, 1, 3)
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_2, 1, 0, 9, 3)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 3, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_MostrarValoresMaioresQue, 1, 0, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_MostrarValoresMaioresQue, 2, 0, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_VisaoGeral, 4, 0, 2, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.ComboBox_Ativos, 1, 2, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Custo, 2, 2, 1, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Retorno, 3, 2, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_Setor, 6, 0, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_AtivoPorCorretora, 4, 2, 2, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_VerCriptomoedas, 6, 2, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 3, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_MostrarValoresMaioresQue, 1, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_MostrarValoresMaioresQue, 2, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_VisaoGeral, 4, 0, 2, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.ComboBox_Ativos, 1, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Custo, 2, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Retorno, 3, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_Setor, 6, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_AtivoPorCorretora, 4, 2, 2, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_VerCriptomoedas, 6, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
         self.HMI.TextBox_MostrarValoresMaioresQue.clearFocus()
 
     def CreatePage50(self): # Página Criptomoedas
@@ -914,15 +917,15 @@ class HMI_ARCA(object):
         self.HMI.Label_Titulo = QLabel('ARCA: Criptomoedas')
         self.HMI.Label_Titulo.setStyleSheet('color: white')
         self.HMI.Label_Titulo.setFont(self.HMI.font30)
-        self.HMI.Label_Titulo.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Label_MostrarValoresMaioresQue = QLabel('Mostrar em '+UserCoin+'\nvalores maiores que')
-        self.HMI.Label_MostrarValoresMaioresQue.setAlignment(Qt.AlignCenter)
+        self.HMI.Label_MostrarValoresMaioresQue.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.Label_MostrarValoresMaioresQue.setStyleSheet('color: white')
         self.HMI.Label_MostrarValoresMaioresQue.setFont(self.HMI.font12)
 
         self.HMI.TextBox_MostrarValoresMaioresQue = QLineEdit(str(self.MostrarValoresMaioresQue))
-        self.HMI.TextBox_MostrarValoresMaioresQue.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_MostrarValoresMaioresQue.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.TextBox_MostrarValoresMaioresQue.setFixedWidth(int(self.HMI.frameGeometry().width()/20))
         self.HMI.TextBox_MostrarValoresMaioresQue.setStyleSheet("background-color: black; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_MostrarValoresMaioresQue.setFont(self.HMI.font12)
@@ -932,23 +935,23 @@ class HMI_ARCA(object):
         self.HMI.Button_VisaoGeral.pressed.connect(lambda: self.OnButtonPressed('Visão Geral'))
         self.HMI.Button_VisaoGeral.setStyleSheet("background-color: black; color: "+FontColorLineEdit+"; outline: none; border: 1px solid rgba(0, 255, 0, 1)")
         self.HMI.Button_VisaoGeral.setFont(QFont('Times New Roman', 18, QFont.Bold))
-        self.HMI.Button_VisaoGeral.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_VisaoGeral.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_AtivoPorCorretora = QPushButton('Ativo por corretora')
         self.HMI.Button_AtivoPorCorretora.pressed.connect(lambda: self.OnButtonPressed('Ativo por corretora'))
         self.HMI.Button_AtivoPorCorretora.setStyleSheet("background-color: black; color: "+FontColorLineEdit+"; outline: none;")
         self.HMI.Button_AtivoPorCorretora.setFont(self.HMI.font16)
-        self.HMI.Button_AtivoPorCorretora.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_AtivoPorCorretora.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_TotalDeUserCoinPorCorretora = QPushButton('Total de '+UserCoin+' por corretora')
         self.HMI.Button_TotalDeUserCoinPorCorretora.pressed.connect(lambda: self.OnButtonPressed('Total de UserCoin por corretora'))
         self.HMI.Button_TotalDeUserCoinPorCorretora.setStyleSheet("background-color: black; color: "+FontColorLineEdit+"; outline: none;")
         self.HMI.Button_TotalDeUserCoinPorCorretora.setFont(self.HMI.font16)
-        self.HMI.Button_TotalDeUserCoinPorCorretora.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_TotalDeUserCoinPorCorretora.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.ComboBox_Ativos = QComboBox()
         self.HMI.ComboBox_Ativos.setFont(self.HMI.font16)
-        self.HMI.ComboBox_Ativos.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.ComboBox_Ativos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.ComboBox_Ativos.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(255, 255, 255);")
         self.HMI.ComboBox_Ativos.activated[str].connect(lambda pct: self.HMI.UpdatePage())
         self.ativos = self.HMI.DBManager.GetAllAtivos_Cripto()
@@ -966,7 +969,7 @@ class HMI_ARCA(object):
         self.HMI.TextBox_Custo.setStyleSheet('QLineEdit {background-color: black; color: white;}')
         self.HMI.TextBox_Custo.setFont(self.HMI.font16)
         self.HMI.TextBox_Custo.setEnabled(False)
-        self.HMI.TextBox_Custo.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_Custo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if self.HMI.ShowValues: self.HMI.TextBox_Custo.setText('Custo: '+UserCoin+' '+str(f'{round(self.Custo, 2):.2f}'))
         else: self.HMI.TextBox_Custo.setText('Custo: X')
 
@@ -978,7 +981,7 @@ class HMI_ARCA(object):
         self.HMI.TextBox_Retorno.setFixedWidth(int(self.HMI.frameGeometry().width()/5*0.9))
         self.HMI.TextBox_Retorno.setFont(self.HMI.font16)
         self.HMI.TextBox_Retorno.setEnabled(False)
-        self.HMI.TextBox_Retorno.setAlignment(Qt.AlignCenter)
+        self.HMI.TextBox_Retorno.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if self.HMI.ShowValues: self.HMI.TextBox_Retorno.setText('Retorno: '+UserCoin+' '+str(f'{round(self.Retorno, 2):.2f}'))
         else: self.HMI.TextBox_Retorno.setText('Retorno: '+str(round((self.Retorno-self.Custo)/self.Custo*100,1))+'%X')
         if self.Retorno >= self.Custo: self.HMI.TextBox_Retorno.setStyleSheet('QLineEdit {background-color: black; color: green;}')
@@ -988,7 +991,7 @@ class HMI_ARCA(object):
         self.HMI.Button_VerAtivosInternacionais.pressed.connect(lambda: self.HMI.CreatePage('49'))
         self.HMI.Button_VerAtivosInternacionais.setStyleSheet("background-color: black; color: "+FontColorLineEdit+"; outline: none;")
         self.HMI.Button_VerAtivosInternacionais.setFont(QFont('Agency FB', 16))
-        self.HMI.Button_VerAtivosInternacionais.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_VerAtivosInternacionais.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.MainGraphIsShowing = "Visão Geral"
         self.HMI.GraphWidget_MainGraph = self.CreateGraph_Page50_MainGraph_VisaoGeral()
@@ -997,18 +1000,18 @@ class HMI_ARCA(object):
 
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_1, 0, 0, 1, 3)
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_2, 1, 0, 9, 3)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 3, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_MostrarValoresMaioresQue, 1, 0, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_MostrarValoresMaioresQue, 2, 0, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_VisaoGeral, 3, 0, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_TotalDeUserCoinPorCorretora, 6, 0, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.ComboBox_Ativos, 1, 2, 1, 1, Qt.AlignHCenter | Qt.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Custo, 2, 2, 1, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Retorno, 3, 2, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_AtivoPorCorretora, 4, 2, 2, 1, Qt.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_VerAtivosInternacionais, 6, 2, 1, 1, Qt.AlignHCenter | Qt.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget_Distribuicao, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 3, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_MostrarValoresMaioresQue, 1, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_MostrarValoresMaioresQue, 2, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_VisaoGeral, 3, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_TotalDeUserCoinPorCorretora, 6, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget_MainGraph, 1, 1, 6, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.ComboBox_Ativos, 1, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Custo, 2, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Retorno, 3, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_AtivoPorCorretora, 4, 2, 2, 1, Qt.AlignmentFlag.AlignCenter)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_VerAtivosInternacionais, 6, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget_Distribuicao, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
         self.HMI.TextBox_MostrarValoresMaioresQue.clearFocus()
 
     def CreateGraph_Page11_Carteira_pie(self):
@@ -2070,7 +2073,7 @@ class HMI_ARCA(object):
         self.HMI.Button_EspecificaInvisivel = QPushButton()
         self.HMI.Button_EspecificaInvisivel.pressed.connect(lambda: self.CallCreatePage())
         self.HMI.Button_EspecificaInvisivel.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
-        self.HMI.Button_EspecificaInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
+        self.HMI.Button_EspecificaInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         if self.HMI.frameGeometry().width()/self.HMI.frameGeometry().height() < 1.9577: proporcao = 1/6
         elif self.HMI.frameGeometry().width()/self.HMI.frameGeometry().height() < 2.6202: proporcao = 1/8
         else: proporcao = 1/10
@@ -3304,11 +3307,11 @@ class HMI_ARCA(object):
         self.Table_ContasCorrenteHeader.horizontalHeader().hide()
 
         celula0 = QTableWidgetItem(str(HHeader[0]))
-        celula0.setFlags(Qt.ItemFlags(Qt.ItemIsSelectable))
-        celula0.setTextAlignment(Qt.AlignHCenter | Qt.AlignBottom)
+        celula0.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
+        celula0.setTextAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
         celula1 = QTableWidgetItem(str(HHeader[1]))
-        celula1.setFlags(Qt.ItemFlags(Qt.ItemIsSelectable))
-        celula1.setTextAlignment(Qt.AlignHCenter | Qt.AlignBottom)
+        celula1.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
+        celula1.setTextAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
 
         self.Table_ContasCorrenteHeader.setItem(0, 0, celula0)
         self.Table_ContasCorrenteHeader.setItem(0, 1, celula1)
@@ -3322,8 +3325,8 @@ class HMI_ARCA(object):
             it = self.Table_ContasCorrente.item(r, c)
             if not self.HMI.ShowValues and c == 1: text = "***"
             it = QTableWidgetItem(text)
-            it.setFlags(Qt.ItemFlags(Qt.ItemIsSelectable))
-            it.setTextAlignment(Qt.AlignCenter)
+            it.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
+            it.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.Table_ContasCorrente.setItem(r, c, it)
 
         def evt_define_table_width_11_2(data, HHeader):
@@ -3426,7 +3429,7 @@ class HMI_ARCA(object):
             self.HMI.GraphWidget_Carteira.deleteLater()
             if self.CarteiraGraph_id == 'pie': self.HMI.GraphWidget_Carteira = self.CreateGraph_Page11_Carteira_bar()
             elif self.CarteiraGraph_id == 'bar': self.HMI.GraphWidget_Carteira = self.CreateGraph_Page11_Carteira_pie()
-            self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget_Carteira, 2, 2, 2, 2, Qt.AlignHCenter | Qt.AlignBottom)
+            self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.GraphWidget_Carteira, 2, 2, 2, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
             if self.HMI.frameGeometry().width() / self.HMI.frameGeometry().height() < 1.9577: proporcao = 1 / 6
             elif self.HMI.frameGeometry().width() / self.HMI.frameGeometry().height() < 2.6202: proporcao = 1 / 8
             else: proporcao = 1 / 10
@@ -3436,8 +3439,8 @@ class HMI_ARCA(object):
             self.HMI.Button_CarteiraInvisivel.pressed.connect(lambda: self.OnButtonPressed('Change Carteira Graph'))
             self.HMI.Button_CarteiraInvisivel.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
             self.HMI.Button_CarteiraInvisivel.setFixedSize(int(self.HMI.frameGeometry().width() * proporcao), int(self.HMI.frameGeometry().width() * proporcao))
-            self.HMI.Button_CarteiraInvisivel.setCursor(QCursor(Qt.PointingHandCursor))
-            self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_CarteiraInvisivel, 2, 2, 2, 2, Qt.AlignHCenter | Qt.AlignBottom)
+            self.HMI.Button_CarteiraInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+            self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_CarteiraInvisivel, 2, 2, 2, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
 
         elif ButtonPressed == "TextBox_GastoMensal":
             try:
