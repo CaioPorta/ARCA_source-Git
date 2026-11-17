@@ -30,7 +30,6 @@ import pandas as pd
 import numpy as np
 
 class DBManager(object):
-#%% init
     def __init__(self, HMI):
         self.HMI = HMI
         self.ThreadLock = Lock()
@@ -76,7 +75,7 @@ class DBManager(object):
         if chk_conn(self.conn): return "Conectado a base de dados: " + str(self.User) + ".db"
         else: return "Nenhuma base de dados conectada"
 
-#%% Sobre o Usuário
+    #%% Sobre o Usuário
 
     def CriarNovoPerfil(self, user='', senha='', email='', moedacorrente='', userpath=''): # Cria e conecta
         try:
@@ -282,7 +281,7 @@ class DBManager(object):
     #         if df_tabelas['nomes'].isin([tabela]).all():
     #             print(tabela, 'contém apenas valores False')
 
-#%% Adições
+    #%% Adições
 
     def AddBanco(self):
         def BancoExists(Banco):
@@ -685,7 +684,7 @@ class DBManager(object):
         self.UpdatePatrimonioRendimento()
         return True
 
-#%% Updates
+    #%% Updates
     def UpdateEmail(self, Email):
         Email = Email.lower()
         currdir = os.getcwd()
@@ -797,7 +796,7 @@ class DBManager(object):
         finally:
             self.ModifyDB("VACUUM")
 
-#%% Renames
+    #%% Renames
     def RenameAtivo(self):
         self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
         def GetRowId(Table,ativo):
@@ -918,7 +917,7 @@ class DBManager(object):
         self.ModifyDB("UPDATE Bancos SET Banco = (?) Where rowid = "+GetRowId('Bancos',OldBancoName), [("¨"+NewBancoName+"¨")])
         return True
 
-#%% Alterações
+    #%% Alterações
 
     def AlterSetores(self, Setores):
         self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
@@ -1020,7 +1019,7 @@ class DBManager(object):
         self.UpdatePatrimonioRendimento()
         return True
 
-#%% Deletes
+    #%% Deletes
 
     def DeleteBanco(self):
         try:
@@ -1148,7 +1147,7 @@ class DBManager(object):
         if len(retorno)>0: self.ModifyDB("VACUUM")
         self.UpdatePatrimonioRendimento()
 
-#%% Gets
+    #%% Gets
 
     def GetBancos(self):
         retorno, cursor = self.GetDataDB("SELECT * FROM Bancos")
@@ -3012,7 +3011,7 @@ class DBManager(object):
         retorno = list(map(lambda x: x[0], retornoBruto))
         return retorno
 
-#%% Sets
+    #%% Sets
 
     def SetAllTickers(self, AllTickers):
         try:
@@ -3027,7 +3026,7 @@ class DBManager(object):
         finally: self.ThreadLock.release()
         # print(self.GetAllTickers()) # Debug
 
-#%% Funções auxiliares
+    #%% Funções auxiliares
 
     def CriarDB(self, DB):
         conn = sqlite3.connect(DB)
@@ -4090,7 +4089,7 @@ class DBManager(object):
                 self.HMI.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: orange; border: 1px solid '+Background_Header+'}')
         except Exception as e: print(e)
 
-#%% Verificações de coerência
+    #%% Verificações de coerência
 
     def VerificarPrimeiraOperacao(self, ativo='', corretora='', BolsaOuCripto=''):
         Status = False

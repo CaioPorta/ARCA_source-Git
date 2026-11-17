@@ -55,16 +55,15 @@ from ui.popup.RelogioWindow import RelogioWindow as Relogio
 import ui.popup.OperacaoRegistradaComSucesso as OperacaoRegistradaComSucesso
 
 class IHMmain(QWidget):
-    #%% Init
     def __init__(self):
         self.APPVersion = "Versão Beta 0.0.5.5.33.2" #AnáliseDoMercado.Desempenho.ARCA.Tributação.NegociaçõesEGestãoDeDB.HMI
         self.OnlineVersion = ""
         super().__init__()
         self.setObjectName("IHM")
 
-# Initial parameters definition
+        # Initial parameters definition
 
-# HMI fixed parameters
+        # HMI fixed parameters
         user32 = ctypes.windll.user32
         screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
         self.screen_height = screensize[1]
@@ -91,7 +90,7 @@ class IHMmain(QWidget):
         pixmap = QPixmap("./images/ThinkingMonkey.png")
         self.CustomCursor_ThinkingMonkey = QCursor(pixmap, 32, 32)
 
-# Layout creation
+        # Layout creation
 
         # Window creation
         self.setWindowTitle("Finanças")
@@ -157,8 +156,10 @@ class IHMmain(QWidget):
         self.HMI_Desempenho = HMI_Desempenho_page.HMI_Desempenho(self)
         self.HMI_Mercado = HMI_Mercado_page.HMI_Mercado(self)
 
-    #%% Pages Creation
     def CreatePage_Decisao(self):
+        """
+            Pages Creation
+        """
         if self.PageID == '26':
             if len(self.TextBox_NomeNovoAtivo.text())>0 and len(self.TextBox_NomeNovoAtivo.text())<7 and not self.TextBox_NomeNovoAtivo.text().upper() == "USD":
                 self.setCursor(Qt.WaitCursor)
@@ -247,7 +248,6 @@ class IHMmain(QWidget):
                 self.Window_Relogio.close()
                 self.Window_Relogio.show()
         else:
-            #%% PageID == '0'
             if PageID == '0':
                 if self.PageIDAux == '17b':
                     if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado:
@@ -288,7 +288,6 @@ class IHMmain(QWidget):
                     self.InsertGridLayout(0, 0, 1, 20)
                     self.CreatePage0()
                     self.PutHeader()
-            #%% PageID == '1'
             elif PageID == '1':
                 if self.PageID == '7':
                     if (self.TextBox_NovaSenha1.text() == self.TextBox_NovaSenha2.text() and
@@ -416,7 +415,6 @@ class IHMmain(QWidget):
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.CreatePage1()
                     self.PutHeader()
-            #%% PageID == '2'
             elif PageID == '2':
                 self.ClearPage()
                 self.PageID = '2'
@@ -424,7 +422,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePage2()
                 self.PutHeader()
-            #%% PageID == '3'
             elif PageID == '3':
                 self.ClearPage()
                 self.PageID = '3'
@@ -432,7 +429,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePage3()
                 self.PutHeader()
-            #%% PageID == '3b'
             elif PageID == '3b':
                 self.ClearPage()
                 self.PageID = '3b'
@@ -440,7 +436,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePage3b()
                 self.PutHeader()
-            #%% PageID == '4'
             elif PageID == '4':
                 self.ClearPage()
                 self.PageID = '4'
@@ -448,7 +443,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePage4()
                 self.PutHeader()
-            #%% PageID == '5'
             elif PageID == '5': # Cria a mesma página da 13
                 self.ClearPage()
                 self.PageID = '5'
@@ -456,7 +450,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Mercado.CreatePage5()
                 self.PutHeader()
-            #%% PageID == '6'
             elif PageID == '6':
                 if "@" in self.TextBox_EmailOuUsuario.text(): isEmail = True
                 else: isEmail = False
@@ -502,7 +495,6 @@ class IHMmain(QWidget):
                         self.Label_Erro1.setText('Usuário não encontrado.')
                         self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignCenter)
                         self.TextBox_EmailOuUsuario.setFocus()
-            #%% PageID == '7'
             elif PageID == '7':
                 if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado:
                     self.ClearPage()
@@ -521,7 +513,6 @@ class IHMmain(QWidget):
                     self.Label_Erro1.setText('Código não confere.')
                     self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 2, Qt.AlignCenter)
                     self.TextBox_CodigoDeConfirmacao.setFocus()
-            #%% PageID == '8'
             elif PageID == '8':
                 if (len(self.TextBox_NomeDeUsuario.text())>0 and
                     not "@"  in self.TextBox_NomeDeUsuario.text() and
@@ -693,7 +684,6 @@ class IHMmain(QWidget):
                     self.Label_Erro1.setText('O código não confere.')
                     self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 12, 0, 1, 2, Qt.AlignCenter)
                     self.TextBox_CodigoDeConfirmacao.setFocus()
-            #%% PageID == '9'
             elif PageID in ['9', '9_']: # Perfil, Tem ID especial
                 if PageID == '9_':
                     if self.PageIDAux == '15':
@@ -758,7 +748,6 @@ class IHMmain(QWidget):
                     self.InsertGridLayout(1, 0, 1, 3)
                     self.CreatePage9()
                     self.PutHeader()
-            #%% PageID == '10'
             elif PageID == '10':
                 self.ClearPage()
                 self.PageID = '10'
@@ -766,7 +755,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.CreatePage10()
                 self.PutHeader()
-            #%% PageID == '11'
             elif PageID == '11':
                 self.ClearPage()
                 self.PageID = '11'
@@ -774,7 +762,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_ARCA.CreatePage11()
                 self.PutHeader()
-            #%% PageID == '12'
             elif PageID == '12':
                 self.ClearPage()
                 self.PageID = '12'
@@ -782,7 +769,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Desempenho.CreatePage12()
                 self.PutHeader()
-            #%% PageID == '13'
             elif PageID == '13':
                 self.ClearPage()
                 self.PageID = '13'
@@ -790,7 +776,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Mercado.CreatePage13()
                 self.PutHeader()
-            #%% PageID == '14'
             elif PageID == '14':
                 if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
                     self.ClearPage()
@@ -800,18 +785,15 @@ class IHMmain(QWidget):
                     self.PutHeader()
                 else:
                     MessageBox_Msg1 = QMessageBox.about(self, 'Aviso', 'Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
-            #%% PageID == '15'
             elif PageID == '15': # Derivação do perfil, Tem ID especial
                 self.ClearPage()
                 self.PageIDAux = '15'
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePage15()
                 self.PutHeader()
-            #%% PageID == '16'
             elif PageID == '16': # MessageBox, não tem ID
                 self.CreatePage16()
                 self.PutHeader()
-            #%% PageID == '17a'
             elif PageID == '17a': # Derivação do perfil, Tem ID especial
                 if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
                     self.ClearPage()
@@ -821,14 +803,12 @@ class IHMmain(QWidget):
                     self.PutHeader()
                 else:
                     MessageBox_Msg1 = QMessageBox.about(self, 'Aviso', 'Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
-            #%% PageID == '17b'
             elif PageID == '17b': # Derivação do perfil, Tem ID especial
                 self.ClearPage()
                 self.PageIDAux = '17b'
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePage17b()
                 self.PutHeader()
-            #%% PageID == '18'
             elif PageID in ['18','18_']:
                 if PageID == '18_':
                     if self.PageID == '20':
@@ -921,7 +901,6 @@ class IHMmain(QWidget):
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.HMI_Trades.HMI_Trades_Bolsa.CreatePage18()
                     self.PutHeader()
-            #%% PageID == '19'
             elif PageID in ['19','19_']:
                 if PageID == '19_':
                     if self.PageID == '37':
@@ -990,7 +969,6 @@ class IHMmain(QWidget):
                     self.PageIDAux = ''
                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage19()
                     self.PutHeader()
-            #%% PageID == 'Bancos'
             elif PageID in ['Bancos', 'Bancos_']:
                 if PageID == 'Bancos_':
                     if self.PageID == 'BancosAdd':
@@ -1062,7 +1040,6 @@ class IHMmain(QWidget):
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.HMI_Trades.CreatePageBancos()
                     self.PutHeader()
-            #%% PageID == 'BancosAdd'
             elif PageID == 'BancosAdd':
                 self.ClearPage()
                 self.PageID = 'BancosAdd'
@@ -1070,9 +1047,8 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.CreatePageBancosAdd()
                 self.PutHeader()
-            #%% PageID == 'BancosDelete'
-            elif PageID == 'BancosDelete': self.HMI_Trades.CreatePageBancosDelete()
-            #%% PageID == 'BancosRename'
+            elif PageID == 'BancosDelete':
+                self.HMI_Trades.CreatePageBancosDelete()
             elif PageID == 'BancosRename':
                 self.ClearPage()
                 self.PageID = 'BancosRename'
@@ -1080,7 +1056,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.CreatePageBancosRename()
                 self.PutHeader()
-            #%% PageID == '20'
             elif PageID == '20':
                 self.ClearPage()
                 self.PageID = '20'
@@ -1088,13 +1063,11 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage20()
                 self.PutHeader()
-            #%% PageID == '21'
             elif PageID == '21': # MessageBox
                 if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
                     self.HMI_Trades.HMI_Trades_Bolsa.CreatePage21()
                 else:
                     MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
-            #%% PageID == '22'
             elif PageID == '22':
                 self.ClearPage()
                 self.PageID = '22'
@@ -1102,7 +1075,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage22()
                 self.PutHeader()
-            #%% PageID == '23'
             elif PageID in ['23', '23_', '_23_']:
                 if self.PageID == '34b':
                     if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
@@ -1130,7 +1102,6 @@ class IHMmain(QWidget):
 
                 if self.DBManager.VerificarSeTemEstoqueNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','ESTOQUE NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
                 elif self.DBManager.VerificarSeTemCustoNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','CUSTO NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
-            #%% PageID == '24'
             elif PageID in ['24', '24_']:
                 if PageID  == '24_':
                     try:
@@ -1160,7 +1131,6 @@ class IHMmain(QWidget):
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.HMI_Trades.HMI_Trades_Bolsa.CreatePage24()
                     self.PutHeader()
-            #%% PageID == '25'
             elif PageID == '25':
                 self.ClearPage()
                 self.PageID = '25'
@@ -1168,7 +1138,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage25()
                 self.PutHeader()
-            #%% PageID == '26'
             elif PageID == '26':
                 self.ClearPage()
                 self.PageID = '26'
@@ -1176,7 +1145,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage26()
                 self.PutHeader()
-            #%% PageID == '27'
             elif PageID == '27':
                 self.ClearPage()
                 self.PageID = '27'
@@ -1184,7 +1152,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage27()
                 self.PutHeader()
-            #%% PageID == '28'
             elif PageID == '28':
                 try: self.Label_Erro1.deleteLater()
                 except: pass
@@ -1311,7 +1278,6 @@ class IHMmain(QWidget):
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.HMI_Trades.HMI_Trades_Bolsa.CreatePage28()
                     self.PutHeader()
-            #%% PageID == '29'
             elif PageID == '29':
                 self.ClearPage()
                 self.PageID = '29'
@@ -1319,7 +1285,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage29()
                 self.PutHeader()
-            #%% PageID == '30'
             elif PageID == '30':
                 self.ClearPage()
                 self.PageID = '30'
@@ -1327,15 +1292,10 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage30()
                 self.PutHeader()
-            #%% PageID == '31a'
             elif PageID == '31a': MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
-            #%% PageID == '31b'
             elif PageID == '31b': MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
-            #%% PageID == '32a'
             elif PageID == '32a': MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
-            #%% PageID == '32b'
             elif PageID == '32b': MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
-            #%% PageID == '33'
             elif PageID == '33':
                 try:
                     self.LW = LoadingWindow.LoadingWindow(self)
@@ -1343,7 +1303,6 @@ class IHMmain(QWidget):
                     self.Thread_BuscarSetoresExistentes = WorkerThread('Thread_BuscarSetoresExistentes', self)
                     self.Thread_BuscarSetoresExistentes.start()
                 except Exception as e: print(e)
-            #%% PageID == '34a'
             elif PageID == '34a':
                 self.ClearPage()
                 self.PageID = '34a'
@@ -1351,7 +1310,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage34a()
                 self.PutHeader()
-            #%% PageID == '34b'
             elif PageID == '34b':
                 self.ClearPage()
                 self.PageID = '34b'
@@ -1359,7 +1317,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage34b()
                 self.PutHeader()
-            #%% PageID == '35a'
             elif PageID == '35a':
                 self.ClearPage()
                 self.PageID = '35a'
@@ -1367,7 +1324,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage35a()
                 self.PutHeader()
-            #%% PageID == '35b'
             elif PageID == '35b':
                 self.ClearPage()
                 self.PageID = '35b'
@@ -1375,7 +1331,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage35b()
                 self.PutHeader()
-            #%% PageID == '36a_Auto'
             elif PageID == '36a_Auto':
                 self.ClearPage()
                 self.PageID = '36a'
@@ -1384,7 +1339,6 @@ class IHMmain(QWidget):
                 self.ModoManualAtivo = False
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage36a()
                 self.PutHeader()
-            #%% PageID == '36a_Manual'
             elif PageID == '36a_Manual':
                 self.ClearPage()
                 self.PageID = '36a'
@@ -1393,7 +1347,6 @@ class IHMmain(QWidget):
                 self.ModoManualAtivo = True
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage36a()
                 self.PutHeader()
-            #%% PageID == '36b_Manual'
             elif PageID == '36b_Manual':
                 self.ClearPage()
                 self.PageID = '36b'
@@ -1402,7 +1355,6 @@ class IHMmain(QWidget):
                 self.ModoManualAtivo = True
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage36a()
                 self.PutHeader()
-            #%% PageID == '37'
             elif PageID == '37':
                 self.ClearPage()
                 self.PageID = '37'
@@ -1410,11 +1362,9 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage37()
                 self.PutHeader()
-            #%% PageID == '38'
             elif PageID == '38': # MessageBox
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage38()
                 self.PutHeader()
-            #%% PageID == '39'
             elif PageID == '39':
                 self.ClearPage()
                 self.PageID = '39'
@@ -1422,7 +1372,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage39()
                 self.PutHeader()
-            #%% PageID == '40'
             elif PageID == '40':
                 self.ClearPage()
                 self.PageID = '40'
@@ -1434,7 +1383,6 @@ class IHMmain(QWidget):
                 if self.DBManager.VerificarPrimeiraOperacao(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','A primeira operação deve ser do tipo DEPÓSITO ou DROP.')
                 elif self.DBManager.VerificarSeTemEstoqueNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','ESTOQUE NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
                 elif self.DBManager.VerificarSeTemCustoNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','CUSTO NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
-            #%% PageID == '41'
             elif PageID == '41':
                 try: self.Label_Erro1.deleteLater()
                 except: pass
@@ -1503,7 +1451,6 @@ class IHMmain(QWidget):
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage41()
                     self.PutHeader()
-            #%% PageID == '42'
             elif PageID == '42': # Ideia abandonada
                 # self.ClearPage()
                 # self.PageID = '42'
@@ -1512,7 +1459,6 @@ class IHMmain(QWidget):
                 # self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage42()
                 # self.PutHeader()
                 pass
-            #%% PageID == '43'
             elif PageID == '43': # Alter Cripto Operation
                 self.ClearPage()
                 self.PageID = '43'
@@ -1520,7 +1466,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage43()
                 self.PutHeader()
-            #%% PageID == '44'
             elif PageID == '44': # Delete Cripto Operation
                 self.ClearPage()
                 self.PageID = '44'
@@ -1528,7 +1473,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage44()
                 self.PutHeader()
-            #%% PageID == '45'
             elif PageID == '45':
                 if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
                     self.ClearPage()
@@ -1538,7 +1482,6 @@ class IHMmain(QWidget):
                     self.PutHeader()
                 else:
                     MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
-            #%% PageID == '46'
             elif PageID == '46':
                 self.ClearPage()
                 self.PageID = '46'
@@ -1546,7 +1489,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_ARCA.CreatePage46()
                 self.PutHeader()
-            #%% PageID == '47'
             elif PageID == '47':
                 self.ClearPage()
                 self.PageID = '47'
@@ -1554,7 +1496,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_ARCA.CreatePage47()
                 self.PutHeader()
-            #%% PageID == '48'
             elif PageID == '48':
                 self.ClearPage()
                 self.PageID = '48'
@@ -1562,7 +1503,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_ARCA.CreatePage48()
                 self.PutHeader()
-            #%% PageID == '49'
             elif PageID == '49':
                 self.ClearPage()
                 self.PageID = '49'
@@ -1570,7 +1510,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_ARCA.CreatePage49()
                 self.PutHeader()
-            #%% PageID == '50'
             elif PageID == '50':
                 self.ClearPage()
                 self.PageID = '50'
@@ -1578,7 +1517,6 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_ARCA.CreatePage50()
                 self.PutHeader()
-            #%% PageID == '51'
             elif PageID == '51':
                 self.ClearPage()
                 self.PageID = '51'
@@ -1586,20 +1524,16 @@ class IHMmain(QWidget):
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Tributacao.CreatePage51()
                 self.PutHeader()
-            #%% PageID == 'ChooseCurrency'
             elif PageID == 'ChooseCurrency':
                 self.ClearPage()
                 self.PageIDAux = 'ChooseCurrency' # Derivação do perfil, Tem ID especial
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePageChooseCurrency()
                 self.PutHeader()
-            #%% Confirmar email
             elif PageID =='Confirmar email':
                 pass
-            #%% Inserir nova senha
             elif PageID == 'Inserir nova senha':
                 pass
-            #%% PageID == 'Info'
             elif PageID == 'Info1': self.CreatePageInfo1()
             elif PageID == 'Info2': self.CreatePageInfo2()
             elif PageID == 'Info3': self.CreatePageInfo3()
@@ -1628,7 +1562,6 @@ class IHMmain(QWidget):
             elif PageID == 'Info26': self.CreatePageInfo26()
             elif PageID == 'Info27': self.CreatePageInfo27()
 
-    #%% Limpar Page
     def LimparPage(self):
         if self.PageID in ['28', '29', '36a']:
             self.TextBox_Qqt.setText('')
@@ -1654,7 +1587,6 @@ class IHMmain(QWidget):
             try: self.Label_Erro1.deleteLater()
             except: pass
 
-    #%% CreatePage
     def CreatePage0(self):
         black = 'rgb(0, 0, 0)'
         self.Background_1 = QLabel()
@@ -3116,7 +3048,6 @@ class IHMmain(QWidget):
 
     def CreatePageInfo27(self): MessageBox_Msg1 = QMessageBox.about(self,'Informação',"                                             Ativos Internacionais\n\nNada mais rentável do que negócios em dólar.\nProteção à crises locais.\n\nO que olhar:\nLucratividade, endividamento, preço, crescimento, governança corporativa.\n\nChecklist:\nP/L; PEG RATIO; P/VP; ROE; ROA; ROIC; MG. BRUTA; MG. LUCRO;\nDL/PL; DL/EBIT; LIQUIDEZ CORRENTE; DIVIDA BRUTA/EBIT;\nCAGR EBIT; CAGR LUCRO; SALDO DOS ACIONISTAS.\n\n                                                 Criptomoedas\n\nExposição de altíssimo risco.\nMuito volátil, aplicação convexa.\n\nDica de estratégia saudável:\n50 a 60% em BTC\n10% em ETH\n10% em BNB\nO restante divide-se nas pimentinhas.")
 
-    #%% UpdatePage
     def UpdatePage(self):
         if self.PageID == '18':
             UserCoin = self.DBManager.GetCorretoraCoinCurrency()
@@ -3413,8 +3344,8 @@ class IHMmain(QWidget):
             self.GraphWidget_Distribuicao = self.HMI_ARCA.CreateGraph_Page50_Distribuicao()
             self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Distribuicao, 7, 0, 3, 3, Qt.AlignCenter | Qt.AlignBottom)
 
-    #%% Ferramentas
     def EnableAllButtons(self, condition = True):
+        """Ferramentas"""
         if self.PageID == '28':
             self.Button_Compra.setEnabled(condition)
             self.Button_Venda.setEnabled(condition)
@@ -3918,8 +3849,11 @@ class IHMmain(QWidget):
         self.GCount += 1
         self.GLayout.addLayout(self.F_GLayout[self.GCount-1], row, column, panRow, panColumn)
 
-    #%% Header
-    def AtualizarCotacoes(self, whatever): self.DBManager.AtualizarCotacoes()
+    def AtualizarCotacoes(self, whatever): 
+        """
+            Header
+        """
+        self.DBManager.AtualizarCotacoes()
 
     def PutHeader(self):
         self.Background_Header = QLabel()
@@ -4382,9 +4316,7 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignLeft)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignLeft)
 
-    #%% OnButtonPressed
     def OnButtonPressed(self, ButtonPressed):
-        #%% ButtonPressed == "ShowHideValues"
         if ButtonPressed == "ShowHideValues":
             self.HMI_ARCA.Flag_RecalcularGraficos = True
             if self.ShowValues:
@@ -4651,7 +4583,6 @@ class IHMmain(QWidget):
                     self.TextBox_Msg4.setEchoMode(QLineEdit.Password)
                 self.HMI_Tributacao.CreateTable_51_2()
 
-        #%% ButtonPressed == "Atualizar Tabela de Cotações"
         elif ButtonPressed == 'Atualizar Tabela de Cotações':
             for row in range(self.Table_CotaçõesManuais.rowCount()):
                 if not str(self.data_45_1[row][2]) == str(self.Table_CotaçõesManuais.item(row, 2).text()):
@@ -4661,12 +4592,10 @@ class IHMmain(QWidget):
 
             self.CreatePage(self.PageID)
 
-        #%% ButtonPressed == 'RemoveUnusedAtivosFromCotacoes'
         elif ButtonPressed == 'RemoveUnusedAtivosFromCotacoes':
             self.DBManager.RemoveUnusedAtivosFromCotacoes()
             self.CreatePage("45")
 
-        #%% ButtonPressed == "Path Padrão"
         elif ButtonPressed == 'Path Padrão':
             self.Button_PathPadrao.setText("PADRÃO")
             self.Button_PathEspecifico.setText("específico")
@@ -4674,7 +4603,6 @@ class IHMmain(QWidget):
             self.Button_PathEspecifico.setStyleSheet("background-color: black; color: white;")
             self.Button_PathPadrao.setStyleSheet("background-color: green; color: white;")
 
-        #%% ButtonPressed == "Path Específico"
         elif ButtonPressed == 'Path Específico':
             if not self.filedialogIsOpen:
                 root = tkinter.Tk()
@@ -4691,7 +4619,6 @@ class IHMmain(QWidget):
                         self.Button_PathPadrao.setStyleSheet("background-color: black; color: white;")
                 except:pass
 
-        #%% ButtonPressed == "Change UserPath"
         elif ButtonPressed == "Change UserPath":
             def UpdateUserPath(UserName, PathNovo):
                 currdir = os.getcwd()
@@ -4716,7 +4643,6 @@ class IHMmain(QWidget):
                         self.DBManager.ConnectToDB(Path+"\\"+self.User+".db")
                 except Exception as e: print(e)
 
-        #%% ButtonPressed == "ChangeProfilePhoto"
         elif ButtonPressed == "ChangeProfilePhoto":
             root = tkinter.Tk()
             root.withdraw() # Used to hide tkinter window
@@ -4741,7 +4667,6 @@ class IHMmain(QWidget):
                 self.unsetCursor()
                 self.CreatePage('9')
 
-        #%% ButtonPressed == "ExportToExcel"
         elif ButtonPressed == "ExportToExcel":
             if not self.filedialogIsOpen:
                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Para continuar a exportação,\nSALVE seu trabalho de todas as planilhas EXCEL abertas.')
@@ -4794,7 +4719,6 @@ class IHMmain(QWidget):
                     except Exception as e:print(e)
                 finally: self.unsetCursor()
 
-        #%% ButtonPressed == "ExportToDB"
         elif ButtonPressed == "ExportToDB":
             root = tkinter.Tk()
             root.withdraw() # use to hide tkinter window
@@ -4809,7 +4733,6 @@ class IHMmain(QWidget):
                         MessageBox_Msg1 = QMessageBox.about(self,'Informação','Exportação bem sucedida.')
                     except: MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Exportação mal sucedida.')
 
-        #%% ButtonPressed == "ImportFromDB"
         elif ButtonPressed == "ImportFromDB":
             def TrocaUserName(NomeVelho, NomeNovo):
                 self.DBManager.ModifyDB("UPDATE Usuários SET Usuário = (?) Where Usuário = (?)", [(NomeNovo), NomeVelho])
@@ -4938,7 +4861,6 @@ class IHMmain(QWidget):
                         else:
                             MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Importação mal sucedida.\n'+str(msg)+'\nArquivo fora do formato padrão\nOU\nusuário já existe.')
 
-        #%% ButtonPressed == "ImportFromExcel"
         elif ButtonPressed == "ImportFromExcel":
             root = tkinter.Tk()
             root.withdraw() # use to hide tkinter window
@@ -5423,7 +5345,6 @@ class IHMmain(QWidget):
                     finally:
                         self.CreatePage("0")
 
-        #%% ButtonPressed == "Abrir Calendário"
         elif ButtonPressed == "Abrir Calendário":
             if not self.OutraJanelaAberta:
                 self.Window_Calendario = Calendario(self)
@@ -5435,7 +5356,6 @@ class IHMmain(QWidget):
                 self.Window_Relogio.close()
                 self.Window_Relogio.show()
 
-        #%% ButtonPressed == "Abrir Relógio"
         elif ButtonPressed == "Abrir Relógio":
             if not self.OutraJanelaAberta:
                 self.Window_Relogio = Relogio(self)
@@ -5447,7 +5367,6 @@ class IHMmain(QWidget):
                 self.Window_Relogio.close()
                 self.Window_Relogio.show()
 
-    #%% Keyboard
     def keyPressEvent(self, event):
         key = event.key()
         if key == Qt.Key_Escape:
@@ -5508,7 +5427,6 @@ class IHMmain(QWidget):
     def eventFilter(self, obj, event): # Função pra redimensionar alguns elementos do IHM dinamicamente
         if event.type() == QEvent.Resize:
             try:
-                #%% Resizing HMI Page 9
                 if self.PageIDAux == '9':
                     self.Button_ProfilePhoto.setFixedSize(int(self.frameGeometry().width()/8),int(self.frameGeometry().width()/8))
                     self.Button_ProfilePhoto.setIconSize(QSize(int(self.frameGeometry().width()/8*.95),int(self.frameGeometry().width()/8*.95)))
@@ -5519,7 +5437,6 @@ class IHMmain(QWidget):
                     self.Button_ExportDBToExcel.setFixedSize(int(self.frameGeometry().width()*15/20/2),int(self.frameGeometry().height()-160))
                     self.Button_ExportDBToExcel.setIconSize(QSize(int(self.frameGeometry().width()*15/20/2*.98),int(self.frameGeometry().height())))
 
-                #%% Resizing HMI Page 45
                 elif self.PageIDAux == '45':
                     HHeader = ['Ativo',
                                'Última atualização',
@@ -5528,7 +5445,6 @@ class IHMmain(QWidget):
                     self.SetTableWidth_45_1(SizeCol0, SizeCol1, SizeCol2)
                     self.Table_CotaçõesManuais.setFixedHeight(int(self.frameGeometry().height()*6/10))
 
-                #%% Resizing HMI Page 0
                 elif self.PageID == '0': # Home Page Not Logged In
                     self.Button_Mercado.setFixedSize(int(self.frameGeometry().width()*3/4*.9),int(self.frameGeometry().height()/4*.95))
                     self.Movie_Mercado.setScaledSize(QSize().scaled(int(self.frameGeometry().width()*3/4*.90),int(self.frameGeometry().height()*3/4*.95), Qt.KeepAspectRatio))
@@ -5538,7 +5454,6 @@ class IHMmain(QWidget):
                     self.Button_LogIn.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_MercadoInvisivel.setFixedSize(int(self.frameGeometry().width()*3/4*.90),int(self.frameGeometry().height()*3/4*.95))
 
-                #%% Resizing HMI Page 1
                 elif self.PageID == '1':
                     self.Movie_Negociações.setScaledSize(QSize().scaled(int(self.frameGeometry().width()/3*.80),int(self.frameGeometry().height()/5*.95-20), Qt.KeepAspectRatio))
                     self.Button_Negociações.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
@@ -5560,12 +5475,10 @@ class IHMmain(QWidget):
                     self.Button_Mercado.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
                     self.Button_MercadoInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-110))
 
-                #%% Resizing HMI Page 3
                 elif self.PageID == '3':
                     self.Button_ExportDBToExcel.setFixedSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height()-160))
                     self.Button_ExportDBToDB.setFixedSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height()-160))
 
-                #%% Resizing HMI Page 4
                 elif self.PageID == '4':
                     minimo = 24
                     maximo = 36
@@ -5604,7 +5517,6 @@ class IHMmain(QWidget):
                     self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 10
                 elif self.PageID == '10':
                     self.Button_TradesCriptomoedasInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-160))
                     self.Button_TradesCriptomoedas.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
@@ -5616,22 +5528,18 @@ class IHMmain(QWidget):
                     self.Button_Bancos.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
                     self.Movie_Bancos.setScaledSize(QSize().scaled(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-160), Qt.KeepAspectRatio))
 
-                #%% Resizing HMI Page Bancos
                 elif self.PageID == 'Bancos':
                     self.Button_AtuatizarCC.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_AtuatizarCC.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page BancosAdd
                 elif self.PageID == 'BancosAdd':
                     self.Button_AdicionarBanco.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_AdicionarBanco.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page BancosRename
                 elif self.PageID == 'BancosRename':
                     self.Button_RenomearBanco.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_RenomearBanco.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 11
                 elif self.PageID == '11':
                     if self.frameGeometry().width()/self.frameGeometry().height() < 1.9577: proporcao = 1/6
                     elif self.frameGeometry().width()/self.frameGeometry().height() < 2.6202: proporcao = 1/8
@@ -5659,12 +5567,10 @@ class IHMmain(QWidget):
 
                     self.Table_ContasCorrente.setFixedHeight(int(self.frameGeometry().height()*3/10))
 
-                #%% Resizing HMI Page 12
                 elif self.PageID == '12':
                     self.Movie_Grafico2.setScaledSize(QSize().scaled(int(self.frameGeometry().width()),int(self.frameGeometry().height()/5*.95), Qt.KeepAspectRatio))
                     self.Movie_Grafico1.setScaledSize(QSize().scaled(int(self.frameGeometry().width()),int(self.frameGeometry().height()/5*.95), Qt.KeepAspectRatio))
 
-                #%% Resizing HMI Page 5 and 13
                 elif self.PageID in ['5','13']:
                     self.Movie_Mercado1.setScaledSize(QSize().scaled(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-110), Qt.KeepAspectRatio))
                     self.Button_Mercado1.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
@@ -5684,7 +5590,6 @@ class IHMmain(QWidget):
                         self.Button_Mercado2.setFont(self.font24)
                         self.Button_Mercado3.setFont(self.font24)
 
-                #%% Resizing HMI Page 15
                 elif self.PageID == '15':
                     minimo = 23
                     maximo = 43
@@ -5707,7 +5612,6 @@ class IHMmain(QWidget):
                     razao = (self.frameGeometry().width()-b)/a
                     self.Label_Senha2.setText('Confirme a senha:'+str((' ')*int(self.frameGeometry().width()*razao)))
 
-                #%% Resizing HMI Page 18
                 elif self.PageID == '18':
                     self.Movie_AlterarOPBolsa.setScaledSize(QSize().scaled(int(self.frameGeometry().width()*12/20/2),int(self.frameGeometry().height()*7/10*.95-30), Qt.KeepAspectRatio))
                     self.Button_AlterarOPBolsaInvisivel.setFixedSize(int(self.frameGeometry().width()*12/20/2),int(self.frameGeometry().height()*7/10*.95))
@@ -5719,28 +5623,23 @@ class IHMmain(QWidget):
                     self.Button_ContaCorrenteBolsaInvisivel.setFixedSize(int(self.frameGeometry().width()*12/20/2),int(self.frameGeometry().height()*3/10*.95))
                     self.Button_ContaCorrenteBolsa.setFixedSize(int(self.frameGeometry().width()*12/20/2),int(self.frameGeometry().height()*1/10*.95))
 
-                #%% Resizing HMI Page 19
                 elif self.PageID == '19':
                     self.Movie_AlterarOPCriptomoedas.setScaledSize(QSize().scaled(int(self.frameGeometry().width()*12/20),int(self.frameGeometry().height()*7/10*.95-60), Qt.KeepAspectRatio))
                     self.Button_AlterarOPCriptomoedasInvisivel.setFixedSize(int(self.frameGeometry().width()*12/20),int(self.frameGeometry().height()*7/10*.95))
                     self.Button_AlterarOPCriptomoedas.setFixedSize(int(self.frameGeometry().width()*12/20),int(self.frameGeometry().height()*1/10*.95))
 
-                #%% Resizing HMI Page 20
                 elif self.PageID == '20':
                     self.TextBox_NovaCorretora.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_AdicionarCorretora.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_AdicionarCorretora.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 21
                 elif self.PageID == '21':pass
 
-                #%% Resizing HMI Page 22
                 elif self.PageID == '22':
                     self.TextBox_NovoNomeCorretora.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_RenomearCorretora.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_RenomearCorretora.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 23
                 elif self.PageID == '23':
                     HHeader = ['Data',
                                'Tipo',
@@ -5776,7 +5675,6 @@ class IHMmain(QWidget):
                     self.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(6, SizeCol6)
                     self.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(7, SizeCol7)
 
-                #%% Resizing HMI Page 24
                 elif self.PageID == '24':
                     self.Button_Voltar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Voltar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -5784,26 +5682,22 @@ class IHMmain(QWidget):
                     self.Button_Registrar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Table_DepositosESaques.setFixedHeight(int(self.frameGeometry().height()*5/20*1.4))
 
-                #%% Resizing HMI Page 25
                 elif self.PageID == '25':
                     self.Button_Voltar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Voltar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Atualizar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Atualizar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 26
                 elif self.PageID == '26':
                     self.TextBox_NomeNovoAtivo.setFixedWidth(int(self.frameGeometry().width()/8*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 27
                 elif self.PageID == '27':
                     self.TextBox_NovoNomeAtivo.setFixedWidth(int(self.frameGeometry().width()/8*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 28
                 elif self.PageID == '28':
                     self.TextBox_Qqt.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
                     self.TextBox_Preco.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
@@ -5814,7 +5708,6 @@ class IHMmain(QWidget):
                     self.Button_RegistrarOperacao.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_RegistrarOperacao.setFixedSize(int(self.frameGeometry().width()*2/10*0.9),int(self.frameGeometry().width()*1/10*0.9))
 
-                #%% Resizing HMI Page 29
                 elif self.PageID == '29':
                     HHeader = ['Data',
                                'Tipo',
@@ -5860,7 +5753,6 @@ class IHMmain(QWidget):
                     self.TextBox_TaxaB3.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
                     self.TextBox_Obs.setFixedWidth(int(self.frameGeometry().width()*4/7*0.9))
 
-                #%% Resizing HMI Page 30
                 elif self.PageID == '30':
                     HHeader = ['Data',
                                'Tipo',
@@ -5901,43 +5793,36 @@ class IHMmain(QWidget):
                     self.Button_DeletarOperacoes.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_DeletarOperacoes.setFixedSize(int(self.frameGeometry().width()*2/10*0.9),int(self.frameGeometry().width()*1/10*0.9))
 
-                #%% Resizing HMI Page 31a
                 elif self.PageID == '31a':
                     self.TextBox_NovoTipoDeAtivo.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 31b
                 elif self.PageID == '31b':
                     self.TextBox_NovoTipoDeAtivo.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 32a
                 elif self.PageID == '32a':
                     self.TextBox_NovoSubtipoDeAtivo.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 32b
                 elif self.PageID == '32b':
                     self.TextBox_NovoSubtipoDeAtivo.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 33a
                 elif self.PageID == '33a':
                     self.TextBox_NovoTipoSetor.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 33b
                 elif self.PageID == '33b':
                     self.TextBox_NovoSetor.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 34a
                 elif self.PageID == '34a':
                     self.Button_Voltar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Voltar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -5948,7 +5833,6 @@ class IHMmain(QWidget):
                     self.Button_Info1.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Info1.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 34b
                 elif self.PageID == '34b':
                     self.Button_Voltar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Voltar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -5959,7 +5843,6 @@ class IHMmain(QWidget):
                     self.Button_Info1.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Info1.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 35a
                 elif self.PageID == '35a':
                     self.Button_Voltar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Voltar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -5967,7 +5850,6 @@ class IHMmain(QWidget):
                     self.Button_AtivarModoManual.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Info1.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
 
-                #%% Resizing HMI Page 35b
                 elif self.PageID == '35b':
                     self.Button_Voltar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Voltar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -5975,7 +5857,6 @@ class IHMmain(QWidget):
                     self.Button_AtivarModoManual.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Info1.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                #%% Resizing HMI Page 36a
                 elif self.PageID == '36a':
                     self.TextBox_Modo.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
                     self.TextBox_Qqt.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
@@ -5987,7 +5868,6 @@ class IHMmain(QWidget):
                     self.Button_RegistrarOperacao.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_RegistrarOperacao.setFixedSize(int(self.frameGeometry().width()*2/10*0.9),int(self.frameGeometry().width()*1/10*0.9))
 
-                #%% Resizing HMI Page 40
                 elif self.PageID == '40':
                     HHeader = ['Data',
                                'Par',
@@ -6026,7 +5906,6 @@ class IHMmain(QWidget):
                     self.Table_Operacoes_Realizadas.setColumnWidth(7, SizeCol7)
                     self.Table_Operacoes_Realizadas.setColumnWidth(8, SizeCol8)
 
-                #%% Resizing HMI Page 41
                 elif self.PageID == '41':
                     self.TextBox_Par_Esquerda.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
                     self.TextBox_Par_Direita.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
@@ -6041,7 +5920,6 @@ class IHMmain(QWidget):
                     self.Button_RegistrarOperacao.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_RegistrarOperacao.setFixedSize(int(self.frameGeometry().width()*2/10*0.9),int(self.frameGeometry().width()*1/10*0.9))
 
-                #%% Resizing HMI Page 43
                 elif self.PageID == '43':
                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreateTable_43_1() # Table_Operacoes_SelecionadasHeader
                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreateTable_43_2() # Table_Operacoes_Selecionadas (Mostra apenas o item selecionado)
@@ -6058,7 +5936,6 @@ class IHMmain(QWidget):
                     self.Button_RegistrarOperacao.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_RegistrarOperacao.setFixedSize(int(self.frameGeometry().width()*2/10*0.9),int(self.frameGeometry().width()*1/10*0.9))
 
-                #%% Resizing HMI Page 44
                 elif self.PageID == '44':
                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreateTable_44_1() # Table_Operacoes_SelecionadasHeader
                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreateTable_44_2() # Table_Operacoes_Selecionadas (Mostra apenas o item selecionado)
@@ -6068,7 +5945,6 @@ class IHMmain(QWidget):
                     self.Button_DeletarOperacoes.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_DeletarOperacoes.setFixedSize(int(self.frameGeometry().width()*2/10*0.9),int(self.frameGeometry().width()*1/10*0.9))
 
-                #%% Resizing HMI Page 51
                 elif self.PageID == '51':
                     self.Table_Tributacao.setFixedHeight(int(self.frameGeometry().height()*6/20*1.4))
                     if not self.DTeST_51 == "DTeST":
