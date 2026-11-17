@@ -29,5 +29,9 @@ import threading
 
 ThreadLock = threading.Lock()
 
-mgraphical_thread = graphical_thread()
-mgraphical_thread.run()
+def main():
+    mgraphical_thread = graphical_thread()
+    mgraphical_thread.run()
+
+if __name__ == '__main__':
+    main()
