@@ -160,3 +160,12 @@ Je dois séparer la fenêtre du lancement
 - Modularize HMI.py
 - Make DBManager.ThreadLock to be private only
 - Cybersecurity, even if the app will run offline
+
+Crashes:
+- self.HMI.Movie_AlterarOPBolsa.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20/2,self.HMI.frameGeometry().height()*7/10*.95-30, Qt.KeepAspectRatio))
+- HMI_ARCA.py, line 3358, in evt_finished_progress_11_2
+    self.Table_ContasCorrenteHeader.setColumnWidth(1, SizeCol1*.98)
+    TypeError: setColumnWidth(self, column: int, width: int): argument 2 has unexpected type 'float'
+- GetAllTickers 
+ HTTP Error 403: Forbidden
+- WebDriver.__init__() got an unexpected keyword argument 'chrome_options'
