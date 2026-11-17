@@ -47,7 +47,7 @@ class DBManager(object):
         self.series_BasicInfo_MoedasFiat = pd.Series(['CNY','USD','EUR','JPY','INR','RUB','GBP','CHF','KRW','MXN','CAD',
                                                       'BRL','AUD','SAR','HKD','TWD','TRY','SGD','SEK','ZAR','ILS'])
 
-        self.FLAG = False
+        self.CalcularTributacao_is_running = False
 
         self.SumContasCorrentes = 0
 
@@ -239,7 +239,7 @@ class DBManager(object):
         self.conn = sqlite3.connect(DB, check_same_thread=False)
         # self.PersistenceDB() # ideia abandonada
 
-    def Disconnect(self): # Só será desconectada se a FLAG estiver em FALSE, condição imposta lá na thread principal
+    def Disconnect(self): # Só será desconectada se a CalcularTributacao_is_running estiver em FALSE, condição imposta lá na thread principal
         # Close connection
         try:
             self.conn.close()
@@ -4003,7 +4003,7 @@ class DBManager(object):
             # print(row) # Debug
 
     def CalcularTributacao(self):
-        self.FLAG = True
+        self.CalcularTributacao_is_running = True
         self.LW = LoadingWindow.LoadingWindow(self.HMI)
         self.LW.show()
         self.Thread_CalcularTributacao = WorkerThread('Thread_CalcularTributacao', self.HMI)
@@ -4011,7 +4011,7 @@ class DBManager(object):
         # self.Thread_CalcularTributacao.join()
 
     def AtualizarCotacoes(self):
-        if not self.HMI.AtualizarCotacoes_running: # Impede mais de um requerimento na atualização de cotações
+        if not self.HMI.AtualizarCotacoes_is_running: # Impede mais de um requerimento na atualização de cotações
             self.HMI.Movie_AttCotacoes.start()
             # self.Thread_AtualizarCotacoes = WorkerThread('Thread_AtualizarCotações', self.HMI)
             self.Thread_AtualizarCotacoes = BP(ThreadName='Thread_AtualizarCotações', HMI=self.HMI)

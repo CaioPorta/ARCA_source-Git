@@ -484,7 +484,7 @@ class HMI_Tributacao(object):
             for row in content: # Overwrite Tables
                 self.HMI.DBManager.AddRowInCurrentDB(TabelaTibutacao_Nome, row)
             self.HMI.DBManager.LW.pbar.setValue(100)
-        self.HMI.FLAG = False
+        self.HMI.CalcularTributacao_is_running = False
 
     def CalcularTributacao_SemThread(self):
         def GenerateListOfMonthsYears(DataInicial, DataFinal):
@@ -614,7 +614,7 @@ class HMI_Tributacao(object):
             self.HMI.DBManager.ModifyDB("DELETE FROM "+TabelaTibutacao_Nome)
             for row in content: # Overwrite Tables
                 self.HMI.DBManager.AddRowInCurrentDB(TabelaTibutacao_Nome, row)
-        self.HMI.FLAG = False
+        self.HMI.CalcularTributacao_is_running = False
 
     def OnButtonPressed(self, ButtonPressed):
         if ButtonPressed == 'ChangeDTeST':

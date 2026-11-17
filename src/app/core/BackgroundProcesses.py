@@ -67,7 +67,7 @@ class BackgroundProcess(Thread):
 
     def Thread_AtualizarCotacoes(self):
         try:
-            self.HMI.AtualizarCotacoes_running = True
+            self.HMI.AtualizarCotacoes_is_running = True
             try:
                 self.HMI.Movie_AttCotacoes.start()
                 self.HMI.Button_AttCotacoes.unsetCursor()
@@ -86,7 +86,7 @@ class BackgroundProcess(Thread):
             except:pass
             try:
                 playsound("./sounds/Coins Dropping.mp3")
-                self.HMI.AtualizarCotacoes_running = False
+                self.HMI.AtualizarCotacoes_is_running = False
                 self.HMI.Button_AttCotacoes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
             except:pass
 
@@ -137,7 +137,7 @@ class WorkerThread(QThread):
             time.sleep(0.5)
             self.HMI.HMI_Tributacao.CalcularTributacao()
             self.HMI.DBManager.LW.close()
-            self.HMI.DBManager.FLAG = False
+            self.HMI.DBManager.CalcularTributacao_is_running = False
         except:pass
 
     def Thread_EsmaecerMsgSucesso(self):

@@ -2928,7 +2928,7 @@ class HMI_Trades_Criptomoedas(object):
 
         elif ButtonPressed == "Page43_Next":
             try:
-                if not self.HMI.DBManager.FLAG:
+                if not self.HMI.DBManager.CalcularTributacao_is_running:
                     Data = self.HMI.Selecao_Ano+'/'+self.HMI.Selecao_Mes+'/'+self.HMI.Selecao_Dia+" "+self.HMI.Selecao_Hora+":"+self.HMI.Selecao_Minuto+":"+self.HMI.Selecao_Segundo
                     Tipo = self.HMI.TipoDeOperacao
                     ParEsquerdo = self.HMI.TextBox_Par_Esquerda.text()
@@ -2967,7 +2967,7 @@ class HMI_Trades_Criptomoedas(object):
                 self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Erro1, 10, 7, 1, 1, Qt.AlignmentFlag.AlignCenter)
 
         elif ButtonPressed == 'Deletar Ativos da Pagina 44':
-            if not self.HMI.DBManager.FLAG:
+            if not self.HMI.DBManager.CalcularTributacao_is_running:
                 self.HMI.DBManager.DeleteOperacao(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes)
                 self.HMI.CreatePage('40')
             else:

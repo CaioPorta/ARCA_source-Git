@@ -3002,7 +3002,7 @@ class HMI_Trades_Bolsa(object):
             self.HMI.TextBox_Valor.setFocus()
 
         elif ButtonPressed == 'Delete Registro':
-            if not self.HMI.DBManager.FLAG:
+            if not self.HMI.DBManager.CalcularTributacao_is_running:
                 TotalSelecao=[]
                 for idx in self.HMI.Table_DepositosESaques.selectedIndexes():
                     TotalSelecao.append(idx.row())
@@ -3117,7 +3117,7 @@ class HMI_Trades_Bolsa(object):
 
         elif ButtonPressed == "Page29_Next":
             try:
-                if not self.HMI.DBManager.FLAG:
+                if not self.HMI.DBManager.CalcularTributacao_is_running:
                     Data = self.HMI.Selecao_Ano+'/'+self.HMI.Selecao_Mes+'/'+self.HMI.Selecao_Dia+" "+self.HMI.Selecao_Hora+":"+self.HMI.Selecao_Minuto+":"+self.HMI.Selecao_Segundo
                     Tipo = self.HMI.TipoDeOperacao
                     if "," in self.HMI.TextBox_Qqt.text() or "." in self.HMI.TextBox_Qqt.text():
@@ -3161,7 +3161,7 @@ class HMI_Trades_Bolsa(object):
                 self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Erro1, 6, 7, 1, 1, Qt.AlignmentFlag.AlignCenter)
 
         elif ButtonPressed == 'Deletar Ativos da Pagina 23':
-            if not self.HMI.DBManager.FLAG:
+            if not self.HMI.DBManager.CalcularTributacao_is_running:
                 self.HMI.DBManager.DeleteOperacao(self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes)
                 self.HMI.CreatePage('23')
             else:

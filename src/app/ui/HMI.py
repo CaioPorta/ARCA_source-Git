@@ -146,7 +146,7 @@ class IHMmain(QWidget):
         self.Rendimento = 'calculando...'
         self.SumContasCorrentes = 0.
         self.Cache_Cotacao = 0.
-        self.AtualizarCotacoes_running = False
+        self.AtualizarCotacoes_is_running = False
         self.ThreadLock = Lock()
 
         self.LoggedIn = False
@@ -261,7 +261,7 @@ class IHMmain(QWidget):
             if PageID == '0':
                 if self.PageIDAux == '17b':
                     if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado:
-                        if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
+                        if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                             self.LoggedIn = self.DBManager.DeleteUserDB()
                             if not self.LoggedIn:
                                 if os.path.exists(os.getcwd()+"\\images\\ProfilePhoto_"+self.User+".jpg"):
@@ -697,7 +697,7 @@ class IHMmain(QWidget):
             elif PageID in ['9', '9_']: # Perfil, Tem ID especial
                 if PageID == '9_':
                     if self.PageIDAux == '15':
-                        if not self.DBManager.FLAG:
+                        if not self.DBManager.CalcularTributacao_is_running:
                             if self.TextBox_SenhaAtual.text() == self.DBManager.GetPasswdByUser(self.User):
                                 if self.TextBox_Senha1.text() == self.TextBox_Senha2.text() and len(self.TextBox_Senha1.text())>3 and not self.TextBox_Senha1.text().isnumeric() and not self.TextBox_Senha1.text().isalpha():
                                     self.DBManager.ChangePassword(self.TextBox_Senha1.text())
@@ -729,7 +729,7 @@ class IHMmain(QWidget):
                         else:
                             MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
                     elif self.PageIDAux == '17a':
-                        if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
+                        if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                             if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado: # Condições para passar pra página 9
                                 # Mudar Email
                                 self.DBManager.UpdateEmail(self.TextBox_Email.text())
@@ -787,7 +787,7 @@ class IHMmain(QWidget):
                 self.HMI_Mercado.CreatePage13()
                 self.PutHeader()
             elif PageID == '14':
-                if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
+                if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                     self.ClearPage()
                     self.PageIDAux = '14'
                     self.InsertGridLayout(1, 0, 1, 20)
@@ -805,7 +805,7 @@ class IHMmain(QWidget):
                 self.CreatePage16()
                 self.PutHeader()
             elif PageID == '17a': # Derivação do perfil, Tem ID especial
-                if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
+                if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                     self.ClearPage()
                     self.PageIDAux = '17a'
                     self.InsertGridLayout(1, 0, 1, 20)
@@ -823,7 +823,7 @@ class IHMmain(QWidget):
                 if PageID == '18_':
                     if self.PageID == '20':
                         if len(self.TextBox_NovaCorretora.text())>0 and len(self.TextBox_NovaCorretora.text())<9:
-                            if not self.DBManager.FLAG:
+                            if not self.DBManager.CalcularTributacao_is_running:
                                 Executado = self.DBManager.AddCorretora()
                                 if Executado:
                                     self.ClearPage()
@@ -854,7 +854,7 @@ class IHMmain(QWidget):
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                     elif self.PageID == '22':
                         if len(self.TextBox_NovoNomeCorretora.text())>0 and len(self.TextBox_NovoNomeCorretora.text())<9:
-                            if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
+                            if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                                 Executado = self.DBManager.RenameCorretora()
                                 if Executado:
                                     self.ClearPage()
@@ -885,7 +885,7 @@ class IHMmain(QWidget):
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                     elif self.PageID == '25':
                         try:
-                            if not self.DBManager.FLAG:
+                            if not self.DBManager.CalcularTributacao_is_running:
                                 self.DBManager.UpdateContaCorrente()
                                 self.ClearPage()
                                 self.PageID = '18'
@@ -915,7 +915,7 @@ class IHMmain(QWidget):
                 if PageID == '19_':
                     if self.PageID == '37':
                         if len(self.TextBox_NovaCorretora.text())>0 and len(self.TextBox_NovaCorretora.text())<12:
-                            if not self.DBManager.FLAG:
+                            if not self.DBManager.CalcularTributacao_is_running:
                                 Executado = self.DBManager.AddCorretora()
                                 if Executado:
                                     self.ClearPage()
@@ -945,7 +945,7 @@ class IHMmain(QWidget):
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 14, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                     elif self.PageID == '39':
                         if len(self.TextBox_NovoNomeCorretora.text())>0 and len(self.TextBox_NovoNomeCorretora.text())<12:
-                            if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
+                            if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                                 Executado = self.DBManager.RenameCorretora()
                                 if Executado:
                                     self.ClearPage()
@@ -983,7 +983,7 @@ class IHMmain(QWidget):
                 if PageID == 'Bancos_':
                     if self.PageID == 'BancosAdd':
                         if len(self.TextBox_NovoBanco.text())>0 and len(self.TextBox_NovoBanco.text())<12:
-                            if not self.DBManager.FLAG:
+                            if not self.DBManager.CalcularTributacao_is_running:
                                 Executado = self.DBManager.AddBanco()
                                 if Executado:
                                     self.ClearPage()
@@ -1014,7 +1014,7 @@ class IHMmain(QWidget):
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 14, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                     elif self.PageID == 'BancosRename':
                         if len(self.TextBox_NovoNomeBanco.text())>0 and len(self.TextBox_NovoNomeBanco.text())<12:
-                            if not self.DBManager.FLAG:
+                            if not self.DBManager.CalcularTributacao_is_running:
                                 Executado = self.DBManager.RenameBanco()
                                 if Executado:
                                     self.ClearPage()
@@ -1074,7 +1074,7 @@ class IHMmain(QWidget):
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage20()
                 self.PutHeader()
             elif PageID == '21': # MessageBox
-                if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
+                if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                     self.HMI_Trades.HMI_Trades_Bolsa.CreatePage21()
                 else:
                     MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
@@ -1087,7 +1087,7 @@ class IHMmain(QWidget):
                 self.PutHeader()
             elif PageID in ['23', '23_', '_23_']:
                 if self.PageID == '34b':
-                    if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
+                    if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                         if PageID == '_23_':
                             self.Modo = 'Manual'
                             self.DBManager.RenameAtivo()
@@ -1097,7 +1097,7 @@ class IHMmain(QWidget):
                     else:
                         MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                 elif self.PageID == '35b':
-                    if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
+                    if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                         if PageID == '23_':
                             self.Modo = 'Manual'
                             self.DBManager.RenameAtivo()
@@ -1119,7 +1119,7 @@ class IHMmain(QWidget):
                         Data = datetime.strptime(Data, '%Y/%m/%d %H:%M:%S')
                         sinal = 1 if self.Deposito else -1
                         Valor = float(self.TextBox_Valor.text())*sinal
-                        if not self.DBManager.FLAG:
+                        if not self.DBManager.CalcularTributacao_is_running:
                             if self.DBManager.AddDepositoOuSaque(Data, Valor):
                                 self.TextBox_Valor.setText('')
                                 self.OnButtonPressed('Deposito')
@@ -1181,7 +1181,7 @@ class IHMmain(QWidget):
                             check = int(self.TextBox_Qqt.text())
                             check = float(self.TextBox_Preco.text())
                             check = float(self.TextBox_Corretagem.text())
-                            if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
+                            if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                                 deubom = self.DBManager.AddOperacao()
                                 if deubom:
                                     try:
@@ -1238,7 +1238,7 @@ class IHMmain(QWidget):
                             check = float(self.TextBox_Preco.text())
                             check = float(self.TextBox_Corretagem.text())
 
-                            if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
+                            if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                                 try:
                                     self.DBManager.AddAtivo()
                                     self.DBManager.AddOperacao() # Sempre vai dar bom na criação do ativo
@@ -1408,7 +1408,7 @@ class IHMmain(QWidget):
                         if len(self.TextBox_Conversao.text())>0: check = float(self.TextBox_Conversao.text())
                         if not self.TextBox_Par_Esquerda.text() == self.TextBox_Par_Direita.text():
                             if not self.TextBox_Par_Esquerda.text() == '' or not self.TextBox_Par_Direita.text() == '':
-                                if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
+                                if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                                     deubom = self.DBManager.AddOperacao()
                                     if deubom:
                                         try:
@@ -1484,7 +1484,7 @@ class IHMmain(QWidget):
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage44()
                 self.PutHeader()
             elif PageID == '45':
-                if not self.DBManager.FLAG and not self.AtualizarCotacoes_running:
+                if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                     self.ClearPage()
                     self.PageIDAux = '45' # Tem ID especial, porque é compartilhado com outros ramos
                     self.InsertGridLayout(1, 0, 1, 20)
@@ -3959,7 +3959,7 @@ class IHMmain(QWidget):
         self.Button_AttCotacoes.setFixedSize(50,50)
         self.Button_AttCotacoes.setMovie(self.Movie_AttCotacoes)
         self.Movie_AttCotacoes.jumpToFrame(0)
-        if self.AtualizarCotacoes_running: self.Movie_AttCotacoes.start()
+        if self.AtualizarCotacoes_is_running: self.Movie_AttCotacoes.start()
         else: self.Button_AttCotacoes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.Button_Perfil = QPushButton()
@@ -6029,6 +6029,8 @@ class graphical_thread():
     def __init__(self,):
         self.mIHM = None
         self.app = None
+        self.DBManager = DBManager
+        self.AtualizarCotacoes_is_running = False
 
     def run(self,):
         self.app = QApplication(sys.argv)
@@ -6036,14 +6038,15 @@ class graphical_thread():
         try:
             self.mIHM = IHMmain()
             self.app.exec_()
-            if not self.DBManager.FLAG or self.AtualizarCotacoes_running:
+            if not getattr(self.DBManager, "CalcularTributacao_is_running", False) or self.AtualizarCotacoes_is_running:
                 self.mIHM.DBManager.Disconnect()
             else:
-                while self.DBManager.FLAG or self.AtualizarCotacoes_running:
+                while getattr(self.DBManager, "CalcularTributacao_is_running", False) or self.AtualizarCotacoes_is_running:
                     pass
                 self.mIHM.DBManager.Disconnect()
         except Exception as error:
-            self.mIHM.DBManager.Disconnect()
+            if self.mIHM is not None and getattr(self.mIHM, "DBManager", None) is not None:
+                self.mIHM.DBManager.Disconnect()
             self.app.quit()
             sys.exit()
             QCoreApplication.quit()
