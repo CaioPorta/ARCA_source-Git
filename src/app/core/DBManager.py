@@ -17,39 +17,43 @@ from sqlite3 import Error
 
 import threading
 from threading import Lock
-from BackgroundProcesses import BackgroundProcess as BP
-from BackgroundProcesses import WorkerThread
+from core.BackgroundProcesses import BackgroundProcess as BP
+from core.BackgroundProcesses import WorkerThread
 
-import LoadingWindow
+import ui.popup.LoadingWindow as LoadingWindow
 
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+
+import pandas as pd
+import numpy as np
 
 class DBManager(object):
 #%% init
     def __init__(self, HMI):
         self.HMI = HMI
         self.ThreadLock = Lock()
-        self.TiposDeAtivosBasicos = ['Ações e Negócios',
-                                     'Real Estate',
-                                     'Caixa',
-                                     'Ativos Internacionais']
-        self.SubtiposDeAtivosBasicos = [('Ações e Negócios','Ações Nacionais'),
-                                        ('Ações e Negócios','Fundos de investimentos: Ações e Negócios'),
-                                        ('Real Estate','Fundos Imobiliários'),
-                                        ('Real Estate','Terrenos'),
-                                        ('Real Estate','Construções'),
-                                        ('Caixa','Renda Fixa'),
-                                        ('Caixa','Tesouro Direto e Títulos Públicos'),
-                                        ('Caixa','Previdência Privada'),
-                                        ('Caixa','COE'),
-                                        ('Caixa','Fundos de Investimento: Renda Fixa'),
-                                        ('Ativos Internacionais','BDR'),
-                                        ('Ativos Internacionais','Fundos de Investimento: Ações Internacionais')]
-        self.SetoresBasicos = self.HMI.YahooFinance.GetSetoresBasicos()
-        # if not len(self.SetoresBasicos)>0: self.SetoresBasicos = self.HMI.YahooFinance.GetSetoresBasicos()
-        self.MoedasFiatBasicas = ['CNY','USD','EUR','JPY','INR','RUB','GBP','CHF','KRW','MXN','CAD','BRL','AUD','SAR','HKD','TWD','TRY','SGD','SEK','ZAR','ILS']
+
+        self.series_BasicInfo_TiposDeAtivos = pd.Series(['Ações e Negócios',
+                                                         'Real Estate',
+                                                         'Caixa',
+                                                         'Ativos Internacionais'])
+        self.series_BasicInfo_SubtiposDeAtivos = pd.Series([('Ações e Negócios','Ações Nacionais'),
+                                                            ('Ações e Negócios','Fundos de investimentos: Ações e Negócios'),
+                                                            ('Real Estate','Fundos Imobiliários'),
+                                                            ('Real Estate','Terrenos'),
+                                                            ('Real Estate','Construções'),
+                                                            ('Caixa','Renda Fixa'),
+                                                            ('Caixa','Tesouro Direto e Títulos Públicos'),
+                                                            ('Caixa','Previdência Privada'),
+                                                            ('Caixa','COE'),
+                                                            ('Caixa','Fundos de Investimento: Renda Fixa'),
+                                                            ('Ativos Internacionais','BDR'),
+                                                            ('Ativos Internacionais','Fundos de Investimento: Ações Internacionais')])
+        self.series_BasicInfo_Setores = pd.Series(self.HMI.YahooFinance.GetSetoresBasicos())
+        self.series_BasicInfo_MoedasFiat = pd.Series(['CNY','USD','EUR','JPY','INR','RUB','GBP','CHF','KRW','MXN','CAD',
+                                                      'BRL','AUD','SAR','HKD','TWD','TRY','SGD','SEK','ZAR','ILS'])
 
         self.FLAG = False
 
@@ -57,6 +61,9 @@ class DBManager(object):
 
         self.conn = None
         self.User = None
+        self.UserPath = None
+        self.Email = None
+        self.Senha = None
 
     def __str__(self):
         def chk_conn(conn):
@@ -77,8 +84,8 @@ class DBManager(object):
             else: self.User = user
             if len(senha)==0: self.Senha = self.HMI.TextBox_Senha1.text()
             else: self.Senha = senha
-            if len(email)==0: self.Email = self.HMI.TextBox_Email.text()
-            else: self.Email = email
+            if len(email)==0: self.Email = self.HMI.TextBox_Email.text().lower()
+            else: self.Email = email.lower()
             if len(moedacorrente)==0: moedacorrente = self.HMI.ComboBox_Currency.currentText()
             if len(userpath)==0: self.UserPath = self.HMI.TextBox_Path.text()
             else: self.UserPath = userpath
@@ -107,19 +114,19 @@ class DBManager(object):
             # Create Table Perfil_TiposDeAtivos
             self.CreateTableInCurrentDB('TiposDeAtivo', [('TipoDeAtivo', 'TEXT')])
             # Adicionar os Tipos básicos
-            for TipoDeAtivo in self.TiposDeAtivosBasicos:
+            for TipoDeAtivo in self.series_BasicInfo_TiposDeAtivos:
                 self.AddRowInCurrentDB('TiposDeAtivo', [('TipoDeAtivo', TipoDeAtivo)])
             # Create Table Perfil_SubtipoDeAtivos
             self.CreateTableInCurrentDB('SubtiposDeAtivo', [('TipoDeAtivo', 'TEXT'),('SubtipoDeAtivo', 'TEXT')])
             # Adicionar os Subtipos básicos
-            for item in self.SubtiposDeAtivosBasicos:
+            for item in self.series_BasicInfo_SubtiposDeAtivos:
                 TipoDeAtivo = item[0]
                 SubtipoDeAtivo = item[1]
                 self.AddRowInCurrentDB('SubtiposDeAtivo', [('TiposDeAtivo', TipoDeAtivo),('SubtipoDeAtivo', SubtipoDeAtivo)])
             # Create Table Setores
             self.CreateTableInCurrentDB('Setores', [('Setor', 'TEXT')])
             # Adicionar os Setores básicos
-            for Setor in self.SetoresBasicos:
+            for Setor in self.series_BasicInfo_Setores:
                 self.AddRowInCurrentDB('Setores', [('Setor', Setor)])
             # Create Table Bolsa
             self.CreateTableInCurrentDB('Bolsa', [('Ativo', 'TEXT'),('TipoDeAtivo', 'TEXT'),('SubtipoDeAtivo', 'TEXT'),('Setor', 'TEXT')])
@@ -137,7 +144,7 @@ class DBManager(object):
             self.CreateTableInCurrentDB('Bancos', [('Banco', 'TEXT'),('MoedaCorrente', 'TEXT'),('ContaCorrente', 'REAL')])
             # Create Table MoedasFiat
             self.CreateTableInCurrentDB('MoedasFiat', [('MoedaFiat', 'TEXT')])
-            for Moeda in self.MoedasFiatBasicas:
+            for Moeda in self.series_BasicInfo_MoedasFiat:
                 self.AddRowInCurrentDB('MoedasFiat', [('MoedaFiat', Moeda)])
 
             return True
@@ -146,6 +153,7 @@ class DBManager(object):
 
     def CheckIfEmailExists(self, EmailToCheck):
         Exists = False
+        EmailToCheck = EmailToCheck.lower()
         try:
             currdir = os.getcwd() # Get current directory
             conn = sqlite3.connect(currdir+'\\Users.db')
@@ -185,6 +193,7 @@ class DBManager(object):
         self.ModifyDB("UPDATE Perfil SET Senha = (?)", [(NewPassword)])
 
     def ChangeEmail(self, NewEmail): # Ninguém chama essa por enquanto, mas já funciona
+        NewEmail = NewEmail.lower()
         if not self.CheckIfEmailExists(NewEmail):
             self.ModifyDB("UPDATE Perfil SET Email = (?)", [(NewEmail)])
             return True
@@ -236,12 +245,42 @@ class DBManager(object):
 
     def ConnectToDB(self, DB):
         self.conn = sqlite3.connect(DB, check_same_thread=False)
+        # self.PersistenceDB() # ideia abandonada
 
     def Disconnect(self): # Só será desconectada se a FLAG estiver em FALSE, condição imposta lá na thread principal
         # Close connection
-        try: self.conn.close()
+        try:
+            self.conn.close()
+
+            currdir = os.getcwd() # Bug Fix
+            if not self.UserPath.replace("/","\\") == currdir:
+                # Verificar se tem uma "self.User"+.db na currdir
+                os.remove(currdir+"\\"+self.User+".db")
+
         except: pass
         finally: return False  # Set self.LoggedIn as False
+        
+    # def PersistenceDB(self): #ideia abandonada
+    #     print("running PersistenceDB")
+    #     tabelas = pd.read_sql("SELECT name FROM sqlite_master WHERE type='table'", self.conn)['name']
+    #     df_tabelas = pd.DataFrame({'nomes':[]})
+    #     df_TabelasBrutoBolsa = pd.DataFrame({'nomes':[]})
+    #     df_TabelasBrutoCripto = pd.DataFrame({'nomes':[]})
+    #     for tabela in tabelas:
+    #         df_tabelas = df_tabelas.append({'nomes':tabela}, ignore_index=True)
+    #         if "¨Bolsa¨Bruto" in tabela:
+    #             df_TabelasBrutoBolsa=df_TabelasBrutoBolsa.append({'nomes':tabela.replace("¨Bruto","¨ST")}, ignore_index=True)
+    #             df_TabelasBrutoBolsa=df_TabelasBrutoBolsa.append({'nomes':tabela.replace("¨Bruto","¨DT")}, ignore_index=True)
+    #         elif "¨Cripto¨Bruto" in tabela:
+    #             df_TabelasBrutoCripto=df_TabelasBrutoCripto.append({'nomes':tabela.replace("¨Bruto","¨Refinado")}, ignore_index=True)
+    #     # print("df_TabelasBrutoBolsa ", df_TabelasBrutoBolsa)
+    #     # print("df_TabelasBrutoCripto ", df_TabelasBrutoCripto)
+    #     print("df_tabelas ", df_tabelas)
+        
+    #     for tabela in df_TabelasBrutoBolsa['nomes']:
+    #         #print(tabela, " is in df? ", df_tabelas['nomes'].isin([tabela]))
+    #         if df_tabelas['nomes'].isin([tabela]).all():
+    #             print(tabela, 'contém apenas valores False')
 
 #%% Adições
 
@@ -255,6 +294,27 @@ class DBManager(object):
         if BancoExists(Banco): return False
         MoedaCorrente = self.HMI.ComboBox_Currency.currentText()
         self.AddRowInCurrentDB('Bancos', [('Banco', "¨"+Banco+"¨"),('MoedaCorrente', MoedaCorrente),('ContaCorrente', 0)])
+
+        def AtivoExisteNaTabelaDeCotacoes(ativo):
+            Table, cursor = self.GetDataDB("SELECT * FROM Cotações")
+            aux = list(filter(lambda x: x[2]==ativo, Table))
+            if len(aux)>0:
+                return True
+            return False
+
+        if not MoedaCorrente == self.GetUserCoinCurrency() and not AtivoExisteNaTabelaDeCotacoes(MoedaCorrente):
+            Cotacao = 0.
+            Modo = "Manual"
+            try:
+                MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso',"Identificamos uma nova moeda na base de dados.\nA operação seguinte pode levar alguns minutos,\npois irá buscar online a cotação atual dessa moeda.\nNÃO FECHE O PROGRAMA DURANTE O PROCESSO SEGUINTE!")
+                Cotacao, CotacaoDolar = self.HMI.YahooFinance.GetCotacaoCripto(MoedaCorrente, self.GetUserCoinCurrency())
+                if Cotacao > 0: Modo = "Auto"
+            except:pass
+            finally:
+                self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
+                                                    ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
+                                                    ('Ativo', MoedaCorrente),
+                                                    ('Cotação', Cotacao)])
         return True
 
     def AddCorretora(self):
@@ -317,16 +377,18 @@ class DBManager(object):
             retorno, cursor = self.GetDataDB("SELECT * FROM Bolsa")
             retorno = list(filter(lambda x: str(x[0]).find(ativo.replace(" ","_"))>-1, retorno))
             if len(retorno) == 0:
+                print("add ativo: ",ativo)
                 self.AddRowInCurrentDB("Bolsa", [('Ativo', ativo.replace(" ","_")),
                                                  ('TipoDeAtivo', self.HMI.ComboBox_TipoDeAtivo.currentText()),
                                                  ('SubtipoDeAtivo', self.HMI.ComboBox_SubtipoDeAtivo.currentText()),
                                                  ('Setor', self.HMI.ComboBox_SetorAtivo.currentText())])
 
                 # Adicionar linha na Table Cotações: Se modo manual, add 0 à cotação
-                Cotacao = 0.
-                try:
-                    if not ModoManualAtivo: Cotacao = self.HMI.YahooFinance.GetCotacao(ativo, self.GetUserCoinCurrency())
-                except:pass
+                # Cotacao = 0.
+                # try:
+                #     if not ModoManualAtivo: Cotacao = self.HMI.YahooFinance.GetCotacao(ativo, self.GetUserCoinCurrency())
+                # except:pass
+                Cotacao = self.HMI.Cache_Cotacao
                 self.AddRowInCurrentDB('Cotações', [('Modo', "Manual" if ModoManualAtivo else "Auto"),
                                                     ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
                                                     ('Ativo', ativo),
@@ -393,7 +455,7 @@ class DBManager(object):
         try:
             if self.HMI.BolsaOuCripto == "Bolsa":
                 if self.HMI.PageID in ['36a','36b']: ativo = self.HMI.TextBox_NomeNovoAtivo.text().replace(" ","_")
-                elif self.HMI.PageID == '28': ativo = self.HMI.ComboBox_Ativo.currentText().replace(" ","_")
+                elif self.HMI.PageID == '28': ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
                 # Adicionar linha na Table OPs_Ativo_Corretora_Bolsa_DT. (Add novos dados. Células de cálculo automatizado, inserir zero)
                 TableName = str('OPs¨'+ativo+
                                 '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
@@ -413,8 +475,9 @@ class DBManager(object):
                 if ThereIsAnotherOPWithTheSameDate(TableName, data): return False
                 if data > datetime.now(): return False
 
+                # if self.HMI.TipoDeOperacao in ["Compra", "Venda"]:
                 self.AddRowInCurrentDB(TableNameBruto, [('Data', data),
-                                                        ('Tipo', "Compra" if self.HMI.Compra else "Venda"),
+                                                        ('Tipo', self.HMI.TipoDeOperacao),
                                                         ('Qqt', int(self.HMI.TextBox_Qqt.text())),
                                                         ('Preço', float(self.HMI.TextBox_Preco.text())),
                                                         ('Corretagem', float(self.HMI.TextBox_Corretagem.text())),
@@ -428,7 +491,7 @@ class DBManager(object):
                                                         ('Resultado', 'NULL')])
                 if not 'Fundos Imobiliários' == self.GetSubtipoDeAtivoDeAtivo(ativo):
                     self.AddRowInCurrentDB(TableNameST, [('Data', data),
-                                                        ('Tipo', "Compra" if self.HMI.Compra else "Venda"),
+                                                        ('Tipo', self.HMI.TipoDeOperacao),
                                                         ('Qqt', int(self.HMI.TextBox_Qqt.text())),
                                                         ('Preço', float(self.HMI.TextBox_Preco.text())),
                                                         ('Corretagem', float(self.HMI.TextBox_Corretagem.text())),
@@ -440,6 +503,62 @@ class DBManager(object):
                                                         ('CustoTotal', 'NULL'),
                                                         ('CustoMédio', 'NULL'),
                                                         ('Resultado', 'NULL')])
+                # else:
+                #     if self.HMI.TipoDeOperacao == "Desdobramento":
+                #         self.AddRowInCurrentDB(TableNameBruto, [('Data', data),
+                #                                                 ('Tipo', "Venda"),
+                #                                                 ('Qqt', int(self.HMI.DBManager.GetEstoque(self.HMI.ComboBox_Ativos.currentText()))), # Vende tudo
+                #                                                 ('Preço', float(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText()))), # Ao preço médio anterior
+                #                                                 ('Corretagem', 0), # 0
+                #                                                 ('TaxaB3Per', 0), # 0
+                #                                                 ('TaxaB3', 0), # 0
+                #                                                 ('Obs', self.HMI.TextBox_Obs.text()),
+                #                                                 ('Estoque', 'NULL'),
+                #                                                 ('CustoDaOperação', 0), # 0
+                #                                                 ('CustoTotal', 'NULL'),
+                #                                                 ('CustoMédio', 'NULL'),
+                #                                                 ('Resultado', 'NULL')])
+                #         self.AddRowInCurrentDB(TableNameBruto, [('Data', data),
+                #                                                 ('Tipo', "Compra"),
+                #                                                 ('Qqt', int(self.HMI.TextBox_Qqt.text())), # Compra tudo
+                #                                                 ('Preço', float(self.HMI.TextBox_Preco.text())),
+                #                                                 ('Corretagem', float(self.HMI.TextBox_Corretagem.text())), # 0
+                #                                                 ('TaxaB3Per', TaxaB3Per), # 0
+                #                                                 ('TaxaB3', TaxaB3), # 0
+                #                                                 ('Obs', self.HMI.TextBox_Obs.text()),
+                #                                                 ('Estoque', 'NULL'),
+                #                                                 ('CustoDaOperação', TaxaB3+float(self.HMI.TextBox_Corretagem.text())), # 0
+                #                                                 ('CustoTotal', 'NULL'),
+                #                                                 ('CustoMédio', 'NULL'),
+                #                                                 ('Resultado', 'NULL')])
+                #         if not 'Fundos Imobiliários' == self.GetSubtipoDeAtivoDeAtivo(ativo):
+                #             self.AddRowInCurrentDB(TableNameST, [('Data', data),
+                #                                                 ('Tipo', self.HMI.TipoDeOperacao),
+                #                                                 ('Qqt', int(self.HMI.TextBox_Qqt.text())),
+                #                                                 ('Preço', float(self.HMI.TextBox_Preco.text())),
+                #                                                 ('Corretagem', float(self.HMI.TextBox_Corretagem.text())),
+                #                                                 ('TaxaB3Per', TaxaB3Per),
+                #                                                 ('TaxaB3', TaxaB3),
+                #                                                 ('Obs', self.HMI.TextBox_Obs.text()),
+                #                                                 ('Estoque', 'NULL'),
+                #                                                 ('CustoDaOperação', TaxaB3+float(self.HMI.TextBox_Corretagem.text())),
+                #                                                 ('CustoTotal', 'NULL'),
+                #                                                 ('CustoMédio', 'NULL'),
+                #                                                 ('Resultado', 'NULL')])
+                #             self.AddRowInCurrentDB(TableNameST, [('Data', data),
+                #                                                 ('Tipo', self.HMI.TipoDeOperacao),
+                #                                                 ('Qqt', int(self.HMI.TextBox_Qqt.text())),
+                #                                                 ('Preço', float(self.HMI.TextBox_Preco.text())),
+                #                                                 ('Corretagem', float(self.HMI.TextBox_Corretagem.text())),
+                #                                                 ('TaxaB3Per', TaxaB3Per),
+                #                                                 ('TaxaB3', TaxaB3),
+                #                                                 ('Obs', self.HMI.TextBox_Obs.text()),
+                #                                                 ('Estoque', 'NULL'),
+                #                                                 ('CustoDaOperação', TaxaB3+float(self.HMI.TextBox_Corretagem.text())),
+                #                                                 ('CustoTotal', 'NULL'),
+                #                                                 ('CustoMédio', 'NULL'),
+                #                                                 ('Resultado', 'NULL')])
+
                 # Separar DT e ST se não for FII. Se for FII fazer só pra DT
                 if not 'Fundos Imobiliários' == self.GetSubtipoDeAtivoDeAtivo(ativo):
                     self.SepararDTeST(TableName)
@@ -461,7 +580,8 @@ class DBManager(object):
                 data = self.HMI.Selecao_Dia+"/"+self.HMI.Selecao_Mes+"/"+self.HMI.Selecao_Ano+" "+self.HMI.Selecao_Hora+":"+self.HMI.Selecao_Minuto+":"+self.HMI.Selecao_Segundo
                 data = datetime.strptime(data, '%d/%m/%Y %H:%M:%S')
 
-                if ThereIsAnotherOPWithTheSameDate(TableName, data): return False
+                if ThereIsAnotherOPWithTheSameDate(TableName, data):
+                    return False
                 if data > datetime.now(): return False
 
                 Taxa = 0; MoedaDaTaxa = self.GetUserCoinCurrency(); Conversao = 1
@@ -491,36 +611,44 @@ class DBManager(object):
                         return True
                     return False
 
+                JaFezOPopUp = False
+
                 ativo = self.HMI.TextBox_Par_Esquerda.text()
-                if not AtivoExisteNaTabelaDeCotacoes(ativo):
+                if not ativo == self.GetUserCoinCurrency() and not ativo in ["USD", "BUSD", "USDT", "USDC", "USDP", "TUSD"] and not AtivoExisteNaTabelaDeCotacoes(ativo):
                     Cotacao = 0.
                     Modo = "Manual"
                     try:
-                        Cotacao = self.HMI.YahooFinance.GetCotacaoCripto(ativo, self.GetUserCoinCurrency())
+                        MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso',"Identificamos uma nova moeda na base de dados("+ativo+").\nA operação seguinte pode levar alguns minutos,\npois irá buscar online a cotação atual dessa moeda.\nNÃO FECHE O PROGRAMA DURANTE O PROCESSO SEGUINTE!")
+                        JaFezOPopUp = True
+                        Cotacao, CotacaoDolar = self.HMI.YahooFinance.GetCotacaoCripto(ativo, self.GetUserCoinCurrency())
                         if Cotacao > 0: Modo = "Auto"
                     except:pass
-                    self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
-                                                        ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
-                                                        ('Ativo', ativo),
-                                                        ('Cotação', Cotacao)])
+                    finally:
+                        self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
+                                                            ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
+                                                            ('Ativo', ativo),
+                                                            ('Cotação', Cotacao)])
                 ativo = self.HMI.TextBox_Par_Direita.text()
-                if not AtivoExisteNaTabelaDeCotacoes(ativo) and not ativo == "":
+                if not ativo == self.GetUserCoinCurrency() and not ativo in ["USD", "BUSD", "USDT", "USDC", "USDP", "TUSD"] and not AtivoExisteNaTabelaDeCotacoes(ativo) and not ativo == "":
                     Cotacao = 0.
                     Modo = "Manual"
                     try:
-                        Cotacao = self.HMI.YahooFinance.GetCotacaoCripto(ativo, self.GetUserCoinCurrency())
+                        if not JaFezOPopUp: MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso',"Identificamos uma nova moeda na base de dados("+ativo+").\nA operação seguinte pode levar alguns minutos,\npois irá buscar online a cotação atual dessa moeda.\nNÃO FECHE O PROGRAMA DURANTE O PROCESSO SEGUINTE!")
+                        Cotacao, CotacaoDolar = self.HMI.YahooFinance.GetCotacaoCripto(ativo, self.GetUserCoinCurrency())
                         if Cotacao > 0: Modo = "Auto"
                     except:pass
-                    self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
-                                                        ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
-                                                        ('Ativo', ativo),
-                                                        ('Cotação', Cotacao)])
-        except Exception as e:pass
-        finally:
-            # Calcular a tributação devida de ST e de DT
-            self.CalcularTributacao()
-            self.UpdatePatrimonioRendimento()
-            return True
+                    finally:
+                        self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
+                                                            ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
+                                                            ('Ativo', ativo),
+                                                            ('Cotação', Cotacao)])
+        except Exception as e: return False
+
+        # Calcular a tributação devida de ST e de DT
+        # self.CalcularTributacao() # Via thread
+        self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
+        self.UpdatePatrimonioRendimento()
+        return True
 
     def AddTipoDeAtivo(self): # Eu uso isso ainda?
         # Adicionar linha nova
@@ -558,11 +686,25 @@ class DBManager(object):
         return True
 
 #%% Updates
+    def UpdateEmail(self, Email):
+        Email = Email.lower()
+        currdir = os.getcwd()
+        # Update TaxaB3Per em Table Perfil
+        self.ModifyDB("UPDATE Perfil SET Email = (?)", [(Email)])
+        self.Disconnect()
+
+        self.ConnectToDB(currdir + '\\Users.db')
+        self.ModifyDB("UPDATE Usuários SET Email = (?) WHERE Usuário = (?)", [Email, self.User])
+        # Disconnect from Users.db
+        self.Disconnect()
+
+        self.ConnectToDB(self.UserPath + "\\" + self.User + '.db')
+        self.Email = Email
+        self.HMI.Email = Email
 
     def UpdateTaxa(self, TaxaB3Per):
         # Update TaxaB3Per em Table Perfil
         self.ModifyDB("UPDATE Perfil SET TaxaB3Per = (?)", [(TaxaB3Per)])
-
 
     def UpdateContaCorrente_Banco(self):
         def GetRowId(Banco):
@@ -587,14 +729,14 @@ class DBManager(object):
         self.ModifyDB("UPDATE Corretoras SET ContaCorrente = (?) Where rowid = "+GetRowId(self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")), [(Valor)])
         self.UpdatePatrimonioRendimento()
 
-    def UpdateContaCorrente_Cripto(self):
+    def UpdateContaCorrente_Cripto(self, corretora = ''):
         def GetRowId(corretora):
             retorno, cursor = self.GetDataDB("SELECT rowid, * FROM Corretoras")
             retorno = list(filter(lambda x: str(x).find(corretora+"¨Cripto")>-1, retorno))
             retorno = retorno[0][0]
             return str(retorno)
         # Update Conta Corrente em Table ContaCorrente_Corretora_BolsaOuCripto
-        corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
+        if len(corretora) == 0: corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
         Valor = self.GetEstoque(ativo = self.GetUserCoinCurrency(), corretora = corretora, BolsaOuCripto = "Cripto")
         self.ModifyDB("UPDATE Corretoras SET ContaCorrente = (?) Where rowid = "+GetRowId(corretora), [(Valor)])
 
@@ -638,6 +780,23 @@ class DBManager(object):
                                                     ('Ativo', ativo+"-USD"),
                                                     ('Cotação', Valor)])
 
+    def RemoveUnusedAtivosFromCotacoes(self):
+        AtivosDaTabelaCotacoes = []
+        AtivosSendoUtilizados = []
+
+        try:
+            AtivosSendoUtilizados = self.GetAllAtivos()
+
+            retorno, cursor = self.GetDataDB("SELECT Ativo FROM Cotações")
+            AtivosDaTabelaCotacoes = list(map(lambda x: x[0],retorno))
+
+            for ativo in AtivosDaTabelaCotacoes:
+                if ativo not in AtivosSendoUtilizados and not ativo == "USD" and not ativo == self.GetUserCoinCurrency():
+                    self.ModifyDB("DELETE FROM Cotações WHERE Ativo = (?)", [(ativo)])
+        except:pass
+        finally:
+            self.ModifyDB("VACUUM")
+
 #%% Renames
     def RenameAtivo(self):
         self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
@@ -648,7 +807,7 @@ class DBManager(object):
             return str(retorno)
         # Alter all Tables e linhas que contêm "Ativo"
         try:
-            NomeAntigo = self.HMI.ComboBox_Ativo.currentText().replace(" ","_")
+            NomeAntigo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
             NomeNovo = self.HMI.TextBox_NovoNomeAtivo.text().replace(" ","_")
             ID = GetRowId('Bolsa',NomeAntigo)
             TipoDeAtivo = self.HMI.ComboBox_TipoDeAtivo.currentText()
@@ -785,7 +944,7 @@ class DBManager(object):
             if len(aux)>0: return True
             return False
         Item +=1
-        ativo = self.HMI.ComboBox_Ativo.currentText().replace(" ","_")
+        ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
         TableName = str('OPs¨'+ativo +
                         '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
                         '¨'+self.HMI.BolsaOuCripto)
@@ -819,7 +978,8 @@ class DBManager(object):
             # Calcular todas as células automatizadas e fazer update pra cada célula
             self.CalcularCelsAutomatizadas(TableNameBruto)
             self.CalcularCelsAutomatizadas(TableNameDT)
-        self.CalcularTributacao()
+        # self.CalcularTributacao() # Via thread
+        self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
         self.UpdatePatrimonioRendimento()
         return True
 
@@ -855,7 +1015,8 @@ class DBManager(object):
         # Separar DT e ST se não for FII. Se for FII fazer só pra DT
         self.CalcularCelsAutomatizadas_CriptoRefinado(TableName)
         self.UpdateContaCorrente_Cripto()
-        self.CalcularTributacao()
+        # self.CalcularTributacao() # Via thread
+        self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
         self.UpdatePatrimonioRendimento()
         return True
 
@@ -864,9 +1025,9 @@ class DBManager(object):
     def DeleteBanco(self):
         try:
             Banco = self.HMI.ComboBox_Bancos.currentText().replace(" ","_")
-            self.ModifyDB("DELETE FROM Bancos WHERE Banco = (?)",[(Banco)])
+            self.ModifyDB("DELETE FROM Bancos WHERE Banco = (?)",[("¨"+Banco+"¨")])
             self.ModifyDB("VACUUM")
-        except:pass
+        except:print('erro deletando banco')
         finally: self.UpdatePatrimonioRendimento()
 
     def DeleteCorretora(self):
@@ -914,7 +1075,7 @@ class DBManager(object):
         if self.HMI.BolsaOuCripto == "Bolsa":
             # Delete linha
             Items = list(map(lambda x: len(self.HMI.HMI_Trades.HMI_Trades_Bolsa.data_23_1)-x,Items)) # Items = list(map(lambda x: x+1,Items)) # Debug: Para quando a tabela de registros é mostrada em ordem crescente
-            ativo = self.HMI.ComboBox_Ativo.currentText().replace(" ","_")
+            ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
             TableName = str('OPs¨'+
                         ativo +
                         '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
@@ -940,7 +1101,8 @@ class DBManager(object):
                     self.CopiarBrutoPraDT(ativo)
                     # Calcular todas as células automatizadas e fazer update pra cada célula
                     self.CalcularCelsAutomatizadas(TableNameDT)
-                self.CalcularTributacao()
+                # self.CalcularTributacao() # Via thread
+                self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
             else:
                 self.ModifyDB("DROP TABLE "+TableNameBruto)
                 self.ModifyDB("DROP TABLE "+TableNameST)
@@ -970,7 +1132,8 @@ class DBManager(object):
             if len(retornoBruto)>0: self.ModifyDB("VACUUM")
             self.CalcularCelsAutomatizadas_CriptoRefinado(TableName)
             self.UpdateContaCorrente_Cripto()
-            self.CalcularTributacao()
+            # self.CalcularTributacao() # Via thread
+            self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
         self.UpdatePatrimonioRendimento()
 
     def DeleteDepositoOuSaque(self, Items):
@@ -1005,8 +1168,8 @@ class DBManager(object):
     def GetAllCorretoras_ComBolsaOuCripto(self):
         retorno, cursor = self.GetDataDB("SELECT * FROM Corretoras")
         corretoras = list(map(lambda x: x[0], retorno))
-        corretorasBolsa = list(filter(lambda Broker: "¨Bolsa" in Broker, corretoras))
-        corretorasCripto = list(filter(lambda Broker: "¨Cripto" in Broker, corretoras))
+        corretorasBolsa = list(filter(lambda x: "¨Bolsa" in x, corretoras))
+        corretorasCripto = list(filter(lambda x: "¨Cripto" in x, corretoras))
         return corretorasBolsa, corretorasCripto
 
     def GetCorretoras(self, BolsaOuCripto=''):
@@ -1026,17 +1189,17 @@ class DBManager(object):
         if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
         corretora = corretora.replace(" ","_")
         if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
-        ativos = []
+        Ativos = []
 
         if BolsaOuCripto == "Bolsa":
             tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
             tabelas = list(map(lambda x: x[0], tabelas))
             tabelas = list(filter(lambda x: x.find("¨"+corretora+'¨'+BolsaOuCripto)>-1, tabelas))
-            ativos = list(filter(lambda x: not "¨ST" in x, tabelas))
-            ativos = list(filter(lambda x: not "¨DT" in x, ativos))
-            ativos = list(filter(lambda x: not "¨DepSaq" in x, ativos))
-            ativos = list(map(lambda x: x.replace('¨'+corretora+'¨'+BolsaOuCripto+'¨Bruto',''), ativos))
-            ativos = list(map(lambda x: x.replace('OPs¨',''), ativos))
+            Ativos = list(filter(lambda x: not "¨ST" in x, tabelas))
+            Ativos = list(filter(lambda x: not "¨DT" in x, Ativos))
+            Ativos = list(filter(lambda x: not "¨DepSaq" in x, Ativos))
+            Ativos = list(map(lambda x: x.replace('¨'+corretora+'¨'+BolsaOuCripto+'¨Bruto',''), Ativos))
+            Ativos = list(map(lambda x: x.replace('OPs¨',''), Ativos))
 
         elif BolsaOuCripto == "Cripto":
             try:
@@ -1046,12 +1209,89 @@ class DBManager(object):
                     headers = list(map(lambda x: x[0], cursor.description))[13:]
                     for idx, head in enumerate(headers):
                         if (idx+1) % 5 == 0:
-                            ativos.append(head.replace("PreçoMédioDe¨",""))
+                            Ativos.append(head.replace("PreçoMédioDe¨",""))
                 else:
-                    ativos = []
-            except: ativos = []
-        ativos = list(map(lambda x: x.replace("_"," "), ativos))
-        return ativos
+                    Ativos = []
+            except: Ativos = []
+        Ativos = list(map(lambda x: x.replace("_"," "), Ativos))
+        return sorted(Ativos)
+
+    def GetAllAtivos(self):
+        Ativos = []
+        corretorasBolsa, corretorasCripto = self.GetAllCorretoras_ComBolsaOuCripto()
+        corretorasBolsa = list(map(lambda corretora: corretora.replace("¨Bolsa",""), corretorasBolsa))
+        corretorasCripto = list(map(lambda corretora: corretora.replace("¨Cripto",""), corretorasCripto))
+        for corretora in corretorasBolsa:
+            Ativos.extend(self.GetAtivos(corretora, "Bolsa"))
+        for corretora in corretorasCripto:
+            Ativos.extend(self.GetAtivos(corretora, "Cripto"))
+        Ativos = list(set(Ativos))
+        return sorted(Ativos)
+
+    def GetAllAtivos_Cripto(self):
+        Ativos = []
+        corretorasBolsa, corretorasCripto = self.GetAllCorretoras_ComBolsaOuCripto()
+        corretorasCripto = list(map(lambda corretora: corretora.replace("¨Cripto",""), corretorasCripto))
+        for corretora in corretorasCripto:
+            try: Ativos.extend(self.GetAtivos(corretora, "Cripto"))
+            except: pass
+        Ativos = list(set(Ativos))
+        return sorted(Ativos)
+
+    def GetAllAtivosPorCorretora_Cripto(self, corretora = ''):
+        if not len(corretora) > 0: corretora = self.HMI.ComboBox_Corretoras.currentText()
+        AtivosEstoque = []
+        Ativos = []
+
+        retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨" + corretora + "¨Cripto¨Refinado")
+        headers = list(map(lambda x: x[0], cursor.description))
+
+        for col in headers:
+            if "EstoqueDe¨" in col:
+                Ativos.append(col.replace("EstoqueDe¨",""))
+        Ativos = sorted(Ativos)
+        for ativo in Ativos:
+            AtivosEstoque.append((ativo, self.GetEstoque(ativo, corretora, "Cripto")))
+        return AtivosEstoque
+
+    def GetAllAtivos_Bolsa(self):
+        Ativos = []
+        corretorasBolsa, corretorasCripto = self.GetAllCorretoras_ComBolsaOuCripto()
+        corretorasBolsa = list(map(lambda corretora: corretora.replace("¨Bolsa",""), corretorasBolsa))
+        for corretora in corretorasBolsa:
+            try: Ativos.extend(self.GetAtivos(corretora, "Bolsa"))
+            except: pass
+        Ativos = list(set(Ativos))
+        return Ativos
+
+    def GetAllAtivosPorTipoDeAtivo_Bolsa(self, TipoDeAtivo):
+        Ativos = []
+        Volume = []
+
+        corretorasBolsa, corretorasCripto = self.GetAllCorretoras_ComBolsaOuCripto()
+        corretorasBolsa = list(map(lambda corretora: corretora.replace("¨Bolsa",""), corretorasBolsa))
+
+        retorno, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?)",[(TipoDeAtivo)])
+        Ativos = list(map(lambda x: x[0], retorno))
+        for ativo in Ativos:
+            estoque_ativo = 0
+            for corretora in corretorasBolsa:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨Bolsa¨Bruto")
+                    estoque_ativo += retorno[-1][8]
+                except: pass # Não tem esse ativo nessa corretora
+            cotacao_ativo = self.GetCustoAtivo(ativo, "Bolsa")
+            Volume.append(estoque_ativo * cotacao_ativo)
+
+        # Ordenar BDR
+        ParaOrdenar = []
+        for i, ativo in enumerate(Ativos):
+            if Volume[i] > 0: ParaOrdenar.append((ativo, Volume[i]))
+        Ordenado = sorted(ParaOrdenar, key=lambda tup: tup[1])
+        Ativos = list(map(lambda tup: tup[0], Ordenado))
+        Volume = list(map(lambda tup: tup[1], Ordenado))
+
+        return Ativos, Volume
 
     def GetTiposDeAtivo(self):
         retorno, cursor = self.GetDataDB("SELECT * FROM TiposDeAtivo")
@@ -1097,9 +1337,16 @@ class DBManager(object):
             else: SubtipoDeAtivo = ''
         return SubtipoDeAtivo
 
+    def GetAtivosDaTabelaBolsa(self):
+        retorno, cursor = self.GetDataDB("SELECT * FROM Bolsa")
+        Ativos = []
+        if len(retorno)>0:
+            Ativos = list(map(lambda x: x[0], retorno))
+        return Ativos
+
     def GetCustosDasOperacoes(self, ativo = '', corretora = '', BolsaOuCripto = ''):
         CustoDaOperacao = 0
-        if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativo.currentText().replace(" ","_")
+        if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
         if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
         corretora = corretora.replace(" ","_")
         if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
@@ -1135,10 +1382,8 @@ class DBManager(object):
         return CustoDaOperacao
 
     def GetEstoque(self, ativo = '', corretora = '', BolsaOuCripto = ''):
-        estoqueST = 0.
-        estoqueDT = 0.
         estoque = 0.
-        if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativo.currentText().replace(" ","_")
+        if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
         if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
         corretora = corretora.replace(" ","_")
         if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
@@ -1146,35 +1391,136 @@ class DBManager(object):
         if BolsaOuCripto == "Bolsa":
             if len(ativo)>0 and len(corretora)>0:
                 try:
-                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨ST")
-                    estoqueST = retorno[-1][8]
-                    if estoqueST == "NULL":
-                        estoqueST = 0.
-                except: estoqueST = 0.
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨Bolsa¨Bruto")
+                    estoque = retorno[-1][8]
+                    if estoque == "NULL":
+                        estoque = 0.
+                except: estoque = 0.
+
+        elif BolsaOuCripto == "Cripto":
+            try:
+                retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+corretora+"¨Cripto¨Refinado")
+                headers = list(map(lambda x: x[0], cursor.description))
+                column = headers.index("EstoqueDe¨"+ativo)
+                estoque = retorno[-1][column]
+                column = headers.index("HoldDe¨"+ativo)
+                estoque += retorno[-1][column]
+                column = headers.index("StakeDe¨"+ativo)
+                estoque += retorno[-1][column]
+            except:pass
+        return estoque
+
+    def GetEstoqueAtivo(self, ativo='', BolsaOuCripto=''):
+        estoque = 0.
+        if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
+        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
+
+        corretorasBolsa, corretorasCripto = self.GetAllCorretoras_ComBolsaOuCripto()
+
+        if BolsaOuCripto == "Bolsa":
+            for corretoraBolsa in corretorasBolsa:
+                retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretoraBolsa+"¨Bruto")
                 try:
-                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨DT")
-                    estoqueDT = retorno[-1][8]
-                    if estoqueDT == "NULL":
-                        estoqueDT = 0.
-                except: estoqueDT = 0.
-            estoque = int(estoqueST) + int(estoqueDT)
+                    if not retorno[-1][8] == "NULL":
+                        estoque += retorno[-1][8]
+                except: pass
+
+        elif BolsaOuCripto == "Cripto":
+            for corretoraCripto in corretorasCripto:
+                retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+corretoraCripto+"¨Refinado")
+                headers = list(map(lambda x: x[0], cursor.description))
+                try:
+                    column = headers.index("EstoqueDe¨"+ativo)
+                    if not retorno[-1][column] == "NULL":
+                        estoque += retorno[-1][column] # Trade
+                    # column = headers.index("HoldDe¨"+ativo)
+                    if not retorno[-1][column+1] == "NULL":
+                        estoque += retorno[-1][column+1] # Hold
+                    # column = headers.index("StakeDe¨"+ativo)
+                    if not retorno[-1][column+2] == "NULL":
+                        estoque += retorno[-1][column+2] # Stake
+                except: pass
+        return estoque
+
+    def GetCusto(self, ativo = '', corretora = '', BolsaOuCripto = ''):
+        custo = 0.
+        if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
+        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
+        corretora = corretora.replace(" ","_")
+        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
+
+        if BolsaOuCripto == "Bolsa":
+            if len(ativo)>0 and len(corretora)>0:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨Bruto")
+                    custo = retorno[-1][10]
+                except: custo = 0.
 
         elif BolsaOuCripto == "Cripto":
             try:
                 TableName = "OPs¨"+corretora+"¨Cripto¨Refinado"
                 retorno, cursor = self.GetDataDB("SELECT * FROM "+TableName)
                 headers = list(map(lambda x: x[0], cursor.description))
-                column = headers.index("EstoqueDe¨"+ativo)
-                estoque = retorno[-1][column]
-            except:pass
-        return round(float(estoque), 8)
+                column = headers.index("CustoDe¨"+ativo)
+                custo = retorno[-1][column]
+            except: custo = 0.
+        return custo
+
+    def GetCustoAtivo(self, ativo='', BolsaOuCripto=''): # É a soma do custo do ativo em todas as corretoras
+        custo = 0.
+        if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
+        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
+        corretorasBolsa, corretorasCripto = self.GetAllCorretoras_ComBolsaOuCripto()
+        if BolsaOuCripto == "Bolsa":
+            for corretora in corretorasBolsa:
+                corretora = corretora.replace("¨Bolsa","")
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨Bruto")
+                    custo += retorno[-1][10]
+                except: pass # Corretora não tem esse ativo
+
+        elif BolsaOuCripto == "Cripto":
+            for corretora in corretorasCripto:
+                corretora = corretora.replace("¨Cripto","")
+                try:
+                    TableName = "OPs¨"+corretora+"¨Cripto¨Refinado"
+                    retorno, cursor = self.GetDataDB("SELECT * FROM "+TableName)
+                    headers = list(map(lambda x: x[0], cursor.description))
+                    column = headers.index("CustoDe¨"+ativo)
+                    custo += retorno[-1][column]
+                except: pass # Corretora não tem esse ativo
+        return custo
+
+    def GetPrecoMedio(self, ativo = '', corretora = '', BolsaOuCripto = ''):
+        PM = 1.
+        if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
+        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
+        corretora = corretora.replace(" ","_")
+        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
+
+        if BolsaOuCripto == "Bolsa":
+            if len(ativo)>0 and len(corretora)>0:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨Bruto")
+                    PM = retorno[-1][11]
+                except: PM = 0.
+
+        elif BolsaOuCripto == "Cripto":
+            try:
+                TableName = "OPs¨"+corretora+"¨Cripto¨Refinado"
+                retorno, cursor = self.GetDataDB("SELECT * FROM "+TableName)
+                headers = list(map(lambda x: x[0], cursor.description))
+                column = headers.index("PreçoMédioDe¨"+ativo)
+                PM = retorno[-1][column]
+            except: PM = 0.
+        return PM
 
     def GetAllOperacoes(self, DTeST = '', ativo = ''):
         BolsaOuCripto = self.HMI.BolsaOuCripto
         corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
         if self.HMI.BolsaOuCripto == "Bolsa":
             try:
-                if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativo.currentText().replace(" ","_")
+                if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
                 if len(ativo)>0:
                     if DTeST == "":
                         retornoAux, cursor = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨Bruto")
@@ -1410,7 +1756,7 @@ class DBManager(object):
             return [(datetime.now().strftime('%Y-%m-%d %H:%M:%S'),0,0,0,0,0)] # Tamanho 6
 
     def GetModoCotacao(self, ativo = ''):
-        if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativo.currentText().replace(" ","_")
+        if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
         Modo = 'Manual'
         try:
             ativo = ativo.replace(" ","_")
@@ -1425,10 +1771,12 @@ class DBManager(object):
         MoedaCorrente = retorno[0][0]
         return MoedaCorrente
 
-    def GetCorretoraCoinCurrency(self, corretora = ''):
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()+"¨"+self.HMI.BolsaOuCripto
+    def GetCorretoraCoinCurrency(self, corretora = '', BolsaOuCripto=''):
+        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
+        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
         corretora = corretora.replace(" ","_")
-        retorno, cursor = self.GetDataDB("SELECT * FROM Corretoras WHERE Corretora = (?)",[(corretora)])
+        Corretora = corretora + "¨" + BolsaOuCripto
+        retorno, cursor = self.GetDataDB("SELECT * FROM Corretoras WHERE Corretora = (?)",[(Corretora)])
         MoedaCorrente = ''
         for row in retorno:
             MoedaCorrente = str(row[1])
@@ -1442,7 +1790,9 @@ class DBManager(object):
         return str(MoedaCorrente)
 
     def GetCotacao(self, ativo):
+        if ativo == self.GetUserCoinCurrency(): return 1
         ativo = ativo.replace(" ","_")
+        if ativo in ["BUSD", "USDT", "USDC", "USDP", "TUSD"]: ativo = "USD"
         cotacao = 0
         retorno, cursor = self.GetDataDB("SELECT Cotação FROM Cotações WHERE Ativo = (?)",[(ativo)])
         if len(retorno)>0: cotacao = retorno[0][0]
@@ -1466,7 +1816,7 @@ class DBManager(object):
                     Cotacao = self.GetCotacao(ativo)
                     if not (Cotacao > 0. and Estoque >= 0.): return -1
                     Patrimonio += Estoque*Cotacao
-                    Patrimonio -= self.GetCustosDasOperacoes(ativo, corretora, BolsaOuCripto)
+                    # Patrimonio -= self.GetCustosDasOperacoes(ativo, corretora, BolsaOuCripto)
             except: Patrimonio = -2
 
         elif BolsaOuCripto == "Cripto":
@@ -1474,7 +1824,8 @@ class DBManager(object):
                 ativos = self.GetAtivos(corretora, BolsaOuCripto)
                 for ativo in ativos:
                     Estoque = float(self.GetEstoque(ativo, corretora, BolsaOuCripto))
-                    Cotacao = self.GetCotacao(ativo)
+                    if ativo == self.GetUserCoinCurrency(): Cotacao = 1.
+                    else: Cotacao = self.GetCotacao(ativo)
                     if Cotacao == -1: return -1
                     Patrimonio += Estoque*Cotacao
             except: Patrimonio = -2
@@ -1491,14 +1842,14 @@ class DBManager(object):
             retorno = [x[1] for x in retorno]
             Investido = sum(retorno)
         elif BolsaOuCripto == "Cripto":
-            retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+corretora+"¨"+BolsaOuCripto+"¨Bruto")
-            # Pegar o volume das OPs de Depósito
-            depositos = list(filter(lambda x: x[2]=="Depósito", retorno))
-            depositos = list(map(lambda x: x[9]*x[5]*x[6], depositos)) # Volume
-            Investido = sum(depositos)
-            saques = list(filter(lambda x: x[2]=="Saque", retorno))
-            saques = list(map(lambda x: x[9]*x[5]*x[6], saques)) # Volume
-            Investido -= sum(saques)
+            # Soma todos os custos da última linha da tabela de ¨Refinado
+            headers, cursor = self.GetDataDB("PRAGMA table_info(OPs¨"+corretora+"¨"+BolsaOuCripto+"¨Refinado)")
+            headers = list(map(lambda x: x[1],headers))
+            idxs = list(filter(lambda x: x[1].find("CustoDe¨")>-1, enumerate(headers)))
+            idxs = list(map(lambda x: x[0], idxs))
+            conteudo, cursor = self.GetDataDB("SELECT * FROM OPs¨"+corretora+"¨"+BolsaOuCripto+"¨Refinado")
+            for idx in idxs:
+                Investido += conteudo[-1][idx]
         return Investido
 
     def GetAllContasCorrente(self):
@@ -1517,7 +1868,10 @@ class DBManager(object):
             self.SumContasCorrentes += valor
         for banco in self.GetBancos():
             valor = self.GetValorEmContaCorrente_Banco(banco)
-            resposta.append((banco, valor))
+            currency = self.GetBancoCoinCurrency(banco)
+            if not currency == self.GetUserCoinCurrency():
+                valor = valor*self.GetCotacao(currency)
+            resposta.append((banco, round(valor,2)))
             self.SumContasCorrentes += valor
         return resposta
 
@@ -1528,7 +1882,11 @@ class DBManager(object):
 
         retorno, cursor = self.GetDataDB("SELECT * FROM Corretoras")
         for row in retorno:
-            if corretora+"¨"+BolsaOuCripto in row[0]: valor = float(row[2])
+            if corretora+"¨"+BolsaOuCripto in row[0]:
+                # currency = row[1]
+                valor = float(row[2])
+                # if not currency == self.GetUserCoinCurrency():
+                #     valor = valor*self.GetCotacao(currency)
         return round(valor, 2)
 
     def GetValorEmContaCorrente_Banco(self, Banco):
@@ -1536,7 +1894,8 @@ class DBManager(object):
         retorno, cursor = self.GetDataDB("SELECT * FROM Bancos")
         valor = 0.
         for row in retorno:
-            if "¨"+Banco+"¨" in row[0]: valor = float(row[2])
+            if "¨"+Banco+"¨" in row[0]:
+                valor = float(row[2])
         return round(valor, 2)
 
     def GetDataUltimaOPRegistrada(self, corretora = ''):
@@ -1573,13 +1932,12 @@ class DBManager(object):
             elif self.HMI.BolsaOuCripto == "Cripto":
                 # Pegar último depósito feito da tabela
                 retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+corretora+"¨"+self.HMI.BolsaOuCripto+"¨Bruto")
-                retorno = list(filter(lambda x: "Depósito" in x[2] or "Saque" in x[2], retorno))
+                UserCoin = self.GetUserCoinCurrency()
+                retorno = list(filter(lambda x: ("Depósito" in x[2] or "Saque" in x[2]) and x[3] == UserCoin, retorno))
                 if len(retorno)>0:
-                    Preco = retorno[-1][5]
                     Qqt = retorno[-1][6]
                     Conversão = retorno[-1][9]
-                    CotacaoCurrency = Conversão * Preco
-                    Volume = CotacaoCurrency * Qqt
+                    Volume = Conversão * Qqt
                     valor = Volume
                     if retorno[-1][2] == "Saque": valor = -valor
         return valor
@@ -1599,6 +1957,25 @@ class DBManager(object):
             datas.append(row[1])
             ativos.append(row[2].replace("_"," "))
             cotacoes.append(row[3])
+        AtivosDaBolsa = self.GetAtivosDaTabelaBolsa()
+        ListOfTuples1 = []
+        for idx, ativo in enumerate(ativos):
+            if ativo in AtivosDaBolsa:
+                ListOfTuples1.append((ativos[idx], datas[idx], cotacoes[idx]))
+        ListOfTuples1 = sorted(ListOfTuples1, key=lambda x: x[0])
+
+        ListOfTuples2 = []
+        for idx, ativo in enumerate(ativos):
+            if not ativo in AtivosDaBolsa:
+                ListOfTuples2.append((ativos[idx], datas[idx], cotacoes[idx]))
+        ListOfTuples2 = sorted(ListOfTuples2, key=lambda x: x[0])
+        ListOfTuples = ListOfTuples1
+        ListOfTuples.extend(ListOfTuples2)
+
+        ativos = list(map(lambda x: x[0],ListOfTuples))
+        datas = list(map(lambda x: x[1],ListOfTuples))
+        cotacoes = list(map(lambda x: x[2],ListOfTuples))
+
         return ativos, datas, cotacoes
 
     def GetEmailByUser(self, User):
@@ -1619,7 +1996,7 @@ class DBManager(object):
         try:
             currdir = os.getcwd() # Get current directory
             conn = sqlite3.connect(currdir+'\\Users.db')
-            retorno = list(conn.execute("SELECT * FROM Usuários WHERE Email = (?)",[(Email)]))
+            retorno = list(conn.execute("SELECT * FROM Usuários WHERE Email = (?)",[(Email.lower())]))
             for row in retorno:
                 User = row[0]
         except:pass
@@ -1962,8 +2339,8 @@ class DBManager(object):
         Coins = []
         for TableName in TableNamesCriptoRefinado:
             retorno, cursor = self.GetDataDB("SELECT ParEsquerdo, ParDireito FROM "+TableName)
-            Coins.extend(retorno[0])
-            Coins.extend(retorno[1])
+            for i, pair in enumerate(retorno):
+                Coins.extend(retorno[i])
         Coins = list(dict.fromkeys(Coins))
         Coins = list(filter(lambda x: not x=="" and not x==self.GetUserCoinCurrency(), Coins))
 
@@ -1990,11 +2367,11 @@ class DBManager(object):
                 break
 
         if len(Volume_Coins)>=1:
-            Volume_Coins = sorted(Volume_Coins, key=lambda tup: tup[1])
-            Volume_Top1 = Volume_Coins[-1][1]
-        if len(Volume_Coins)>=2: Volume_Top2 = Volume_Coins[-2][1]
-        if len(Volume_Coins)>=3: Volume_Top3 = Volume_Coins[-3][1]
-        if len(Volume_Coins)>=4: Volume_Outras = sum([tup[1] for tup in Volume_Coins[:-3]])
+            Volume_Coins = sorted(Volume_Coins, key=lambda tup: tup[1], reverse=True)
+            Volume_Top1 = round(Volume_Coins[0][1], 8)
+        if len(Volume_Coins)>=2: Volume_Top2 = round(Volume_Coins[1][1], 8)
+        if len(Volume_Coins)>=3: Volume_Top3 = round(Volume_Coins[2][1], 8)
+        if len(Volume_Coins)>=4: Volume_Outras = round(sum([tup[1] for tup in Volume_Coins[3:]]), 8)
 
         return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras
 
@@ -2011,10 +2388,10 @@ class DBManager(object):
         Coins = []
         for TableName in TableNamesCriptoRefinado:
             retorno, cursor = self.GetDataDB("SELECT ParEsquerdo, ParDireito FROM "+TableName)
-            Coins.extend(retorno[0])
-            Coins.extend(retorno[1])
+            for i, pair in enumerate(retorno):
+                Coins.extend(retorno[i])
         Coins = list(dict.fromkeys(Coins))
-        Coins = list(filter(lambda x: not x=="", Coins))
+        Coins = list(filter(lambda x: not x=="" and not x==self.GetUserCoinCurrency(), Coins))
 
         Label_Coins = []
         for coin in Coins:
@@ -2041,827 +2418,594 @@ class DBManager(object):
         if len(Label_Coins)>=1:
             Label_Coins = sorted(Label_Coins, key=lambda tup: tup[1])
             Label_Top1 = Label_Coins[-1][0]
-            print(Label_Top1)
         if len(Label_Coins)>=2: Label_Top2 = Label_Coins[-2][0]
         if len(Label_Coins)>=3: Label_Top3 = Label_Coins[-3][0]
 
         return Label_Top1, Label_Top2, Label_Top3
 
-    def GetDataForAcoesNacionais(self):
+    def GetDetailedDataForCriptomoedas(self):
+        Labels = []
+        Volumes = []
+
+        # Pegar o estoque de cada moeda, independente da corretora
+
+        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
+        Tabelas = list(map(lambda x: x[0],Tabelas))
+        TableNamesCriptoRefinado = list(filter(lambda x: x.find("¨Cripto¨Refinado")>-1 and x.find("OPs¨")>-1, Tabelas))
+        Coins = []
+        for TableName in TableNamesCriptoRefinado:
+            retorno, cursor = self.GetDataDB("SELECT ParEsquerdo, ParDireito FROM "+TableName)
+            for i, pair in enumerate(retorno):
+                Coins.extend(retorno[i])
+        Coins = list(dict.fromkeys(Coins))
+        Coins = list(filter(lambda x: not x=="", Coins))
+
+        Volume_Coins = []
+        for coin in Coins:
+            flag = 0.
+            VolumeTrade = 0.
+            VolumeHold = 0.
+            VolumeStake = 0.
+            for TableName in TableNamesCriptoRefinado:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT EstoqueDe¨"+coin+" FROM "+TableName)
+                    EstoqueTrade = retorno[-1][0]
+                    retorno, cursor = self.GetDataDB("SELECT HoldDe¨"+coin+" FROM "+TableName)
+                    EstoqueHold = retorno[-1][0]
+                    retorno, cursor = self.GetDataDB("SELECT StakeDe¨"+coin+" FROM "+TableName)
+                    EstoqueStake = retorno[-1][0]
+                    Cotacao = self.GetCotacao(coin)
+                    if EstoqueTrade < 0. or EstoqueHold < 0. or EstoqueStake < 0. or Cotacao <= 0.:
+                        flag = -1.
+                        break
+                    VolumeTrade += EstoqueTrade * Cotacao
+                    VolumeHold += EstoqueHold * Cotacao
+                    VolumeStake += EstoqueStake * Cotacao
+                except:pass # Não tem essa moeda nessa corretora
+            Volume_Coins.append((coin,(VolumeTrade,VolumeHold,VolumeStake)))
+            if flag == -1.:
+                Volume_Coins = []
+                break
+
+        if len(Volume_Coins) > 0:
+            Volume_Coins = sorted(Volume_Coins, key=lambda tup: tup[1][0]+tup[1][1]+tup[1][2])
+            Labels = list(map(lambda tup: tup[0], Volume_Coins))
+            Volumes = list(map(lambda tup: tup[1], Volume_Coins))
+
+        return Labels, Volumes
+
+    def GetDetailedDataForCriptomoedas_AtivoPorCorretora(self, coin):
+        Labels = [] # Corretoras
+        Volumes = []
+
+        corretorasBolsa, corretorasCripto = self.GetAllCorretoras_ComBolsaOuCripto()
+        corretoras = list(map(lambda corretora: corretora.replace("¨Cripto",""), corretorasCripto))
+        corretoras = sorted(corretoras)
+        Labels = corretoras
+
+        # Pegar o estoque da moeda em cada corretora
+
+        flag = 0.
+        for corretora in corretoras:
+            Volume = 0.
+            try:
+                retorno, cursor = self.GetDataDB("SELECT EstoqueDe¨"+coin+" FROM OPs¨"+corretora+"¨Cripto¨Refinado")
+                EstoqueTrade = retorno[-1][0]
+                retorno, cursor = self.GetDataDB("SELECT HoldDe¨"+coin+" FROM OPs¨"+corretora+"¨Cripto¨Refinado")
+                EstoqueHold = retorno[-1][0]
+                retorno, cursor = self.GetDataDB("SELECT StakeDe¨"+coin+" FROM OPs¨"+corretora+"¨Cripto¨Refinado")
+                EstoqueStake = retorno[-1][0]
+                Cotacao = self.GetCotacao(coin)
+                if EstoqueTrade < 0. or EstoqueHold < 0. or EstoqueStake < 0. or Cotacao <= 0.:
+                    flag = -1.
+                    break
+                Volume = EstoqueTrade * Cotacao
+                Volume += EstoqueHold * Cotacao
+                Volume += EstoqueStake * Cotacao
+            except:pass # Não tem essa moeda nessa corretora
+            Volumes.append(Volume)
+
+        if flag == -1.:
+            Volumes = []
+            Labels = []
+
+        return Labels, Volumes
+
+    def GetDetailedDataForCriptomoedas_TotalDeUserCoinPorCorretora(self):
+        Labels = [] # Corretoras
+        Volumes = []
+
+        corretorasBolsa, corretorasCripto = self.GetAllCorretoras_ComBolsaOuCripto()
+        corretoras = list(map(lambda corretora: corretora.replace("¨Cripto",""), corretorasCripto))
+        corretoras = sorted(corretoras)
+        Labels = corretoras
+
+        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
+        Tabelas = list(map(lambda x: x[0],Tabelas))
+        TableNamesCriptoRefinado = list(filter(lambda x: x.find("¨Cripto¨Refinado")>-1 and x.find("OPs¨")>-1, Tabelas))
+        Coins = []
+        for TableName in TableNamesCriptoRefinado:
+            retorno, cursor = self.GetDataDB("SELECT ParEsquerdo, ParDireito FROM "+TableName)
+            for i, pair in enumerate(retorno):
+                Coins.extend(retorno[i])
+        Coins = list(dict.fromkeys(Coins))
+        Coins = list(filter(lambda x: not x=="" and not x==self.GetUserCoinCurrency(), Coins))
+
+        # Pegar o estoque da moeda em cada corretora
+
+        flag = 0.
+        for corretora in corretoras:
+            Volume = 0.
+            for coin in Coins:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT CustoDe¨"+coin+" FROM OPs¨"+corretora+"¨Cripto¨Refinado")
+                    CustoDe = retorno[-1][0]
+                    if CustoDe < 0.:
+                        flag = -1.
+                        break
+                    Volume += CustoDe
+                except:pass # Não tem essa moeda nessa corretora
+            Volumes.append(Volume)
+
+            if flag == -1.:
+                Volumes = []
+                Labels = []
+                break
+
+        return Labels, Volumes
+
+    def GetDetailedDataForAtivosInternacionais(self):
+        Labels_BDR=[]
+        Labels_Fundos=[]
+        Values_BDR=[]
+        Values_Fundos=[]
+        Setores_BDR=[]
+        Setores_Fundos=[]
+
+        retorno, cursor = self.GetDataDB("SELECT Ativo, Setor FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Ativos Internacionais", "BDR"])
+        Labels_BDR = list(map(lambda x: x[0], retorno))
+        Setores_BDR = list(map(lambda x: x[1], retorno))
+
+        retorno, cursor = self.GetDataDB("SELECT Ativo, Setor FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Ativos Internacionais", "Fundos de Investimento: Ações Internacionais"])
+        Labels_Fundos = list(map(lambda x: x[0], retorno))
+        Setores_Fundos = list(map(lambda x: x[1], retorno))
+
+        corretorasBolsa, corretorasCripto = self.GetAllCorretoras_ComBolsaOuCripto()
+
+        for ativo in Labels_BDR:
+            estoque = 0
+            for corretoraBolsa in corretorasBolsa:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretoraBolsa+"¨Bruto")
+                    estoque += retorno[-1][8]
+                except:pass # Não tem esse ativo nessa corretora
+            cotacao = self.GetCotacao(ativo)
+            if cotacao > 0 and estoque >= 0:
+                Values_BDR.append(estoque*cotacao)
+            else: return [''],[''],[0],[0]
+
+        for ativo in Labels_Fundos:
+            estoque = 0
+            for corretoraBolsa in corretorasBolsa:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretoraBolsa+"¨Bruto")
+                    estoque += retorno[-1][8]
+                except:pass # Não tem esse ativo nessa corretora
+            cotacao = self.GetCotacao(ativo)
+            if cotacao > 0 and estoque >= 0:
+                Values_BDR.append(estoque*cotacao)
+            else: return [''],[''],[0],[0]
+
+        # Ordenar BDR
+        ParaOrdenar = []
+        for i, BDR in enumerate(Labels_BDR):
+            if Values_BDR[i] > 0: ParaOrdenar.append((BDR, Values_BDR[i], Setores_BDR[i]))
+        Ordenado = sorted(ParaOrdenar, key=lambda tup: tup[1])
+        Labels_BDR = list(map(lambda tup: tup[0], Ordenado))
+        Values_BDR = list(map(lambda tup: tup[1], Ordenado))
+        Setores_BDR = list(map(lambda tup: tup[2], Ordenado))
+
+        # Ordenar Fundos
+        ParaOrdenar = []
+        for i, Fundos in enumerate(Labels_Fundos):
+            if Values_Fundos[i] > 0: ParaOrdenar.append((Fundos, Values_Fundos[i], Setores_Fundos[i]))
+        Ordenado = sorted(ParaOrdenar, key=lambda tup: tup[1])
+        Labels_Fundos = list(map(lambda tup: tup[0], Ordenado))
+        Values_Fundos = list(map(lambda tup: tup[1], Ordenado))
+        Setores_Fundos = list(map(lambda tup: tup[2], Ordenado))
+
+        return Labels_BDR, Labels_Fundos, Values_BDR, Values_Fundos, Setores_BDR, Setores_Fundos
+
+    def GetDetailedDataForCaixa(self):
+        Labels_RF = []
+        Labels_TDTP = []
+        Labels_PP = []
+        Labels_COE = []
+        Labels_Fundos = []
+        Values_RF = []
+        Values_TDTP = []
+        Values_PP = []
+        Values_COE = []
+        Values_Fundos = []
+        Setores_RF = []
+        Setores_TDTP = []
+        Setores_PP = []
+        Setores_COE = []
+        Setores_Fundos = []
+
+        retorno, cursor = self.GetDataDB("SELECT Ativo, Setor FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)", ["Caixa", "Renda Fixa"])
+        Labels_RF = list(map(lambda x: x[0], retorno))
+        Setores_RF = list(map(lambda x: x[1], retorno))
+
+        retorno, cursor = self.GetDataDB("SELECT Ativo, Setor FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)", ["Caixa", "Tesouro Direto e Títulos Públicos"])
+        Labels_TDTP = list(map(lambda x: x[0], retorno))
+        Setores_TDTP = list(map(lambda x: x[1], retorno))
+
+        retorno, cursor = self.GetDataDB("SELECT Ativo, Setor FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)", ["Caixa", "Previdência Privada"])
+        Labels_PP = list(map(lambda x: x[0], retorno))
+        Setores_PP = list(map(lambda x: x[1], retorno))
+
+        retorno, cursor = self.GetDataDB("SELECT Ativo, Setor FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)", ["Caixa", "COE"])
+        Labels_COE = list(map(lambda x: x[0], retorno))
+        Setores_COE = list(map(lambda x: x[1], retorno))
+
+        retorno, cursor = self.GetDataDB("SELECT Ativo, Setor FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)", ["Caixa", "Fundos de Investimento: Renda Fixa"])
+        Labels_Fundos = list(map(lambda x: x[0], retorno))
+        Setores_Fundos = list(map(lambda x: x[1], retorno))
+
+        corretorasBolsa, corretorasCripto = self.GetAllCorretoras_ComBolsaOuCripto()
+
+        for ativo in Labels_RF:
+            estoque = 0
+            for corretoraBolsa in corretorasBolsa:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨" + ativo + "¨" + corretoraBolsa + "¨Bruto")
+                    estoque += retorno[-1][8]
+                except:
+                    pass  # Não tem esse ativo nessa corretora
+            cotacao = self.GetCotacao(ativo)
+            if cotacao > 0 and estoque >= 0:
+                Values_RF.append(estoque * cotacao)
+            else:
+                return [''], [''], [0], [0]
+
+        for ativo in Labels_TDTP:
+            estoque = 0
+            for corretoraBolsa in corretorasBolsa:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨" + ativo + "¨" + corretoraBolsa + "¨Bruto")
+                    estoque += retorno[-1][8]
+                except:
+                    pass  # Não tem esse ativo nessa corretora
+            cotacao = self.GetCotacao(ativo)
+            if cotacao > 0 and estoque >= 0:
+                Values_TDTP.append(estoque * cotacao)
+            else:
+                return [''], [''], [0], [0]
+
+        for ativo in Labels_PP:
+            estoque = 0
+            for corretoraBolsa in corretorasBolsa:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨" + ativo + "¨" + corretoraBolsa + "¨Bruto")
+                    estoque += retorno[-1][8]
+                except:
+                    pass  # Não tem esse ativo nessa corretora
+            cotacao = self.GetCotacao(ativo)
+            if cotacao > 0 and estoque >= 0:
+                Values_PP.append(estoque * cotacao)
+            else:
+                return [''], [''], [0], [0]
+
+        for ativo in Labels_COE:
+            estoque = 0
+            for corretoraBolsa in corretorasBolsa:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨" + ativo + "¨" + corretoraBolsa + "¨Bruto")
+                    estoque += retorno[-1][8]
+                except:
+                    pass  # Não tem esse ativo nessa corretora
+            cotacao = self.GetCotacao(ativo)
+            if cotacao > 0 and estoque >= 0:
+                Values_COE.append(estoque * cotacao)
+            else:
+                return [''], [''], [0], [0]
+
+        for ativo in Labels_Fundos:
+            estoque = 0
+            for corretoraBolsa in corretorasBolsa:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨" + ativo + "¨" + corretoraBolsa + "¨Bruto")
+                    estoque += retorno[-1][8]
+                except:
+                    pass  # Não tem esse ativo nessa corretora
+            cotacao = self.GetCotacao(ativo)
+            if cotacao > 0 and estoque >= 0:
+                Values_Fundos.append(estoque * cotacao)
+            else:
+                return [''], [''], [0], [0]
+
+        # Ordenar Renda Fixa
+        ParaOrdenar = []
+        for i, RF in enumerate(Labels_RF):
+            if Values_RF[i] > 0: ParaOrdenar.append((RF, Values_RF[i], Setores_RF[i]))
+        Ordenado = sorted(ParaOrdenar, key=lambda tup: tup[1])
+        Labels_RF = list(map(lambda tup: tup[0], Ordenado))
+        Values_RF = list(map(lambda tup: tup[1], Ordenado))
+        Setores_RF = list(map(lambda tup: tup[2], Ordenado))
+
+        # Ordenar Tesouro Direto e Títulos Públicos
+        ParaOrdenar = []
+        for i, TDTP in enumerate(Labels_TDTP):
+            if Values_TDTP[i] > 0: ParaOrdenar.append((TDTP, Values_TDTP[i], Setores_TDTP[i]))
+        Ordenado = sorted(ParaOrdenar, key=lambda tup: tup[1])
+        Labels_TDTP = list(map(lambda tup: tup[0], Ordenado))
+        Values_TDTP = list(map(lambda tup: tup[1], Ordenado))
+        Setores_TDTP = list(map(lambda tup: tup[2], Ordenado))
+
+        # Ordenar Previdência Privada
+        ParaOrdenar = []
+        for i, PP in enumerate(Labels_PP):
+            if Values_PP[i] > 0: ParaOrdenar.append((PP, Values_PP[i], Setores_PP[i]))
+        Ordenado = sorted(ParaOrdenar, key=lambda tup: tup[1])
+        Labels_PP = list(map(lambda tup: tup[0], Ordenado))
+        Values_PP = list(map(lambda tup: tup[1], Ordenado))
+        Setores_PP = list(map(lambda tup: tup[2], Ordenado))
+
+        # Ordenar COE
+        ParaOrdenar = []
+        for i, COE in enumerate(Labels_COE):
+            if Values_COE[i] > 0: ParaOrdenar.append((COE, Values_COE[i], Setores_COE[i]))
+        Ordenado = sorted(ParaOrdenar, key=lambda tup: tup[1])
+        Labels_COE = list(map(lambda tup: tup[0], Ordenado))
+        Values_COE = list(map(lambda tup: tup[1], Ordenado))
+        Setores_COE = list(map(lambda tup: tup[2], Ordenado))
+
+        # Ordenar Fundos
+        ParaOrdenar = []
+        for i, Fundos in enumerate(Labels_Fundos):
+            if Values_Fundos[i] > 0: ParaOrdenar.append((Fundos, Values_Fundos[i], Setores_Fundos[i]))
+        Ordenado = sorted(ParaOrdenar, key=lambda tup: tup[1])
+        Labels_Fundos = list(map(lambda tup: tup[0], Ordenado))
+        Values_Fundos = list(map(lambda tup: tup[1], Ordenado))
+        Setores_Fundos = list(map(lambda tup: tup[2], Ordenado))
+
+        return Labels_RF, Labels_TDTP, Labels_PP, Labels_COE, Labels_Fundos, Values_RF, Values_TDTP, Values_PP, Values_COE, Values_Fundos, Setores_RF, Setores_TDTP, Setores_PP, Setores_COE, Setores_Fundos
+
+    def GetDetailedDataForRealEstate(self):
+        Labels_Terrenos = []
+        Labels_Construcoes = []
+        Labels_Fundos = []
+        Values_Terrenos = []
+        Values_Construcoes = []
+        Values_Fundos = []
+        Setores_Terrenos = []
+        Setores_Construcoes = []
+        Setores_Fundos = []
+
+        retorno, cursor = self.GetDataDB("SELECT Ativo, Setor FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)", ["Real Estate", "Terrenos"])
+        Labels_Terrenos = list(map(lambda x: x[0], retorno))
+        Setores_Terrenos = list(map(lambda x: x[1], retorno))
+
+        retorno, cursor = self.GetDataDB("SELECT Ativo, Setor FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)", ["Real Estate", "Construções"])
+        Labels_Construcoes = list(map(lambda x: x[0], retorno))
+        Setores_Construcoes = list(map(lambda x: x[1], retorno))
+
+        retorno, cursor = self.GetDataDB("SELECT Ativo, Setor FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)", ["Real Estate", "Fundos Imobiliários"])
+        Labels_Fundos = list(map(lambda x: x[0], retorno))
+        Setores_Fundos = list(map(lambda x: x[1], retorno))
+
+        corretorasBolsa, corretorasCripto = self.GetAllCorretoras_ComBolsaOuCripto()
+
+        for ativo in Labels_Terrenos:
+            estoque = 0
+            for corretoraBolsa in corretorasBolsa:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨" + ativo + "¨" + corretoraBolsa + "¨Bruto")
+                    estoque += retorno[-1][8]
+                except:
+                    pass  # Não tem esse ativo nessa corretora
+            cotacao = self.GetCotacao(ativo)
+            if cotacao > 0 and estoque >= 0:
+                Values_Terrenos.append(estoque * cotacao)
+            else:
+                return [''], [''], [0], [0]
+
+        for ativo in Labels_Construcoes:
+            estoque = 0
+            for corretoraBolsa in corretorasBolsa:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨" + ativo + "¨" + corretoraBolsa + "¨Bruto")
+                    estoque += retorno[-1][8]
+                except:
+                    pass  # Não tem esse ativo nessa corretora
+            cotacao = self.GetCotacao(ativo)
+            if cotacao > 0 and estoque >= 0:
+                Values_Construcoes.append(estoque * cotacao)
+            else:
+                return [''], [''], [0], [0]
+
+        for ativo in Labels_Fundos:
+            estoque = 0
+            for corretoraBolsa in corretorasBolsa:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨" + ativo + "¨" + corretoraBolsa + "¨Bruto")
+                    estoque += retorno[-1][8]
+                except:
+                    pass  # Não tem esse ativo nessa corretora
+            cotacao = self.GetCotacao(ativo)
+            if cotacao > 0 and estoque >= 0:
+                Values_Fundos.append(estoque * cotacao)
+            else:
+                return [''], [''], [0], [0]
+
+        # Ordenar Terrenos
+        ParaOrdenar = []
+        for i, Terrenos in enumerate(Labels_Terrenos):
+            if Values_Terrenos[i] > 0: ParaOrdenar.append((Terrenos, Values_Terrenos[i], Setores_Terrenos[i]))
+        Ordenado = sorted(ParaOrdenar, key=lambda tup: tup[1])
+        Labels_Terrenos = list(map(lambda tup: tup[0], Ordenado))
+        Values_Terrenos = list(map(lambda tup: tup[1], Ordenado))
+        Setores_Terrenos = list(map(lambda tup: tup[2], Ordenado))
+
+        # Ordenar Construcoes
+        ParaOrdenar = []
+        for i, Construcoes in enumerate(Labels_Construcoes):
+            if Values_Construcoes[i] > 0: ParaOrdenar.append((Construcoes, Values_Construcoes[i], Setores_Construcoes[i]))
+        Ordenado = sorted(ParaOrdenar, key=lambda tup: tup[1])
+        Labels_Construcoes = list(map(lambda tup: tup[0], Ordenado))
+        Values_Construcoes = list(map(lambda tup: tup[1], Ordenado))
+        Setores_Construcoes = list(map(lambda tup: tup[2], Ordenado))
+
+        # Ordenar Fundos
+        ParaOrdenar = []
+        for i, Fundos in enumerate(Labels_Fundos):
+            if Values_Fundos[i] > 0: ParaOrdenar.append((Fundos, Values_Fundos[i], Setores_Fundos[i]))
+        Ordenado = sorted(ParaOrdenar, key=lambda tup: tup[1])
+        Labels_Fundos = list(map(lambda tup: tup[0], Ordenado))
+        Values_Fundos = list(map(lambda tup: tup[1], Ordenado))
+        Setores_Fundos = list(map(lambda tup: tup[2], Ordenado))
+
+        return Labels_Terrenos, Labels_Construcoes, Labels_Fundos, Values_Terrenos, Values_Construcoes, Values_Fundos, Setores_Terrenos, Setores_Construcoes, Setores_Fundos
+
+    def GetDetailedDataForAcoesENegocios(self):
+        Labels_AN = []
+        Labels_Fundos = []
+        Values_AN = []
+        Values_Fundos = []
+        Setores_AN = []
+        Setores_Fundos = []
+
+        retorno, cursor = self.GetDataDB("SELECT Ativo, Setor FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)", ["Ações e Negócios", "Ações Nacionais"])
+        Labels_AN = list(map(lambda x: x[0], retorno))
+        Setores_AN = list(map(lambda x: x[1], retorno))
+
+        retorno, cursor = self.GetDataDB("SELECT Ativo, Setor FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)", ["Ações e Negócios", "Fundos de investimentos: Ações e Negócios"])
+        Labels_Fundos = list(map(lambda x: x[0], retorno))
+        Setores_Fundos = list(map(lambda x: x[1], retorno))
+
+        corretorasBolsa, corretorasCripto = self.GetAllCorretoras_ComBolsaOuCripto()
+
+        for ativo in Labels_AN:
+            estoque = 0
+            for corretoraBolsa in corretorasBolsa:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨" + ativo + "¨" + corretoraBolsa + "¨Bruto")
+                    estoque += retorno[-1][8]
+                except:
+                    pass  # Não tem esse ativo nessa corretora
+            cotacao = self.GetCotacao(ativo)
+            if cotacao > 0 and estoque >= 0:
+                Values_AN.append(estoque * cotacao)
+            else:
+                return [''], [''], [0], [0]
+
+        for ativo in Labels_Fundos:
+            estoque = 0
+            for corretoraBolsa in corretorasBolsa:
+                try:
+                    retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨" + ativo + "¨" + corretoraBolsa + "¨Bruto")
+                    estoque += retorno[-1][8]
+                except:
+                    pass  # Não tem esse ativo nessa corretora
+            cotacao = self.GetCotacao(ativo)
+            if cotacao > 0 and estoque >= 0:
+                Values_Fundos.append(estoque * cotacao)
+            else:
+                return [''], [''], [0], [0]
+
+        # Ordenar AN
+        ParaOrdenar = []
+        for i, AN in enumerate(Labels_AN):
+            if Values_AN[i] > 0: ParaOrdenar.append((AN, Values_AN[i], Setores_AN[i]))
+        Ordenado = sorted(ParaOrdenar, key=lambda tup: tup[1])
+        Labels_AN = list(map(lambda tup: tup[0], Ordenado))
+        Values_AN = list(map(lambda tup: tup[1], Ordenado))
+        Setores_AN = list(map(lambda tup: tup[2], Ordenado))
+
+        # Ordenar Fundos
+        ParaOrdenar = []
+        for i, Fundos in enumerate(Labels_Fundos):
+            if Values_Fundos[i] > 0: ParaOrdenar.append((Fundos, Values_Fundos[i], Setores_Fundos[i]))
+        Ordenado = sorted(ParaOrdenar, key=lambda tup: tup[1])
+        Labels_Fundos = list(map(lambda tup: tup[0], Ordenado))
+        Values_Fundos = list(map(lambda tup: tup[1], Ordenado))
+        Setores_Fundos = list(map(lambda tup: tup[2], Ordenado))
+
+        return Labels_AN, Labels_Fundos, Values_AN, Values_Fundos, Setores_AN, Setores_Fundos
+
+    def GetDetailedData_AtivoPorCorretora(self, ativo):
+        Labels = [] # Corretoras
+        Volumes = []
+
+        corretorasBolsa, corretorasCripto = self.GetAllCorretoras_ComBolsaOuCripto()
+        corretoras = list(map(lambda corretora: corretora.replace("¨Bolsa",""), corretorasBolsa))
+        corretoras = sorted(corretoras)
+        Labels = corretoras
+
+        # Pegar o estoque do ativo em cada corretora
+
+        flag = 0.
+        for corretora in corretoras:
+            Volume = 0.
+            try:
+                retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨Bolsa¨Bruto")
+                Estoque = retorno[-1][8]
+                Cotacao = self.GetCotacao(ativo)
+                if Estoque < 0. or Cotacao <= 0.:
+                    flag = -1.
+                    break
+                Volume = Estoque * Cotacao
+            except:pass # Não tem essa moeda nessa corretora
+            Volumes.append(Volume)
+
+        if flag == -1.:
+            Volumes = []
+            Labels = []
+
+        return Labels, Volumes
+
+    def GetDataFor(self, TipoDeAtivo, SubtipoDeAtivo):
         Volume_Top1 = 0.
         Volume_Top2 = 0.
         Volume_Top3 = 0.
         Volume_Outras = 0.
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Ações e Negócios","Ações Nacionais"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Volume_Top1 = sorted_by_volume[0][1]
-            if len(sorted_by_volume)>1: Volume_Top2 = sorted_by_volume[1][1]
-            if len(sorted_by_volume)>2: Volume_Top3 = sorted_by_volume[2][1]
-            if len(sorted_by_volume)>3: Volume_Outras = sum(volume for label, volume in sorted_by_volume[3:])
-
-        return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras
-
-    def GetDataLabelsForAcoesNacionais(self):
         Label_Top1 = '...'
         Label_Top2 = '...'
         Label_Top3 = '...'
         VolumeELabel_Acoes = []
 
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Ações e Negócios","Ações Nacionais"])
+        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",[TipoDeAtivo, SubtipoDeAtivo])
         Ativos = list(map(lambda x: x[0],Ativos))
         Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
         Tabelas = list(map(lambda x: x[0],Tabelas))
         for ativo in Ativos:
+            Estoque = 0
             TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
             for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
+                retorno, cursor = self.GetDataDB("SELECT * FROM "+TableName)
+                Estoque += retorno[-1][8]
+            Cotacao = self.GetCotacao(ativo)
+            if Estoque < 0. or Cotacao <= 0.:
+                VolumeELabel_Acoes = -1.
+                break
+            VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
 
         if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Label_Top1 = sorted_by_volume[0][0]
-            if len(sorted_by_volume)>1: Label_Top2 = sorted_by_volume[1][0]
-            if len(sorted_by_volume)>2: Label_Top3 = sorted_by_volume[2][0]
-
-        return Label_Top1, Label_Top2, Label_Top3
-
-    def GetDataForFundosAcoesENegocios(self): # Desenvolver
-        Volume_Top1 = 0.
-        Volume_Top2 = 0.
-        Volume_Top3 = 0.
-        Volume_Outras = 0.
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Ações e Negócios","Fundos de investimentos: Ações e Negócios"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Volume_Top1 = sorted_by_volume[0][1]
-            if len(sorted_by_volume)>1: Volume_Top2 = sorted_by_volume[1][1]
-            if len(sorted_by_volume)>2: Volume_Top3 = sorted_by_volume[2][1]
-            if len(sorted_by_volume)>3: Volume_Outras = sum(volume for label, volume in sorted_by_volume[3:])
-
-        return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras
-
-    def GetDataLabelsForFundosAcoesENegocios(self): # Desenvolver
-        Label_Top1 = '...'
-        Label_Top2 = '...'
-        Label_Top3 = '...'
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Ações e Negócios","Fundos de investimentos: Ações e Negócios"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Label_Top1 = sorted_by_volume[0][0]
-            if len(sorted_by_volume)>1: Label_Top2 = sorted_by_volume[1][0]
-            if len(sorted_by_volume)>2: Label_Top3 = sorted_by_volume[2][0]
-
-        return Label_Top1, Label_Top2, Label_Top3
-
-    def GetDataForFII(self):
-        Volume_Top1 = 0.
-        Volume_Top2 = 0.
-        Volume_Top3 = 0.
-        Volume_Outras = 0.
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Real Estate","Fundos Imobiliários"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Volume_Top1 = sorted_by_volume[0][1]
-            if len(sorted_by_volume)>1: Volume_Top2 = sorted_by_volume[1][1]
-            if len(sorted_by_volume)>2: Volume_Top3 = sorted_by_volume[2][1]
-            if len(sorted_by_volume)>3: Volume_Outras = sum(volume for label, volume in sorted_by_volume[3:])
-
-        return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras
-
-    def GetDataLabelsForFII(self):
-        Label_Top1 = '...'
-        Label_Top2 = '...'
-        Label_Top3 = '...'
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Real Estate","Fundos Imobiliários"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Label_Top1 = sorted_by_volume[0][0]
-            if len(sorted_by_volume)>1: Label_Top2 = sorted_by_volume[1][0]
-            if len(sorted_by_volume)>2: Label_Top3 = sorted_by_volume[2][0]
-
-        return Label_Top1, Label_Top2, Label_Top3
-
-    def GetDataForTerrenos(self):
-        Volume_Top1 = 0.
-        Volume_Top2 = 0.
-        Volume_Top3 = 0.
-        Volume_Outras = 0.
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Real Estate","Terrenos"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Volume_Top1 = sorted_by_volume[0][1]
-            if len(sorted_by_volume)>1: Volume_Top2 = sorted_by_volume[1][1]
-            if len(sorted_by_volume)>2: Volume_Top3 = sorted_by_volume[2][1]
-            if len(sorted_by_volume)>3: Volume_Outras = sum(volume for label, volume in sorted_by_volume[3:])
-
-        return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras
-
-    def GetDataLabelsForTerrenos(self):
-        Label_Top1 = '...'
-        Label_Top2 = '...'
-        Label_Top3 = '...'
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Real Estate","Terrenos"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Label_Top1 = sorted_by_volume[0][0]
-            if len(sorted_by_volume)>1: Label_Top2 = sorted_by_volume[1][0]
-            if len(sorted_by_volume)>2: Label_Top3 = sorted_by_volume[2][0]
-
-        return Label_Top1, Label_Top2, Label_Top3
-
-    def GetDataForConstrucoes(self):
-        Volume_Top1 = 0.
-        Volume_Top2 = 0.
-        Volume_Top3 = 0.
-        Volume_Outras = 0.
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Real Estate","Construções"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Volume_Top1 = sorted_by_volume[0][1]
-            if len(sorted_by_volume)>1: Volume_Top2 = sorted_by_volume[1][1]
-            if len(sorted_by_volume)>2: Volume_Top3 = sorted_by_volume[2][1]
-            if len(sorted_by_volume)>3: Volume_Outras = sum(volume for label, volume in sorted_by_volume[3:])
-
-        return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras
-
-    def GetDataLabelsForConstrucoes(self):
-        Label_Top1 = '...'
-        Label_Top2 = '...'
-        Label_Top3 = '...'
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Real Estate","Construções"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Label_Top1 = sorted_by_volume[0][0]
-            if len(sorted_by_volume)>1: Label_Top2 = sorted_by_volume[1][0]
-            if len(sorted_by_volume)>2: Label_Top3 = sorted_by_volume[2][0]
-
-        return Label_Top1, Label_Top2, Label_Top3
-
-    def GetDataForRendaFixa(self):
-        Volume_Top1 = 0.
-        Volume_Top2 = 0.
-        Volume_Top3 = 0.
-        Volume_Outras = 0.
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Caixa","Renda Fixa"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Volume_Top1 = sorted_by_volume[0][1]
-            if len(sorted_by_volume)>1: Volume_Top2 = sorted_by_volume[1][1]
-            if len(sorted_by_volume)>2: Volume_Top3 = sorted_by_volume[2][1]
-            if len(sorted_by_volume)>3: Volume_Outras = sum(volume for label, volume in sorted_by_volume[3:])
-
-        return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras
-
-    def GetDataLabelsForRendaFixa(self):
-        Label_Top1 = '...'
-        Label_Top2 = '...'
-        Label_Top3 = '...'
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Caixa","Renda Fixa"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Label_Top1 = sorted_by_volume[0][0]
-            if len(sorted_by_volume)>1: Label_Top2 = sorted_by_volume[1][0]
-            if len(sorted_by_volume)>2: Label_Top3 = sorted_by_volume[2][0]
-
-        return Label_Top1, Label_Top2, Label_Top3
-
-    def GetDataForTesouroDiretoETitulosPublicos(self):
-        Volume_Top1 = 0.
-        Volume_Top2 = 0.
-        Volume_Top3 = 0.
-        Volume_Outras = 0.
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Caixa","Tesouro Direto e Títulos Públicos"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Volume_Top1 = sorted_by_volume[0][1]
-            if len(sorted_by_volume)>1: Volume_Top2 = sorted_by_volume[1][1]
-            if len(sorted_by_volume)>2: Volume_Top3 = sorted_by_volume[2][1]
-            if len(sorted_by_volume)>3: Volume_Outras = sum(volume for label, volume in sorted_by_volume[3:])
-
-        return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras
-
-    def GetDataLabelsForTesouroDiretoETitulosPublicos(self):
-        Label_Top1 = '...'
-        Label_Top2 = '...'
-        Label_Top3 = '...'
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Caixa","Tesouro Direto e Títulos Públicos"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Label_Top1 = sorted_by_volume[0][0]
-            if len(sorted_by_volume)>1: Label_Top2 = sorted_by_volume[1][0]
-            if len(sorted_by_volume)>2: Label_Top3 = sorted_by_volume[2][0]
-
-        return Label_Top1, Label_Top2, Label_Top3
-
-    def GetDataForPrevidenciaPrivada(self):
-        Volume_Top1 = 0.
-        Volume_Top2 = 0.
-        Volume_Top3 = 0.
-        Volume_Outras = 0.
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Caixa","Previdência Privada"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Volume_Top1 = sorted_by_volume[0][1]
-            if len(sorted_by_volume)>1: Volume_Top2 = sorted_by_volume[1][1]
-            if len(sorted_by_volume)>2: Volume_Top3 = sorted_by_volume[2][1]
-            if len(sorted_by_volume)>3: Volume_Outras = sum(volume for label, volume in sorted_by_volume[3:])
-
-        return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras
-
-    def GetDataLabelsForPrevidenciaPrivada(self):
-        Label_Top1 = '...'
-        Label_Top2 = '...'
-        Label_Top3 = '...'
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Caixa","Previdência Privada"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Label_Top1 = sorted_by_volume[0][0]
-            if len(sorted_by_volume)>1: Label_Top2 = sorted_by_volume[1][0]
-            if len(sorted_by_volume)>2: Label_Top3 = sorted_by_volume[2][0]
-
-        return Label_Top1, Label_Top2, Label_Top3
-
-    def GetDataForCOE(self):
-        Volume_Top1 = 0.
-        Volume_Top2 = 0.
-        Volume_Top3 = 0.
-        Volume_Outras = 0.
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Caixa","COE"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Volume_Top1 = sorted_by_volume[0][1]
-            if len(sorted_by_volume)>1: Volume_Top2 = sorted_by_volume[1][1]
-            if len(sorted_by_volume)>2: Volume_Top3 = sorted_by_volume[2][1]
-            if len(sorted_by_volume)>3: Volume_Outras = sum(volume for label, volume in sorted_by_volume[3:])
-
-        return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras
-
-    def GetDataLabelsForCOE(self):
-        Label_Top1 = '...'
-        Label_Top2 = '...'
-        Label_Top3 = '...'
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Caixa","COE"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Label_Top1 = sorted_by_volume[0][0]
-            if len(sorted_by_volume)>1: Label_Top2 = sorted_by_volume[1][0]
-            if len(sorted_by_volume)>2: Label_Top3 = sorted_by_volume[2][0]
-
-        return Label_Top1, Label_Top2, Label_Top3
-
-    def GetDataForFundosDeRendaFixa(self):
-        Volume_Top1 = 0.
-        Volume_Top2 = 0.
-        Volume_Top3 = 0.
-        Volume_Outras = 0.
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Caixa","Fundos de Investimento: Renda Fixa"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Volume_Top1 = sorted_by_volume[0][1]
-            if len(sorted_by_volume)>1: Volume_Top2 = sorted_by_volume[1][1]
-            if len(sorted_by_volume)>2: Volume_Top3 = sorted_by_volume[2][1]
-            if len(sorted_by_volume)>3: Volume_Outras = sum(volume for label, volume in sorted_by_volume[3:])
-
-        return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras
-
-    def GetDataLabelsForFundosDeRendaFixa(self):
-        Label_Top1 = '...'
-        Label_Top2 = '...'
-        Label_Top3 = '...'
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Caixa","Fundos de Investimento: Renda Fixa"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Label_Top1 = sorted_by_volume[0][0]
-            if len(sorted_by_volume)>1: Label_Top2 = sorted_by_volume[1][0]
-            if len(sorted_by_volume)>2: Label_Top3 = sorted_by_volume[2][0]
-
-        return Label_Top1, Label_Top2, Label_Top3
-
-    def GetDataForBDR(self):
-        Volume_Top1 = 0.
-        Volume_Top2 = 0.
-        Volume_Top3 = 0.
-        Volume_Outras = 0.
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Ativos Internacionais","BDR"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Volume_Top1 = sorted_by_volume[0][1]
-            if len(sorted_by_volume)>1: Volume_Top2 = sorted_by_volume[1][1]
-            if len(sorted_by_volume)>2: Volume_Top3 = sorted_by_volume[2][1]
-            if len(sorted_by_volume)>3: Volume_Outras = sum(volume for label, volume in sorted_by_volume[3:])
-
-        return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras
-
-    def GetDataLabelsForBDR(self):
-        Label_Top1 = '...'
-        Label_Top2 = '...'
-        Label_Top3 = '...'
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Ativos Internacionais","BDR"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Label_Top1 = sorted_by_volume[0][0]
-            if len(sorted_by_volume)>1: Label_Top2 = sorted_by_volume[1][0]
-            if len(sorted_by_volume)>2: Label_Top3 = sorted_by_volume[2][0]
-
-        return Label_Top1, Label_Top2, Label_Top3
-
-    def GetDataForFundosAcoesInternacionais(self):
-        Volume_Top1 = 0.
-        Volume_Top2 = 0.
-        Volume_Top3 = 0.
-        Volume_Outras = 0.
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Ativos Internacionais","Fundos de Investimento: Ações Internacionais"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Volume_Top1 = sorted_by_volume[0][1]
-            if len(sorted_by_volume)>1: Volume_Top2 = sorted_by_volume[1][1]
-            if len(sorted_by_volume)>2: Volume_Top3 = sorted_by_volume[2][1]
-            if len(sorted_by_volume)>3: Volume_Outras = sum(volume for label, volume in sorted_by_volume[3:])
-
-        return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras
-
-    def GetDataLabelsForFundosAcoesInternacionais(self):
-        Label_Top1 = '...'
-        Label_Top2 = '...'
-        Label_Top3 = '...'
-        VolumeELabel_Acoes = []
-
-        Ativos, cursor = self.GetDataDB("SELECT Ativo FROM Bolsa WHERE TipoDeAtivo = (?) AND SubtipoDeAtivo = (?)",["Ativos Internacionais","Fundos de Investimento: Ações Internacionais"])
-        Ativos = list(map(lambda x: x[0],Ativos))
-        Tabelas, cursor = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        Tabelas = list(map(lambda x: x[0],Tabelas))
-        for ativo in Ativos:
-            TableNamesDoAtivo = list(filter(lambda x: x.find("¨Bolsa¨Bruto")>-1 and x.find("OPs¨"+ativo)>-1, Tabelas))
-            for TableName in TableNamesDoAtivo:
-                Compras, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Compra")])
-                Compras = list(map(lambda x: x[0],Compras))
-                Vendas, cursor = self.GetDataDB("SELECT Qqt FROM "+TableName+" WHERE Tipo = (?)",[("Venda")])
-                Vendas = list(map(lambda x: x[0],Vendas))
-                Estoque = sum(Compras) - sum(Vendas)
-                Cotacao = self.GetCotacao(ativo)
-                if Estoque < 0. or Cotacao <= 0.:
-                    VolumeELabel_Acoes = -1.
-                    break
-                VolumeELabel_Acoes.append((ativo, Estoque * Cotacao))
-            if VolumeELabel_Acoes == -1: break
-
-        if not VolumeELabel_Acoes == -1:
-            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1])
-            if len(sorted_by_volume)>0: Label_Top1 = sorted_by_volume[0][0]
-            if len(sorted_by_volume)>1: Label_Top2 = sorted_by_volume[1][0]
-            if len(sorted_by_volume)>2: Label_Top3 = sorted_by_volume[2][0]
-
-        return Label_Top1, Label_Top2, Label_Top3
+            sorted_by_volume = sorted(VolumeELabel_Acoes, key=lambda tup: tup[1], reverse=True)
+            if len(sorted_by_volume)>0:
+                Label_Top1 = sorted_by_volume[0][0]
+                Volume_Top1 = sorted_by_volume[0][1]
+            if len(sorted_by_volume)>1:
+                Label_Top2 = sorted_by_volume[1][0]
+                Volume_Top2 = sorted_by_volume[1][1]
+            if len(sorted_by_volume)>2:
+                Label_Top3 = sorted_by_volume[2][0]
+                Volume_Top3 = sorted_by_volume[2][1]
+            if len(sorted_by_volume)>3:
+                Volume_Outras = sum(volume for label, volume in sorted_by_volume[3:])
+
+        return Volume_Top1, Volume_Top2, Volume_Top3, Volume_Outras, Label_Top1, Label_Top2, Label_Top3
 
     def GetAllTickers(self):
         retornoBruto, cursor = self.GetDataDB("SELECT * FROM Tickers")
@@ -2888,7 +3032,12 @@ class DBManager(object):
     def CriarDB(self, DB):
         conn = sqlite3.connect(DB)
         conn.close()
-        try:os.popen('attrib +h '+os.path.split(DB)[1]) # Torna o arquivo oculto na pasta do APP
+        currdir = os.getcwd() # Get current directory
+        try:
+            if os.path.split(DB)[0] == currdir:
+                os.popen('attrib +h '+os.path.split(DB)[1]) # Torna o arquivo oculto na pasta do APP
+            else:
+                os.popen('attrib +h '+DB) # Torna o arquivo oculto na pasta do APP
         except:pass
 
     def CreateTableInCurrentDB(self, TableName, ContentType):
@@ -2905,19 +3054,20 @@ class DBManager(object):
         ColCount = ColCount[:-1]
 
         # Colocar cada linha de conteúdo em um tuple
-        rowcontent = ('',)
+        rowcontent = ('¨First¨Column¨Disconsider',)
         for item in range(len(Content)):
-            if rowcontent[0]=='': rowcontent = (Content[item][1],)
+            if rowcontent[0]=='¨First¨Column¨Disconsider': rowcontent = (Content[item][1],)
             else: rowcontent += (Content[item][1],)
 
         self.ModifyDB("INSERT INTO "+TableName+" VALUES ("+ColCount+")", rowcontent)
         return True
 
-    def SortByDate(self, TableName):
+    def SortByDate(self, TableName, BolsaOuCripto = ''):
+        if len(BolsaOuCripto) == 0: BolsaOuCripto = self.HMI.BolsaOuCripto
         try:
             self.ModifyDB("ALTER TABLE "+TableName+" RENAME TO "+TableName+"¨NotSorted") # Transforma a tabela antiga na auxiliar
             if "OPs¨" in TableName:
-                if self.HMI.BolsaOuCripto == "Bolsa":
+                if BolsaOuCripto == "Bolsa":
                     self.CreateTableInCurrentDB(TableName, [('Data', 'DATETIME'),
                                                             ('Tipo', 'TEXT'),
                                                             ('Qqt', 'INTEGER'),
@@ -2931,7 +3081,7 @@ class DBManager(object):
                                                             ('CustoTotal', 'REAL'),
                                                             ('CustoMédio', 'REAL'),
                                                             ('Resultado', 'REAL')]) # Cria Nova Tabela pra ser a ordenada
-                elif self.HMI.BolsaOuCripto == "Cripto":
+                elif BolsaOuCripto == "Cripto":
                     self.CreateTableInCurrentDB(TableName, [('Observação', 'TEXT'),
                                                             ('Data', 'DATETIME'),
                                                             ('Tipo', 'TEXT'),
@@ -2952,7 +3102,7 @@ class DBManager(object):
                 for item in oneRowTupleNotInShape: oneRowListOfTuples.append(('',item))
                 content.append(oneRowListOfTuples)
             for row in content: self.AddRowInCurrentDB(TableName, row)
-        except Exception as e:pass
+        except Exception as e: print("erro: DBManager função SortByDate\n"+str(e))
         finally: self.ModifyDB("DROP TABLE "+TableName+"¨NotSorted") # Deleta a tabela antiga
 
     def SepararDTeST(self, TableName, AcabouDeAdd = True):
@@ -3267,11 +3417,10 @@ class DBManager(object):
                             OPsNaData.append(OP)
                 return [],[],[]
 
-        # if "_Bolsa" in TableName:
         NovaDT_Reposta = []
         NovaST_Reposta = []
 
-        self.SortByDate(TableName+"¨Bruto")
+        self.SortByDate(TableName+"¨Bruto", "Bolsa")
         TableBruto_Inicial, cursor = self.GetDataDB("SELECT * FROM "+TableName+"¨Bruto")
         TableDT_Inicial, cursor = self.GetDataDB("SELECT * FROM "+TableName+"¨DT")
         TableST_Inicial, cursor = self.GetDataDB("SELECT * FROM "+TableName+"¨ST")
@@ -3352,7 +3501,7 @@ class DBManager(object):
         #     NovaDT_Reposta = []
         #     NovaST_Reposta = []
         #
-        #     self.SortByDate(TableName+"¨Bruto")
+        #     self.SortByDate(TableName+"¨Bruto", "Cripto")
         #     TableBruto_Inicial, cursor = self.GetDataDB("SELECT * FROM "+TableName+"¨Bruto")
         #     # TableDTeST_sorted = sorted(TableBruto_Inicial, key=lambda sub: (datetime.strptime(sub[1],"%Y-%m-%d %H:%M:%S"), sub[1]))
         #     aux = [t[1][:-9] for t in TableBruto_Inicial]
@@ -3377,6 +3526,7 @@ class DBManager(object):
         #         self.AddRowInCurrentDB(TableName+"¨ST", row)
 
     def CopiarBrutoPraDT(self, TableName):
+        self.SortByDate(TableName+"¨Bruto", "Bolsa")
         self.ModifyDB("DROP TABLE "+TableName+"¨DT") # Deleta a tabela antiga
         self.CreateTableInCurrentDB(TableName+"¨DT", [('Data', 'DATETIME'),
                                                       ('Tipo', 'TEXT'),
@@ -3433,7 +3583,8 @@ class DBManager(object):
                 if row[1] == "Compra":
                     if i == 0:
                         Estoque = row[2]
-                        CustoTotal = row[9]+row[2]*row[3]
+                        CustoTotal = row[9]
+                        if not "Bonificação;" in row[7]: CustoTotal += row[2]*row[3]
                         CustoMedio = CustoTotal/Estoque if not Estoque == 0 else 0
                         Resultado = "NULL"
                         content.append([('Data', row[0]),
@@ -3515,7 +3666,9 @@ class DBManager(object):
     def CalcularCelsAutomatizadas_CriptoRefinado(self, TableName):
         TableNameBruto = TableName+"¨Bruto"
         TableNameRefinado = TableName+"¨Refinado"
-        self.SortByDate(TableNameBruto)
+        corretora = TableName.replace("OPs¨","").replace("¨Cripto","")
+
+        self.SortByDate(TableNameBruto, "Cripto")
 
         Observacao_idx = 0
         Resultado_idx = 1
@@ -3551,7 +3704,7 @@ class DBManager(object):
             # 4.3) Escrever linha auxiliar na tabela
 
         # 1)
-        MoedaCorrente = self.GetCorretoraCoinCurrency()
+        MoedaCorrente = self.GetCorretoraCoinCurrency(corretora, "Cripto")
         Header = [('Observação', 'TEXT'),
                   ('Resultado', 'REAL'),
                   ('Data', 'DATETIME'),
@@ -3573,6 +3726,8 @@ class DBManager(object):
         ListaDeMoedas.extend(ListaComParesDaDireita)
         ListaDeMoedas = list(dict.fromkeys(ListaDeMoedas))
         try:ListaDeMoedas.remove('')
+        except:pass
+        try:ListaDeMoedas.remove(None)
         except:pass
         # print("Moedas encontradas: ", ListaDeMoedas) # Debug
         # 3)
@@ -3740,10 +3895,11 @@ class DBManager(object):
 
                 # 4.3.4)
                 if row[ParEsquerdo_idx][1] == MoedaCorrente:
-                    row[Resultado_idx] = (row[Resultado_idx][0], row[Quantidade_idx][1] * (1 - PrecoMedioAnterior)) # Resultado
-                    if row[MoedaDaTaxa_idx] == MoedaCorrente:
-                        row[Resultado_idx] = (row[Resultado_idx][0], row[Resultado_idx][1] - row[Taxa_idx][1])
-                    row[Resultado_idx] = (row[Resultado_idx][0], round(row[Resultado_idx][1], 2))
+                    row[Resultado_idx] = (row[Resultado_idx][0], 0) # A definir no futuro
+                    # row[Resultado_idx] = (row[Resultado_idx][0], row[Quantidade_idx][1] * (1 - PrecoMedioAnterior)) # Resultado
+                    # if row[MoedaDaTaxa_idx] == MoedaCorrente:
+                    #     row[Resultado_idx] = (row[Resultado_idx][0], row[Resultado_idx][1] - row[Taxa_idx][1])
+                    # row[Resultado_idx] = (row[Resultado_idx][0], round(row[Resultado_idx][1], 2))
 
             elif row[Tipo_idx][1] == "Drop":
                 # 4.2.1) Aumenta Estoque de ParEsquerdo
@@ -3835,7 +3991,10 @@ class DBManager(object):
                 row[Hold_idx] = (row[Hold_idx][0], round(row[Hold_idx][1] - row[Quantidade_idx][1], 8)) # Stake
 
             # Consideração da Taxa para qualquer tipo de operação
-            Estoque_idx = [x for x, y in enumerate(row) if y[0] == 'EstoqueDe¨'+row[MoedaDaTaxa_idx][1]][0]
+            try:
+                Estoque_idx = [x for x, y in enumerate(row) if y[0] == 'EstoqueDe¨'+row[MoedaDaTaxa_idx][1]][0]
+            except:
+                raise ValueError("Há uma operação cobrando taxa em uma moeda que não há em estoque.\nVerifique em ",TableNameBruto," a operação no dia ",row[Data_idx][1])
             Hold_idx = Estoque_idx + 1; Stake_idx = Hold_idx + 1; Custo_idx = Stake_idx + 1; PrecoMedio_idx = Custo_idx + 1
             if not row[Estoque_idx][1] - row[Taxa_idx][1] < 0:
                 row[Estoque_idx] = (row[Estoque_idx][0], round(row[Estoque_idx][1] - row[Taxa_idx][1], 8))
@@ -3857,6 +4016,7 @@ class DBManager(object):
         self.LW.show()
         self.Thread_CalcularTributacao = WorkerThread('Thread_CalcularTributacao', self.HMI)
         self.Thread_CalcularTributacao.start()
+        # self.Thread_CalcularTributacao.join()
 
     def AtualizarCotacoes(self):
         if not self.HMI.AtualizarCotacoes_running: # Impede mais de um requerimento na atualização de cotações
@@ -3867,6 +4027,7 @@ class DBManager(object):
 
     def AtualizarCotacoes_run(self): # Thread
         # Atualizar tabela de cotações, depois atualizar os valores no HMI
+        self.UpdatePatrimonioRendimento()
         currency = self.GetUserCoinCurrency()
 
         corretoras = self.GetCorretoras("Bolsa")
@@ -3886,19 +4047,12 @@ class DBManager(object):
             if self.GetModoCotacao(ativo) == "Auto":
                 thread_list.append(BP(ThreadName='Thread_GetCotacaoCripto', HMI=self.HMI, ativo=ativo, currency=currency))
 
-        for thread in thread_list:
-            # self.HMI.ThreadLock.acquire()
-            # print(thread.ThreadName, ' start') # Debug
-            # self.HMI.ThreadLock.release()
-            thread.start()
-        for thread in thread_list:
-            # self.HMI.ThreadLock.acquire()
-            # print(thread.ThreadName, ' join') # Debug
-            # self.HMI.ThreadLock.release()
-            thread.join()
+        for thread in thread_list: thread.start()
+        for thread in thread_list: thread.join()
 
         # print('waiting') # Debug
         self.UpdatePatrimonioRendimento()
+        if self.HMI.PageID in ["18", "19"]: self.HMI.UpdatePage()
         # print('UpdatePatrimonioRendimento executed') # Debug
 
     def UpdatePatrimonioRendimento(self):
@@ -3929,10 +4083,10 @@ class DBManager(object):
                 self.HMI.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: yellow; border: 1px solid '+Background_Header+'}')
             elif PatrimonioAux == -2: # Tabela de cotações tem algum valor igual a zero
                 self.HMI.Patrimonio = 0
-                self.HMI.TextBox_Patrimonio.setText("Att cotações")
+                self.HMI.TextBox_Patrimonio.setText("Att. cot. (C)")
                 self.HMI.TextBox_Patrimonio.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: orange; border: 1px solid '+Background_Header+'}')
                 self.HMI.Rendimento = 0
-                self.HMI.TextBox_Rendimento.setText('Att cotações')
+                self.HMI.TextBox_Rendimento.setText('Att. cot. (C)')
                 self.HMI.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: orange; border: 1px solid '+Background_Header+'}')
         except Exception as e: print(e)
 
@@ -3943,7 +4097,7 @@ class DBManager(object):
         if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
         if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
         corretora = corretora.replace(" ","_")
-        if not len(ativo)>0 and BolsaOuCripto == "Bolsa": ativo = self.HMI.ComboBox_Ativo.currentText().replace(" ","_")
+        if not len(ativo)>0 and BolsaOuCripto == "Bolsa": ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
 
         try:
             if BolsaOuCripto == "Bolsa":
@@ -3964,22 +4118,22 @@ class DBManager(object):
         if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
         if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
         corretora = corretora.replace(" ","_")
-        if not len(ativo)>0 and BolsaOuCripto == "Bolsa": ativo = self.HMI.ComboBox_Ativo.currentText().replace(" ","_")
-        if not len(ativo)>0: return False
 
         try:
             if BolsaOuCripto == "Bolsa":
+                if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
+                if not len(ativo)>0: return False
                 retorno, cursor = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨Bruto")
                 retorno = list(filter(lambda x: x[8]<0, retorno))
                 if len(retorno) > 0: Status = True
 
             elif BolsaOuCripto == "Cripto":
                 TableName = "OPs¨"+corretora+"¨Cripto¨Refinado"
-                retorno, cursor = self.GetDataDB("SELECT * FROM "+TableName)
+                Tabela, cursor = self.GetDataDB("SELECT * FROM "+TableName)
                 headers = list(map(lambda x: x[0], cursor.description))[13:]
                 for idx, head in enumerate(headers):
                     if "EstoqueDe¨" in head:
-                        retorno = list(filter(lambda x: x[idx+13]<0 or +x[idx+14]<0 or x[idx+15]<0, retorno))
+                        retorno = list(filter(lambda x: x[idx+13]<0 or +x[idx+14]<0 or x[idx+15]<0, Tabela))
                         if len(retorno) > 0: Status = True
         except:pass
         finally: return Status
@@ -3989,7 +4143,7 @@ class DBManager(object):
         if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
         if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
         corretora = corretora.replace(" ","_")
-        if not len(ativo)>0 and BolsaOuCripto == "Bolsa": ativo = self.HMI.ComboBox_Ativo.currentText().replace(" ","_")
+        if not len(ativo)>0 and BolsaOuCripto == "Bolsa": ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
         if not len(ativo)>0: return False
 
         try:
@@ -4000,11 +4154,11 @@ class DBManager(object):
 
             elif BolsaOuCripto == "Cripto":
                 TableName = "OPs¨"+corretora+"¨Cripto¨Refinado"
-                retorno, cursor = self.GetDataDB("SELECT * FROM "+TableName)
+                Tabela, cursor = self.GetDataDB("SELECT * FROM "+TableName)
                 headers = list(map(lambda x: x[0], cursor.description))[13:]
                 for idx, head in enumerate(headers):
                     if "EstoqueDe¨" in head:
-                        retorno = list(filter(lambda x: x[idx+16]<0, retorno))
+                        retorno = list(filter(lambda x: x[idx+16]<0, Tabela))
                         if len(retorno) > 0: Status = True
         except:pass
         finally: return Status
@@ -4013,24 +4167,26 @@ class DBManager(object):
 
     def GetDataDB(self, command, params=''):
         try:
-            self.ThreadLock.acquire()
+            self.HMI.ThreadLock.acquire()
             self.HMI.unsetCursor()
             cursor = self.conn.cursor()
             RETORNO = []
             if params=='': RETORNO = list(cursor.execute(command))
             else: RETORNO = list(cursor.execute(command, params))
-        except Exception as e: print("Erro GetDataDB: ",str(e))
-        finally: self.ThreadLock.release()
+        except Exception as e:pass
+            # if not "no such column: EstoqueDe" in str(e): # Awaited error
+            #     print("Erro GetDataDB: ",str(e),"\nO comando solicitado foi:\n",command,"\nparâmetros:",params)
+        finally: self.HMI.ThreadLock.release()
         return RETORNO, cursor
 
     def ModifyDB(self, command, params=''):
         try:
-            self.ThreadLock.acquire()
+            self.HMI.ThreadLock.acquire()
             self.HMI.unsetCursor()
             cursor = self.conn.cursor()
             # print(command, params)
             if params=='': cursor.execute(command)
             else: cursor.execute(command, params)
             self.conn.commit()
-        except Exception as e: print("Erro ModifyDB: ",str(e))
-        finally: self.ThreadLock.release()
+        except Exception as e: pass#print("Erro ModifyDB: ",str(e),"\nO comando solicitado foi:\n",command,"\nparâmetros:",params)
+        finally: self.HMI.ThreadLock.release()

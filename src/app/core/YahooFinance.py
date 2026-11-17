@@ -4,7 +4,7 @@ Created on Fri Sep 17 00:16:18 2021
 
 @author: caiop
 """
-from BackgroundProcesses import BackgroundProcess as BP
+from core.BackgroundProcesses import BackgroundProcess as BP
 
 import yfinance as yf # To evitando de usar essa
 from yahoo_fin.stock_info import * # Dar preferencia pra usar essa. Da menos BUG
@@ -371,7 +371,7 @@ class YahooFinance(object):
             options.add_argument("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36")
             options.add_argument('--window-size=1280,1024')
             options.add_argument("--incognito")
-            browser = webdriver.Chrome(chrome_options=options, executable_path = os.getcwd()+'\\chromedriver.exe')
+            browser = webdriver.Chrome(chrome_options=options, executable_path = os.getcwd()+'\\src\\chromedriver.exe')
             browser.set_window_size(1280, 1024)
             DownloadsPath = str(Path.home() / "Downloads")
             browser.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')

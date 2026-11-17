@@ -15,7 +15,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-from BackgroundProcesses import WorkerThread
+from core.BackgroundProcesses import WorkerThread
 
 class OperacaoRegistradaComSucesso(QWidget):
     def __init__(self, HMI, tempo):

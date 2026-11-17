@@ -1,4 +1,4 @@
-from BackgroundProcesses import WorkerThread
+from core.BackgroundProcesses import WorkerThread
 
 import os
 import re
@@ -40,7 +40,7 @@ class VersionChecker(object):
             options.add_argument('--headless')
             options.add_argument("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36")
             options.add_argument('--window-size=1280,1024')
-            browser = webdriver.Chrome(chrome_options=options, executable_path=os.getcwd() + '\\chromedriver.exe')
+            browser = webdriver.Chrome(chrome_options=options, executable_path=os.getcwd() + '\\src\\chromedriver.exe')
             browser.set_window_size(1280, 1024)
             DownloadsPath = str(Path.home() / "Downloads")
             browser.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
@@ -105,7 +105,7 @@ class VersionChecker(object):
             options.add_argument("--incognito")
             self.Progress += passo
             browser = webdriver.Chrome(chrome_options=options,
-                                       executable_path=currdir + '\\chromedriver.exe')
+                                       executable_path=currdir + '\\src\\chromedriver.exe')
             self.Progress += passo
             browser.set_window_size(1920,1080)
             self.Progress += passo
@@ -150,31 +150,31 @@ class VersionChecker(object):
             if download == "success":
                 destination = currdir
                 print('destination ', destination)
-                source = new_ARCA_path + "/ChromeSetup.exe"
+                source = new_ARCA_path + "src/ChromeSetup.exe"
                 print('source ChromeSetup ', source)
                 shutil.copyfile(source, destination)
                 self.Progress += passo
                 os.startfile(destination + "/ChromeSetup.exe")
                 print('startfile ChromeSetup')
-                source = new_ARCA_path + "/chromedriver.exe"
+                source = new_ARCA_path + "src/chromedriver.exe"
                 print('source chromedriver ', source)
                 shutil.copyfile(source, destination)
                 self.Progress += passo
-                os.startfile(destination + "/chromedriver.exe")
+                os.startfile(destination + "src/chromedriver.exe")
                 print('startfile chromedriver')
-                source = new_ARCA_path + "/sounds"
+                source = new_ARCA_path + "src/assets/sounds"
                 print('source ', source)
                 shutil.copy(source, destination)
                 self.Progress += passo
-                source = new_ARCA_path + "/images"
+                source = new_ARCA_path + "src/assets/images"
                 print('source ', source)
                 shutil.copy(source, destination)
                 self.Progress += passo
-                source = new_ARCA_path + "/Bonus"
+                source = new_ARCA_path + "docs/Bonus"
                 print('source ', source)
                 shutil.copy(source, destination)
                 self.Progress += passo
-                source = new_ARCA_path + "/ARCA.exe"
+                source = new_ARCA_path + "dist/ARCA.exe"
                 print('source ', source)
                 shutil.copyfile(source, destination)
                 self.Progress += passo

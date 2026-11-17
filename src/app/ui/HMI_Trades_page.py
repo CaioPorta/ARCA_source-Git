@@ -12,15 +12,15 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-import HMI_Trades_Bolsa
-import HMI_Trades_Criptomoedas
+import ui.HMI_Trades_Bolsa_page as HMI_Trades_Bolsa_page
+import ui.HMI_Trades_Criptomoedas_page as HMI_Trades_Criptomoedas_page
 
 class HMI_Trades(object):
     def __init__(self, HMI):
         self.HMI = HMI
         QToolTip.setFont(QFont('Arial', 12))
-        self.HMI_Trades_Bolsa = HMI_Trades_Bolsa.HMI_Trades_Bolsa(HMI)
-        self.HMI_Trades_Criptomoedas = HMI_Trades_Criptomoedas.HMI_Trades_Criptomoedas(HMI)
+        self.HMI_Trades_Bolsa = HMI_Trades_Bolsa_page.HMI_Trades_Bolsa(HMI)
+        self.HMI_Trades_Criptomoedas = HMI_Trades_Criptomoedas_page.HMI_Trades_Criptomoedas(HMI)
 
     def CreatePage10(self):
         self.HMI.DTeST = "NotDefined"
