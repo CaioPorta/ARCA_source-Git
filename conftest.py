@@ -29,7 +29,7 @@ def pytest_addoption(parser):
         default=False,
         help=(
             "Point the app at Users.db in the project root (like running ARCA.py from the repo root) "
-            "instead of src/assets/Users.db. os.getcwd() is redirected to the project root; image "
+            "instead of tests/test_output/Users.db. os.getcwd() is redirected to the project root; image "
             "loading keeps using src/assets."
         ),
     )
