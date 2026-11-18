@@ -1,15 +1,29 @@
 import os
+import sys
 import pytest
-from PyQt5.QtCore import QEventLoop, QTimer, Qt
+from PyQt5.QtCore import QEventLoop, QTimer, Qt, qInstallMessageHandler
 from PyQt5.QtWidgets import QApplication
 
 from ui.HMI import IHMmain
 import tests.libs.ui_helpers as ui
 
+def _suppress_font_database_warning():
+    # Headless (offscreen) Qt has no font directory, so it prints a spurious QFontDatabase warning.
+    # Filter only that message; forward everything else to stderr so real warnings are not hidden.
+    def _handler(message_type, context, message):
+        if "QFontDatabase" in message or "Qt no longer ships fonts" in message:
+            return
+        sys.stderr.write(f"{message}\n")
+        sys.stderr.flush()
+
+    qInstallMessageHandler(_handler)
+
+
 def pytest_configure(config):
     # Hide the GUI during normal test runs; reveal it on screen only when --visual-check is passed.
     if not config.getoption("--visual-check", default=False):
         os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")  # Run Qt headless unless visually checking.
+        _suppress_font_database_warning()
 
     # pytest-html resolves --html relative to the current directory, but this project chdir's into
     # src/assets so the app can find its images. Force html output under tests/test_output/ instead.
