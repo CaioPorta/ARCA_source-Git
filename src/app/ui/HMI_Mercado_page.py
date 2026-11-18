@@ -15,6 +15,8 @@ from PyQt5.QtCore import (
     QSize, Qt,
 )
 
+from ui.pages import PAGE_BY_NAME
+
 
 class HMI_Mercado(object):
     def __init__(self, HMI):
@@ -53,7 +55,7 @@ class HMI_Mercado(object):
         self.HMI.Movie_Mercado1.start()
 
         self.HMI.Button_Mercado1 = QPushButton("Análise do Mercado\nModelo Firnas")
-        # self.HMI.Button_Mercado1.pressed.connect(lambda: self.HMI.CreatePage('51'))
+        # self.HMI.Button_Mercado1.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Tributacao'].page_id))
         self.HMI.Button_Mercado1.setFont(self.HMI.font24)
         self.HMI.Button_Mercado1.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_Mercado1.setFixedSize(int(self.HMI.frameGeometry().width()/3*.96),int(self.HMI.frameGeometry().height()/5))
@@ -61,7 +63,7 @@ class HMI_Mercado(object):
         self.HMI.Button_Mercado1.setToolTip("Análise do Mercado Modelo Firnas")
 
         self.HMI.Button_MercadoInvisivel1 = QPushButton()
-        # self.HMI.Button_MercadoInvisivel1.pressed.connect(lambda: self.HMI.CreatePage('51'))
+        # self.HMI.Button_MercadoInvisivel1.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Tributacao'].page_id))
         self.HMI.Button_MercadoInvisivel1.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_MercadoInvisivel1.setFixedSize(int(self.HMI.frameGeometry().width()/3*.98),int(self.HMI.frameGeometry().height()*4/5-110))
         self.HMI.Button_MercadoInvisivel1.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -74,7 +76,7 @@ class HMI_Mercado(object):
         self.HMI.Movie_Mercado2.start()
 
         self.HMI.Button_Mercado2 = QPushButton("Análise do Mercado\nModelo Isa")
-        # self.HMI.Button_Mercado2.pressed.connect(lambda: self.HMI.CreatePage('52'))
+        # self.HMI.Button_Mercado2.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['52'].page_id))
         self.HMI.Button_Mercado2.setFont(self.HMI.font24)
         self.HMI.Button_Mercado2.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_Mercado2.setFixedSize(int(self.HMI.frameGeometry().width()/3*.96),int(self.HMI.frameGeometry().height()/5))
@@ -82,7 +84,7 @@ class HMI_Mercado(object):
         self.HMI.Button_Mercado2.setToolTip("Análise do Mercado Modelo Isa")
 
         self.HMI.Button_MercadoInvisivel2 = QPushButton()
-        # self.HMI.Button_MercadoInvisivel2.pressed.connect(lambda: self.HMI.CreatePage('52'))
+        # self.HMI.Button_MercadoInvisivel2.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['52'].page_id))
         self.HMI.Button_MercadoInvisivel2.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_MercadoInvisivel2.setFixedSize(int(self.HMI.frameGeometry().width()/3*.98),int(self.HMI.frameGeometry().height()*4/5-110))
         self.HMI.Button_MercadoInvisivel2.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -95,7 +97,7 @@ class HMI_Mercado(object):
         self.HMI.Movie_Mercado3.start()
 
         self.HMI.Button_Mercado3 = QPushButton("Análise do Mercado\nModelo Cabrero")
-        # self.HMI.Button_Mercado3.pressed.connect(lambda: self.HMI.CreatePage('53'))
+        # self.HMI.Button_Mercado3.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['53'].page_id))
         self.HMI.Button_Mercado3.setFont(self.HMI.font24)
         self.HMI.Button_Mercado3.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_Mercado3.setFixedSize(int(self.HMI.frameGeometry().width()/3*.96),int(self.HMI.frameGeometry().height()/5))
@@ -103,7 +105,7 @@ class HMI_Mercado(object):
         self.HMI.Button_Mercado3.setToolTip("Análise do Mercado Modelo Cabrero")
 
         self.HMI.Button_MercadoInvisivel3 = QPushButton()
-        # self.HMI.Button_MercadoInvisivel3.pressed.connect(lambda: self.HMI.CreatePage('53'))
+        # self.HMI.Button_MercadoInvisivel3.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['53'].page_id))
         self.HMI.Button_MercadoInvisivel3.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_MercadoInvisivel3.setFixedSize(int(self.HMI.frameGeometry().width()/3*.98),int(self.HMI.frameGeometry().height()*4/5-110))
         self.HMI.Button_MercadoInvisivel3.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))

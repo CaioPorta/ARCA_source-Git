@@ -16,6 +16,8 @@ from PyQt5.QtCore import (
     QSize, Qt
 )
 
+from ui.pages import PAGE_BY_NAME
+
 import ui.HMI_Trades_Bolsa_page as HMI_Trades_Bolsa_page
 import ui.HMI_Trades_Criptomoedas_page as HMI_Trades_Criptomoedas_page
 
@@ -54,14 +56,14 @@ class HMI_Trades(object):
         self.HMI.Movie_TradesBolsa.start()
 
         self.HMI.Button_TradesBolsaInvisivel = QPushButton()
-        self.HMI.Button_TradesBolsaInvisivel.pressed.connect(lambda: self.HMI.CreatePage('18'))
+        self.HMI.Button_TradesBolsaInvisivel.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id))
         self.HMI.Button_TradesBolsaInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_TradesBolsaInvisivel.setFixedSize(int(self.HMI.frameGeometry().width()/3*.98),int(self.HMI.frameGeometry().height()*4/5-160))
         self.HMI.Button_TradesBolsaInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.Button_TradesBolsaInvisivel.setToolTip("Negociações B3")
 
         self.HMI.Button_TradesBolsa = QPushButton("Bolsa")
-        self.HMI.Button_TradesBolsa.pressed.connect(lambda: self.HMI.CreatePage('18'))
+        self.HMI.Button_TradesBolsa.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id))
         self.HMI.Button_TradesBolsa.setFont(self.HMI.font24)
         self.HMI.Button_TradesBolsa.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_TradesBolsa.setFixedSize(int(self.HMI.frameGeometry().width()/3*.96),int(self.HMI.frameGeometry().height()/5))
@@ -75,7 +77,7 @@ class HMI_Trades(object):
         self.HMI.Movie_TradesCriptomoedas.start()
 
         self.HMI.Button_TradesCriptomoedas = QPushButton("Criptomoedas")
-        self.HMI.Button_TradesCriptomoedas.pressed.connect(lambda: self.HMI.CreatePage('19'))
+        self.HMI.Button_TradesCriptomoedas.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id))
         self.HMI.Button_TradesCriptomoedas.setFont(self.HMI.font24)
         self.HMI.Button_TradesCriptomoedas.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_TradesCriptomoedas.setFixedSize(int(self.HMI.frameGeometry().width()/3*.96),int(self.HMI.frameGeometry().height()/5))
@@ -83,7 +85,7 @@ class HMI_Trades(object):
         self.HMI.Button_TradesCriptomoedas.setToolTip("Negociações de criptomoedas")
 
         self.HMI.Button_TradesCriptomoedasInvisivel = QPushButton()
-        self.HMI.Button_TradesCriptomoedasInvisivel.pressed.connect(lambda: self.HMI.CreatePage('19'))
+        self.HMI.Button_TradesCriptomoedasInvisivel.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id))
         self.HMI.Button_TradesCriptomoedasInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_TradesCriptomoedasInvisivel.setFixedSize(int(self.HMI.frameGeometry().width()/3*.98),int(self.HMI.frameGeometry().height()*4/5-160))
         self.HMI.Button_TradesCriptomoedasInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -96,14 +98,14 @@ class HMI_Trades(object):
         self.HMI.Movie_Bancos.start()
 
         self.HMI.Button_BancosInvisivel = QPushButton()
-        self.HMI.Button_BancosInvisivel.pressed.connect(lambda: self.HMI.CreatePage('Bancos'))
+        self.HMI.Button_BancosInvisivel.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id))
         self.HMI.Button_BancosInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_BancosInvisivel.setFixedSize(int(self.HMI.frameGeometry().width()/3*.98),int(self.HMI.frameGeometry().height()*4/5-160))
         self.HMI.Button_BancosInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.Button_BancosInvisivel.setToolTip("Bancos")
 
         self.HMI.Button_Bancos = QPushButton("Bancos")
-        self.HMI.Button_Bancos.pressed.connect(lambda: self.HMI.CreatePage('Bancos'))
+        self.HMI.Button_Bancos.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id))
         self.HMI.Button_Bancos.setFont(self.HMI.font24)
         self.HMI.Button_Bancos.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_Bancos.setFixedSize(int(self.HMI.frameGeometry().width()/3*.96),int(self.HMI.frameGeometry().height()/5))
@@ -149,7 +151,7 @@ class HMI_Trades(object):
         self.HMI.Label_Titulo.setFixedHeight(int(self.HMI.screen_height/20))
 
         self.HMI.Button_AddBanco = QPushButton()
-        self.HMI.Button_AddBanco.pressed.connect(lambda: self.HMI.CreatePage('BancosAdd'))
+        self.HMI.Button_AddBanco.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['AdicionarNovoBanco'].page_id))
         self.HMI.Button_AddBanco.setFixedSize(40,40)
         self.HMI.Button_AddBanco.setIconSize(QSize(35, 35))
         self.HMI.Button_AddBanco.setIcon(QIcon("./images/add_user.png"))
@@ -158,7 +160,7 @@ class HMI_Trades(object):
         self.HMI.Button_AddBanco.setStyleSheet("QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}")
 
         self.HMI.Button_DeleteBanco = QPushButton()
-        self.HMI.Button_DeleteBanco.pressed.connect(lambda: self.HMI.CreatePage('BancosDelete'))
+        self.HMI.Button_DeleteBanco.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['BancosDelete'].page_id))
         self.HMI.Button_DeleteBanco.setFixedSize(40,40)
         self.HMI.Button_DeleteBanco.setIconSize(QSize(35, 35))
         self.HMI.Button_DeleteBanco.setIcon(QIcon("./images/delete_broker.png"))
@@ -180,7 +182,7 @@ class HMI_Trades(object):
             self.HMI.ComboBox_Bancos.setCurrentIndex(self.HMI.idxBanco)
 
         self.HMI.Button_RenameBanco = QPushButton()
-        self.HMI.Button_RenameBanco.pressed.connect(lambda: self.HMI.CreatePage('BancosRename'))
+        self.HMI.Button_RenameBanco.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RenomearBanco'].page_id))
         self.HMI.Button_RenameBanco.setFixedSize(40,40)
         self.HMI.Button_RenameBanco.setIconSize(QSize(35, 35))
         self.HMI.Button_RenameBanco.setIcon(QIcon("./images/Rename.png"))
@@ -293,7 +295,7 @@ class HMI_Trades(object):
         self.HMI.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.TextBox_NovoBanco = QLineEdit()
-        self.HMI.TextBox_NovoBanco.returnPressed.connect(lambda: self.HMI.CreatePage('Bancos_'))
+        self.HMI.TextBox_NovoBanco.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EditacaoContasCorrentesBancos_'].page_id))
         self.HMI.TextBox_NovoBanco.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
 
         self.HMI.Label_Msg2 = QLabel('Moeda Corrente:')
@@ -313,7 +315,7 @@ class HMI_Trades(object):
         self.HMI.ComboBox_Currency.setCurrentIndex(idxUserCoin)
 
         self.HMI.Button_AdicionarBanco = QPushButton('Seguinte')
-        self.HMI.Button_AdicionarBanco.pressed.connect(lambda: self.HMI.CreatePage('Bancos_'))
+        self.HMI.Button_AdicionarBanco.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EditacaoContasCorrentesBancos_'].page_id))
         self.HMI.Button_AdicionarBanco.setFont(self.HMI.font16)
         self.HMI.Button_AdicionarBanco.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_AdicionarBanco.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -344,7 +346,7 @@ class HMI_Trades(object):
         returnValue = MessageBox_Msg1.exec()
         if returnValue == QMessageBox.Yes:
             self.HMI.DBManager.DeleteBanco()
-            self.HMI.CreatePage('Bancos')
+            self.HMI.CreatePage(PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id)
 
     def CreatePageBancosRename(self):
         black = 'rgb(0, 0, 0)'
@@ -370,11 +372,11 @@ class HMI_Trades(object):
         self.HMI.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.TextBox_NovoNomeBanco = QLineEdit()
-        self.HMI.TextBox_NovoNomeBanco.returnPressed.connect(lambda: self.HMI.CreatePage('Bancos_'))
+        self.HMI.TextBox_NovoNomeBanco.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EditacaoContasCorrentesBancos_'].page_id))
         self.HMI.TextBox_NovoNomeBanco.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
 
         self.HMI.Button_RenomearBanco = QPushButton('Seguinte')
-        self.HMI.Button_RenomearBanco.pressed.connect(lambda: self.HMI.CreatePage('Bancos_'))
+        self.HMI.Button_RenomearBanco.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EditacaoContasCorrentesBancos_'].page_id))
         self.HMI.Button_RenomearBanco.setFont(self.HMI.font16)
         self.HMI.Button_RenomearBanco.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_RenomearBanco.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))

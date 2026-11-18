@@ -54,7 +54,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_AddCorretora = QPushButton()
         self.HMI.Button_AddCorretora.setToolTip("Adicionar corretora")
         self.HMI.Button_AddCorretora.setStyleSheet("QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}")
-        self.HMI.Button_AddCorretora.pressed.connect(lambda: self.HMI.CreatePage('20'))
+        self.HMI.Button_AddCorretora.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['AdicionarCorretoraBolsa'].page_id))
         self.HMI.Button_AddCorretora.setFixedSize(40,40)
         self.HMI.Button_AddCorretora.setIconSize(QSize(35, 35))
         self.HMI.Button_AddCorretora.setIcon(QIcon("./images/add_user.png"))
@@ -63,7 +63,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_DeleteCorretora = QPushButton()
         self.HMI.Button_DeleteCorretora.setToolTip("Deletar corretora")
         self.HMI.Button_DeleteCorretora.setStyleSheet("QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}")
-        self.HMI.Button_DeleteCorretora.pressed.connect(lambda: self.HMI.CreatePage('21'))
+        self.HMI.Button_DeleteCorretora.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['ConfirmarDeletarCorretoraBolsa'].page_id))
         self.HMI.Button_DeleteCorretora.setFixedSize(40,40)
         self.HMI.Button_DeleteCorretora.setIconSize(QSize(35, 35))
         self.HMI.Button_DeleteCorretora.setIcon(QIcon("./images/delete_broker.png"))
@@ -87,7 +87,7 @@ class HMI_Trades_Bolsa(object):
 
         self.HMI.Button_RenameCorretora = QPushButton()
         self.HMI.Button_RenameCorretora.setToolTip("Renomear corretora")
-        self.HMI.Button_RenameCorretora.pressed.connect(lambda: self.HMI.CreatePage('22'))
+        self.HMI.Button_RenameCorretora.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RenomearCorretoraBolsa'].page_id))
         self.HMI.Button_RenameCorretora.setFixedSize(40,40)
         self.HMI.Button_RenameCorretora.setIconSize(QSize(35, 35))
         self.HMI.Button_RenameCorretora.setIcon(QIcon("./images/Rename.png"))
@@ -204,13 +204,13 @@ class HMI_Trades_Bolsa(object):
 
         self.HMI.Button_AlterarOPBolsaInvisivel = QPushButton()
         self.HMI.Button_AlterarOPBolsaInvisivel.setToolTip("Alterar operação feita na B3")
-        self.HMI.Button_AlterarOPBolsaInvisivel.pressed.connect(lambda: self.HMI.CreatePage('23'))
+        self.HMI.Button_AlterarOPBolsaInvisivel.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id))
         self.HMI.Button_AlterarOPBolsaInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_AlterarOPBolsaInvisivel.setFixedSize(int(self.HMI.frameGeometry().width()*12/20/2),int(self.HMI.frameGeometry().height()*7/10*.95))
         self.HMI.Button_AlterarOPBolsaInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_AlterarOPBolsa = QPushButton("Registros")
-        self.HMI.Button_AlterarOPBolsa.pressed.connect(lambda: self.HMI.CreatePage('23'))
+        self.HMI.Button_AlterarOPBolsa.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id))
         self.HMI.Button_AlterarOPBolsa.setToolTip("Alterar operação feita na B3")
         self.HMI.Button_AlterarOPBolsa.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_AlterarOPBolsa.setFont(self.HMI.font16)
@@ -230,13 +230,13 @@ class HMI_Trades_Bolsa(object):
 
         self.HMI.Button_DepositosESaquesBolsaInvisivel = QPushButton()
         self.HMI.Button_DepositosESaquesBolsaInvisivel.setToolTip("Registro de depósitos e saques")
-        self.HMI.Button_DepositosESaquesBolsaInvisivel.pressed.connect(lambda: self.HMI.CreatePage('24'))
+        self.HMI.Button_DepositosESaquesBolsaInvisivel.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id))
         self.HMI.Button_DepositosESaquesBolsaInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_DepositosESaquesBolsaInvisivel.setFixedSize(int(self.HMI.frameGeometry().width()*12/20/2),int(self.HMI.frameGeometry().height()*3/10*.95))
         self.HMI.Button_DepositosESaquesBolsaInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_DepositosESaquesBolsa = QPushButton("Depósitos e Saques")
-        self.HMI.Button_DepositosESaquesBolsa.pressed.connect(lambda: self.HMI.CreatePage('24'))
+        self.HMI.Button_DepositosESaquesBolsa.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id))
         self.HMI.Button_DepositosESaquesBolsa.setToolTip("Registro de depósitos e saques")
         self.HMI.Button_DepositosESaquesBolsa.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_DepositosESaquesBolsa.setFont(self.HMI.font16)
@@ -250,7 +250,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Movie_ContaCorrenteBolsa.start()
 
         self.HMI.Button_ContaCorrenteBolsaInvisivel = QPushButton()
-        self.HMI.Button_ContaCorrenteBolsaInvisivel.pressed.connect(lambda: self.HMI.CreatePage('25'))
+        self.HMI.Button_ContaCorrenteBolsaInvisivel.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['SaldoContaCorrenteBolsa'].page_id))
         self.HMI.Button_ContaCorrenteBolsaInvisivel.setToolTip("Registro de valor em conta-corrente")
         self.HMI.Button_ContaCorrenteBolsaInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_ContaCorrenteBolsaInvisivel.setFixedSize(int(self.HMI.frameGeometry().width()*12/20/2),int(self.HMI.frameGeometry().height()*3/10*.95))
@@ -258,7 +258,7 @@ class HMI_Trades_Bolsa(object):
 
         self.HMI.Button_ContaCorrenteBolsa = QPushButton("Em conta-corrente")
         self.HMI.Button_ContaCorrenteBolsa.setToolTip("Registro de valor em conta-corrente")
-        self.HMI.Button_ContaCorrenteBolsa.pressed.connect(lambda: self.HMI.CreatePage('25'))
+        self.HMI.Button_ContaCorrenteBolsa.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['SaldoContaCorrenteBolsa'].page_id))
         self.HMI.Button_ContaCorrenteBolsa.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_ContaCorrenteBolsa.setFont(self.HMI.font16)
         self.HMI.Button_ContaCorrenteBolsa.setFixedSize(int(self.HMI.frameGeometry().width()*12/20/2),int(self.HMI.frameGeometry().height()*1/10*.95))
@@ -343,7 +343,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.TextBox_NovaCorretora = QLineEdit()
-        self.HMI.TextBox_NovaCorretora.returnPressed.connect(lambda: self.HMI.CreatePage('18_'))
+        self.HMI.TextBox_NovaCorretora.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa_'].page_id))
         self.HMI.TextBox_NovaCorretora.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
 
         self.HMI.Label_Msg2 = QLabel('Moeda Corrente:')
@@ -363,7 +363,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.ComboBox_Currency.setCurrentIndex(idxUserCoin)
 
         self.HMI.Button_AdicionarCorretora = QPushButton('Seguinte')
-        self.HMI.Button_AdicionarCorretora.pressed.connect(lambda: self.HMI.CreatePage('18_'))
+        self.HMI.Button_AdicionarCorretora.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa_'].page_id))
         self.HMI.Button_AdicionarCorretora.setFont(self.HMI.font16)
         self.HMI.Button_AdicionarCorretora.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_AdicionarCorretora.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -394,7 +394,7 @@ class HMI_Trades_Bolsa(object):
         returnValue = MessageBox_Msg1.exec()
         if returnValue == QMessageBox.Yes:
             self.HMI.DBManager.DeleteCorretora()
-            self.HMI.CreatePage('18')
+            self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id)
 
     def CreatePage22(self): # Renomear corretora da bolsa
         black = 'rgb(0, 0, 0)'
@@ -420,11 +420,11 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.TextBox_NovoNomeCorretora = QLineEdit()
-        self.HMI.TextBox_NovoNomeCorretora.returnPressed.connect(lambda: self.HMI.CreatePage('18_'))
+        self.HMI.TextBox_NovoNomeCorretora.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa_'].page_id))
         self.HMI.TextBox_NovoNomeCorretora.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
 
         self.HMI.Button_RenomearCorretora = QPushButton('Seguinte')
-        self.HMI.Button_RenomearCorretora.pressed.connect(lambda: self.HMI.CreatePage('18_'))
+        self.HMI.Button_RenomearCorretora.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa_'].page_id))
         self.HMI.Button_RenomearCorretora.setFont(self.HMI.font16)
         self.HMI.Button_RenomearCorretora.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_RenomearCorretora.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -459,7 +459,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Button_AddAtivo = QPushButton()
-        self.HMI.Button_AddAtivo.pressed.connect(lambda: self.HMI.CreatePage('26'))
+        self.HMI.Button_AddAtivo.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['AdicionarNovoAtivo'].page_id))
         self.HMI.Button_AddAtivo.setFixedSize(40,40)
         self.HMI.Button_AddAtivo.setIconSize(QSize(35, 35))
         self.HMI.Button_AddAtivo.setIcon(QIcon("./images/add_user.png"))
@@ -483,7 +483,7 @@ class HMI_Trades_Bolsa(object):
 
         self.HMI.Button_RenameAtivo = QPushButton()
         self.HMI.Button_RenameAtivo.setToolTip("Registro de depósitos e saques")
-        self.HMI.Button_RenameAtivo.pressed.connect(lambda: self.HMI.CreatePage('27'))
+        self.HMI.Button_RenameAtivo.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RenomearAtivo'].page_id))
         self.HMI.Button_RenameAtivo.setFixedSize(40,40)
         self.HMI.Button_RenameAtivo.setIconSize(QSize(35, 35))
         self.HMI.Button_RenameAtivo.setIcon(QIcon("./images/Rename.png"))
@@ -523,7 +523,7 @@ class HMI_Trades_Bolsa(object):
         elif self.HMI.DTeST == "DT": self.HMI.Button_DTeST.setIcon(QIcon("./images/Visualizar Apenas DT.png"))
 
         self.HMI.Button_AddOperacao = QPushButton('Adicionar operação')
-        self.HMI.Button_AddOperacao.pressed.connect(lambda: self.HMI.CreatePage('28'))
+        self.HMI.Button_AddOperacao.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id))
         self.HMI.Button_AddOperacao.setFixedSize(160,40)
         self.HMI.Button_AddOperacao.setIconSize(QSize(35, 35))
         self.HMI.Button_AddOperacao.setIcon(QIcon("./images/add_user.png"))
@@ -531,7 +531,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_AddOperacao.setStyleSheet('QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)}')
 
         self.HMI.Button_AlterarOperacao = QPushButton('Alterar operação')
-        self.HMI.Button_AlterarOperacao.pressed.connect(lambda: self.HMI.CreatePage('29'))
+        self.HMI.Button_AlterarOperacao.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id))
         self.HMI.Button_AlterarOperacao.setFixedSize(160,40)
         self.HMI.Button_AlterarOperacao.setIconSize(QSize(35, 35))
         self.HMI.Button_AlterarOperacao.setIcon(QIcon("./images/iconeAdjustDB.png"))
@@ -539,7 +539,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_AlterarOperacao.setStyleSheet('QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)}')
 
         self.HMI.Button_DeletarOperacao = QPushButton('Deletar operação')
-        self.HMI.Button_DeletarOperacao.pressed.connect(lambda: self.HMI.CreatePage('30'))
+        self.HMI.Button_DeletarOperacao.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['DeletarOperacoesBolsa'].page_id))
         self.HMI.Button_DeletarOperacao.setFixedSize(160,40)
         self.HMI.Button_DeletarOperacao.setIconSize(QSize(35, 35))
         self.HMI.Button_DeletarOperacao.setIcon(QIcon("./images/delete_broker.png"))
@@ -638,7 +638,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.TextBox_Valor.setFont(self.HMI.font16)
         self.HMI.TextBox_Valor.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.TextBox_Valor.setStyleSheet('color: green')
-        # self.HMI.TextBox_Valor.returnPressed.connect(lambda: self.HMI.CreatePage('24_'))
+        # self.HMI.TextBox_Valor.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarDepositosSaqBolsa_'].page_id))
 
         self.HMI.Label_Msg3 = QLabel()
         self.HMI.Label_Msg3.setText(' no dia ')
@@ -669,7 +669,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Relogio.pressed.connect(lambda: self.HMI.OnButtonPressed("Abrir Relógio"))
 
         self.HMI.Button_Voltar = QPushButton("Voltar")
-        self.HMI.Button_Voltar.pressed.connect(lambda: self.HMI.CreatePage('18'))
+        self.HMI.Button_Voltar.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id))
         self.HMI.Button_Voltar.setStyleSheet('background-color: gray; color: black')
         self.HMI.Button_Voltar.setFont(self.HMI.font16)
         self.HMI.Button_Voltar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -678,7 +678,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Voltar.setIcon(QIcon("./images/Voltar.png"))
 
         self.HMI.Button_Registrar = QPushButton("Registrar")
-        self.HMI.Button_Registrar.pressed.connect(lambda: self.HMI.CreatePage('24_'))
+        self.HMI.Button_Registrar.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarDepositosSaqBolsa_'].page_id))
         self.HMI.Button_Registrar.setStyleSheet('background-color: green; color: black')
         self.HMI.Button_Registrar.setFont(self.HMI.font16)
         self.HMI.Button_Registrar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -763,12 +763,12 @@ class HMI_Trades_Bolsa(object):
             self.HMI.TextBox_CCAtualizada.setEchoMode(QLineEdit.Normal)
         else:
             self.HMI.TextBox_CCAtualizada.setEchoMode(QLineEdit.Password)
-        self.HMI.TextBox_CCAtualizada.returnPressed.connect(lambda: self.HMI.CreatePage('18_'))
+        self.HMI.TextBox_CCAtualizada.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa_'].page_id))
         self.HMI.TextBox_CCAtualizada.setFont(self.HMI.font16)
         self.HMI.TextBox_CCAtualizada.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Button_Voltar = QPushButton("Deixar como está")
-        self.HMI.Button_Voltar.pressed.connect(lambda: self.HMI.CreatePage('18'))
+        self.HMI.Button_Voltar.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id))
         self.HMI.Button_Voltar.setStyleSheet('background-color: gray; color: black')
         self.HMI.Button_Voltar.setFont(self.HMI.font16)
         self.HMI.Button_Voltar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -777,7 +777,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Voltar.setIcon(QIcon("./images/Voltar.png"))
 
         self.HMI.Button_Atualizar = QPushButton("Atualizar")
-        self.HMI.Button_Atualizar.pressed.connect(lambda: self.HMI.CreatePage('18_'))
+        self.HMI.Button_Atualizar.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa_'].page_id))
         self.HMI.Button_Atualizar.setStyleSheet('background-color: green; color: black')
         self.HMI.Button_Atualizar.setFont(self.HMI.font16)
         self.HMI.Button_Atualizar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -846,7 +846,7 @@ class HMI_Trades_Bolsa(object):
 
         self.HMI.Button_AddTipoAtivo = QPushButton()
         self.HMI.Button_AddTipoAtivo.setToolTip("Adicionar tipo de ativo")
-        self.HMI.Button_AddTipoAtivo.pressed.connect(lambda: self.HMI.CreatePage('31a'))
+        self.HMI.Button_AddTipoAtivo.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['NaoImplementada31a'].page_id))
         self.HMI.Button_AddTipoAtivo.setFixedSize(40,40)
         self.HMI.Button_AddTipoAtivo.setIconSize(QSize(35, 35))
         self.HMI.Button_AddTipoAtivo.setIcon(QIcon("./images/add_user.png"))
@@ -875,7 +875,7 @@ class HMI_Trades_Bolsa(object):
         line_edit.setReadOnly(True)
 
         self.HMI.Button_AddSubTipoAtivo = QPushButton()
-        self.HMI.Button_AddSubTipoAtivo.pressed.connect(lambda: self.HMI.CreatePage('32a'))
+        self.HMI.Button_AddSubTipoAtivo.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['NaoImplementada32a'].page_id))
         self.HMI.Button_AddSubTipoAtivo.setFixedSize(40,40)
         self.HMI.Button_AddSubTipoAtivo.setIconSize(QSize(35, 35))
         self.HMI.Button_AddSubTipoAtivo.setIcon(QIcon("./images/add_user.png"))
@@ -905,7 +905,7 @@ class HMI_Trades_Bolsa(object):
         line_edit.setReadOnly(True)
 
         self.HMI.Button_AddSetorAtivo = QPushButton()
-        self.HMI.Button_AddSetorAtivo.pressed.connect(lambda: self.HMI.CreatePage('33'))
+        self.HMI.Button_AddSetorAtivo.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['33'].page_id))
         self.HMI.Button_AddSetorAtivo.setFixedSize(40,40)
         self.HMI.Button_AddSetorAtivo.setIconSize(QSize(35, 35))
         self.HMI.Button_AddSetorAtivo.setIcon(QIcon("./images/update.png"))
@@ -1041,7 +1041,7 @@ class HMI_Trades_Bolsa(object):
         line_edit.setReadOnly(True)
 
         self.HMI.Button_AddSetorAtivo = QPushButton()
-        self.HMI.Button_AddSetorAtivo.pressed.connect(lambda: self.HMI.CreatePage('33'))
+        self.HMI.Button_AddSetorAtivo.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['33'].page_id))
         self.HMI.Button_AddSetorAtivo.setFixedSize(40,40)
         self.HMI.Button_AddSetorAtivo.setIconSize(QSize(35, 35))
         self.HMI.Button_AddSetorAtivo.setIcon(QIcon("./images/update.png"))
@@ -1185,7 +1185,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.TextBox_Qqt.setFixedWidth(int(self.HMI.frameGeometry().width()/7*0.9))
         self.HMI.TextBox_Qqt.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_Qqt.setFont(self.HMI.font14)
-        self.HMI.TextBox_Qqt.returnPressed.connect(lambda: self.HMI.CreatePage('28'))
+        self.HMI.TextBox_Qqt.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id))
 
         self.HMI.Label_Msg5 = QLabel('Preço:')
         self.HMI.Label_Msg5.setStyleSheet('color: white')
@@ -1197,7 +1197,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.TextBox_Preco.setFixedWidth(int(self.HMI.frameGeometry().width()/7*0.9))
         self.HMI.TextBox_Preco.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_Preco.setFont(self.HMI.font14)
-        self.HMI.TextBox_Preco.returnPressed.connect(lambda: self.HMI.CreatePage('28'))
+        self.HMI.TextBox_Preco.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id))
 
         self.HMI.Label_Msg6 = QLabel('Corretagem:')
         self.HMI.Label_Msg6.setStyleSheet('color: white')
@@ -1209,7 +1209,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.TextBox_Corretagem.setFixedWidth(int(self.HMI.frameGeometry().width()/7*0.9))
         self.HMI.TextBox_Corretagem.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_Corretagem.setFont(self.HMI.font14)
-        self.HMI.TextBox_Corretagem.returnPressed.connect(lambda: self.HMI.CreatePage('28'))
+        self.HMI.TextBox_Corretagem.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id))
 
         self.HMI.Label_Msg7 = QLabel('Taxa B3:')
         self.HMI.Label_Msg7.setStyleSheet('color: white')
@@ -1221,7 +1221,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.TextBox_TaxaB3.setFixedWidth(int(self.HMI.frameGeometry().width()/7*0.9))
         self.HMI.TextBox_TaxaB3.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_TaxaB3.setFont(self.HMI.font14)
-        self.HMI.TextBox_TaxaB3.returnPressed.connect(lambda: self.HMI.CreatePage('28'))
+        self.HMI.TextBox_TaxaB3.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id))
 
         self.HMI.Label_Msg8 = QLabel('Observação:')
         self.HMI.Label_Msg8.setStyleSheet('color: white')
@@ -1232,7 +1232,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.TextBox_Obs.setFixedWidth(int(self.HMI.frameGeometry().width()*4/7*0.9))
         self.HMI.TextBox_Obs.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_Obs.setFont(self.HMI.font14)
-        self.HMI.TextBox_Obs.returnPressed.connect(lambda: self.HMI.CreatePage('28'))
+        self.HMI.TextBox_Obs.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id))
 
         self.HMI.Button_LimparCampos = QPushButton('Limpar\ncampos')
         self.HMI.Button_LimparCampos.pressed.connect(lambda: self.HMI.LimparPage())
@@ -1242,7 +1242,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_LimparCampos.setStyleSheet("background-color: rgb(100, 100, 100)")
 
         self.HMI.Button_RegistrarOperacao = QPushButton('Registrar\noperação')
-        self.HMI.Button_RegistrarOperacao.pressed.connect(lambda: self.HMI.CreatePage('28'))
+        self.HMI.Button_RegistrarOperacao.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id))
         self.HMI.Button_RegistrarOperacao.setFont(self.HMI.font16)
         self.HMI.Button_RegistrarOperacao.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_RegistrarOperacao.setFixedSize(int(self.HMI.frameGeometry().width()*2/10*0.9),int(self.HMI.frameGeometry().width()*1/10*0.9))
@@ -1251,7 +1251,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_RegistrarOperacao.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.HMI.Button_Info2 = QPushButton()
-        self.HMI.Button_Info2.pressed.connect(lambda: self.HMI.CreatePage('Info2'))
+        self.HMI.Button_Info2.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info2'].page_id))
         self.HMI.Button_Info2.setFixedSize(40,40)
         self.HMI.Button_Info2.setIconSize(QSize(35, 35))
         self.HMI.Button_Info2.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1259,7 +1259,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Info2.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info3 = QPushButton()
-        self.HMI.Button_Info3.pressed.connect(lambda: self.HMI.CreatePage('Info3'))
+        self.HMI.Button_Info3.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info3'].page_id))
         self.HMI.Button_Info3.setFixedSize(40,40)
         self.HMI.Button_Info3.setIconSize(QSize(35, 35))
         self.HMI.Button_Info3.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1267,7 +1267,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Info3.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info4 = QPushButton()
-        self.HMI.Button_Info4.pressed.connect(lambda: self.HMI.CreatePage('Info4'))
+        self.HMI.Button_Info4.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info4'].page_id))
         self.HMI.Button_Info4.setFixedSize(40,40)
         self.HMI.Button_Info4.setIconSize(QSize(35, 35))
         self.HMI.Button_Info4.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1275,7 +1275,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Info4.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info5 = QPushButton()
-        self.HMI.Button_Info5.pressed.connect(lambda: self.HMI.CreatePage('Info5'))
+        self.HMI.Button_Info5.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info5'].page_id))
         self.HMI.Button_Info5.setFixedSize(40,40)
         self.HMI.Button_Info5.setIconSize(QSize(35, 35))
         self.HMI.Button_Info5.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1283,7 +1283,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Info5.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info6 = QPushButton()
-        self.HMI.Button_Info6.pressed.connect(lambda: self.HMI.CreatePage('Info6'))
+        self.HMI.Button_Info6.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info6'].page_id))
         self.HMI.Button_Info6.setFixedSize(40,40)
         self.HMI.Button_Info6.setIconSize(QSize(35, 35))
         self.HMI.Button_Info6.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1291,7 +1291,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Info6.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info7 = QPushButton()
-        self.HMI.Button_Info7.pressed.connect(lambda: self.HMI.CreatePage('Info7'))
+        self.HMI.Button_Info7.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info7'].page_id))
         self.HMI.Button_Info7.setFixedSize(40,40)
         self.HMI.Button_Info7.setIconSize(QSize(35, 35))
         self.HMI.Button_Info7.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1299,7 +1299,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Info7.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info8 = QPushButton()
-        self.HMI.Button_Info8.pressed.connect(lambda: self.HMI.CreatePage('Info8'))
+        self.HMI.Button_Info8.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info8'].page_id))
         self.HMI.Button_Info8.setFixedSize(40,40)
         self.HMI.Button_Info8.setIconSize(QSize(35, 35))
         self.HMI.Button_Info8.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1553,7 +1553,7 @@ class HMI_Trades_Bolsa(object):
             self.HMI.Button_RegistrarOperacao.setStyleSheet("background-color: rgb(20, 120, 30)")
 
             self.HMI.Button_Info2 = QPushButton()
-            self.HMI.Button_Info2.pressed.connect(lambda: self.HMI.CreatePage('Info2'))
+            self.HMI.Button_Info2.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info2'].page_id))
             self.HMI.Button_Info2.setFixedSize(40,40)
             self.HMI.Button_Info2.setIconSize(QSize(35, 35))
             self.HMI.Button_Info2.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1561,7 +1561,7 @@ class HMI_Trades_Bolsa(object):
             self.HMI.Button_Info2.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info3 = QPushButton()
-            self.HMI.Button_Info3.pressed.connect(lambda: self.HMI.CreatePage('Info3'))
+            self.HMI.Button_Info3.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info3'].page_id))
             self.HMI.Button_Info3.setFixedSize(40,40)
             self.HMI.Button_Info3.setIconSize(QSize(35, 35))
             self.HMI.Button_Info3.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1569,7 +1569,7 @@ class HMI_Trades_Bolsa(object):
             self.HMI.Button_Info3.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info4 = QPushButton()
-            self.HMI.Button_Info4.pressed.connect(lambda: self.HMI.CreatePage('Info4'))
+            self.HMI.Button_Info4.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info4'].page_id))
             self.HMI.Button_Info4.setFixedSize(40,40)
             self.HMI.Button_Info4.setIconSize(QSize(35, 35))
             self.HMI.Button_Info4.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1577,7 +1577,7 @@ class HMI_Trades_Bolsa(object):
             self.HMI.Button_Info4.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info5 = QPushButton()
-            self.HMI.Button_Info5.pressed.connect(lambda: self.HMI.CreatePage('Info5'))
+            self.HMI.Button_Info5.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info5'].page_id))
             self.HMI.Button_Info5.setFixedSize(40,40)
             self.HMI.Button_Info5.setIconSize(QSize(35, 35))
             self.HMI.Button_Info5.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1585,7 +1585,7 @@ class HMI_Trades_Bolsa(object):
             self.HMI.Button_Info5.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info6 = QPushButton()
-            self.HMI.Button_Info6.pressed.connect(lambda: self.HMI.CreatePage('Info6'))
+            self.HMI.Button_Info6.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info6'].page_id))
             self.HMI.Button_Info6.setFixedSize(40,40)
             self.HMI.Button_Info6.setIconSize(QSize(35, 35))
             self.HMI.Button_Info6.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1593,7 +1593,7 @@ class HMI_Trades_Bolsa(object):
             self.HMI.Button_Info6.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info7 = QPushButton()
-            self.HMI.Button_Info7.pressed.connect(lambda: self.HMI.CreatePage('Info7'))
+            self.HMI.Button_Info7.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info7'].page_id))
             self.HMI.Button_Info7.setFixedSize(40,40)
             self.HMI.Button_Info7.setIconSize(QSize(35, 35))
             self.HMI.Button_Info7.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1601,7 +1601,7 @@ class HMI_Trades_Bolsa(object):
             self.HMI.Button_Info7.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info8 = QPushButton()
-            self.HMI.Button_Info8.pressed.connect(lambda: self.HMI.CreatePage('Info8'))
+            self.HMI.Button_Info8.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info8'].page_id))
             self.HMI.Button_Info8.setFixedSize(40,40)
             self.HMI.Button_Info8.setIconSize(QSize(35, 35))
             self.HMI.Button_Info8.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1754,7 +1754,7 @@ class HMI_Trades_Bolsa(object):
         self.Operacoes = list(dict.fromkeys(self.Operacoes))
 
         self.HMI.Button_Cancelar = QPushButton('Cancelar')
-        self.HMI.Button_Cancelar.pressed.connect(lambda: self.HMI.CreatePage('23'))
+        self.HMI.Button_Cancelar.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id))
         self.HMI.Button_Cancelar.setFont(self.HMI.font16)
         self.HMI.Button_Cancelar.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_Cancelar.setFixedSize(int(self.HMI.frameGeometry().width()*2/10*0.9),int(self.HMI.frameGeometry().width()*1/10*0.9))
@@ -1812,7 +1812,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Button_Voltar = QPushButton('Não. Voltar,\nrenomear ativo e\ntentar novamente.')
-        self.HMI.Button_Voltar.pressed.connect(lambda: self.HMI.CreatePage('26'))
+        self.HMI.Button_Voltar.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['AdicionarNovoAtivo'].page_id))
         self.HMI.Button_Voltar.setFont(self.HMI.font16)
         self.HMI.Button_Voltar.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_Voltar.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -1821,7 +1821,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Voltar.setStyleSheet("background-color: rgb(120, 20, 30)")
 
         self.HMI.Button_AtivarModoManual = QPushButton('Não, mas continue\ne ative o modo manual.')
-        self.HMI.Button_AtivarModoManual.pressed.connect(lambda: self.HMI.CreatePage('36a_Manual'))
+        self.HMI.Button_AtivarModoManual.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoManualBolsa_Manual'].page_id))
         self.HMI.Button_AtivarModoManual.setFont(self.HMI.font16)
         self.HMI.Button_AtivarModoManual.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_AtivarModoManual.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -1830,7 +1830,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_AtivarModoManual.setStyleSheet("background-color: rgb(120, 120, 30)")
 
         self.HMI.Button_Seguinte = QPushButton('Sim, está correto!')
-        self.HMI.Button_Seguinte.pressed.connect(lambda: self.HMI.CreatePage('36a_Auto'))
+        self.HMI.Button_Seguinte.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoManualBolsa_Auto'].page_id))
         self.HMI.Button_Seguinte.setFont(self.HMI.font16)
         self.HMI.Button_Seguinte.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_Seguinte.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -1839,7 +1839,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Seguinte.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.HMI.Button_Info1 = QPushButton('O que é modo manual?')
-        self.HMI.Button_Info1.pressed.connect(lambda: self.HMI.CreatePage('Info1'))
+        self.HMI.Button_Info1.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info1'].page_id))
         self.HMI.Button_Info1.setFont(self.HMI.font16)
         self.HMI.Button_Info1.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_Info1.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -1874,7 +1874,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Button_Voltar = QPushButton('Voltar,\nrenomear ativo e\ntentar novamente.')
-        self.HMI.Button_Voltar.pressed.connect(lambda: self.HMI.CreatePage('26'))
+        self.HMI.Button_Voltar.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['AdicionarNovoAtivo'].page_id))
         self.HMI.Button_Voltar.setFont(self.HMI.font16)
         self.HMI.Button_Voltar.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_Voltar.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -1883,7 +1883,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Voltar.setStyleSheet("background-color: rgb(120, 20, 30)")
 
         self.HMI.Button_AtivarModoManual = QPushButton('Ative o modo manual\npara esse ativo.')
-        self.HMI.Button_AtivarModoManual.pressed.connect(lambda: self.HMI.CreatePage('36b_Manual'))
+        self.HMI.Button_AtivarModoManual.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['AlterarNovaOperacaoManualBolsa_Manual'].page_id))
         self.HMI.Button_AtivarModoManual.setFont(self.HMI.font16)
         self.HMI.Button_AtivarModoManual.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_AtivarModoManual.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -1892,7 +1892,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_AtivarModoManual.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.HMI.Button_Info1 = QPushButton('O que é modo manual?')
-        self.HMI.Button_Info1.pressed.connect(lambda: self.HMI.CreatePage('Info1'))
+        self.HMI.Button_Info1.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info1'].page_id))
         self.HMI.Button_Info1.setFont(self.HMI.font16)
         self.HMI.Button_Info1.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_Info1.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -2046,7 +2046,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_LimparCampos.setStyleSheet("background-color: rgb(100, 100, 100)")
 
         self.HMI.Button_RegistrarOperacao = QPushButton('Registrar\noperação')
-        self.HMI.Button_RegistrarOperacao.pressed.connect(lambda: self.HMI.CreatePage('28'))
+        self.HMI.Button_RegistrarOperacao.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id))
         self.HMI.Button_RegistrarOperacao.setFont(self.HMI.font16)
         self.HMI.Button_RegistrarOperacao.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_RegistrarOperacao.setFixedSize(int(self.HMI.frameGeometry().width()*2/10*0.9),int(self.HMI.frameGeometry().width()*1/10*0.9))
@@ -2055,7 +2055,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_RegistrarOperacao.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.HMI.Button_Info2 = QPushButton()
-        self.HMI.Button_Info2.pressed.connect(lambda: self.HMI.CreatePage('Info2'))
+        self.HMI.Button_Info2.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info2'].page_id))
         self.HMI.Button_Info2.setFixedSize(40,40)
         self.HMI.Button_Info2.setIconSize(QSize(35, 35))
         self.HMI.Button_Info2.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2063,7 +2063,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Info2.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info3 = QPushButton()
-        self.HMI.Button_Info3.pressed.connect(lambda: self.HMI.CreatePage('Info3'))
+        self.HMI.Button_Info3.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info3'].page_id))
         self.HMI.Button_Info3.setFixedSize(40,40)
         self.HMI.Button_Info3.setIconSize(QSize(35, 35))
         self.HMI.Button_Info3.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2071,7 +2071,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Info3.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info4 = QPushButton()
-        self.HMI.Button_Info4.pressed.connect(lambda: self.HMI.CreatePage('Info4'))
+        self.HMI.Button_Info4.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info4'].page_id))
         self.HMI.Button_Info4.setFixedSize(40,40)
         self.HMI.Button_Info4.setIconSize(QSize(35, 35))
         self.HMI.Button_Info4.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2079,7 +2079,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Info4.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info5 = QPushButton()
-        self.HMI.Button_Info5.pressed.connect(lambda: self.HMI.CreatePage('Info5'))
+        self.HMI.Button_Info5.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info5'].page_id))
         self.HMI.Button_Info5.setFixedSize(40,40)
         self.HMI.Button_Info5.setIconSize(QSize(35, 35))
         self.HMI.Button_Info5.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2087,7 +2087,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Info5.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info6 = QPushButton()
-        self.HMI.Button_Info6.pressed.connect(lambda: self.HMI.CreatePage('Info6'))
+        self.HMI.Button_Info6.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info6'].page_id))
         self.HMI.Button_Info6.setFixedSize(40,40)
         self.HMI.Button_Info6.setIconSize(QSize(35, 35))
         self.HMI.Button_Info6.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2095,7 +2095,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Info6.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info7 = QPushButton()
-        self.HMI.Button_Info7.pressed.connect(lambda: self.HMI.CreatePage('Info7'))
+        self.HMI.Button_Info7.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info7'].page_id))
         self.HMI.Button_Info7.setFixedSize(40,40)
         self.HMI.Button_Info7.setIconSize(QSize(35, 35))
         self.HMI.Button_Info7.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2103,7 +2103,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Info7.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info8 = QPushButton()
-        self.HMI.Button_Info8.pressed.connect(lambda: self.HMI.CreatePage('Info8'))
+        self.HMI.Button_Info8.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info8'].page_id))
         self.HMI.Button_Info8.setFixedSize(40,40)
         self.HMI.Button_Info8.setIconSize(QSize(35, 35))
         self.HMI.Button_Info8.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2206,11 +2206,11 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Label_NovoTipoAtivo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.TextBox_NovoTipoAtivo = QLineEdit()
-        self.HMI.TextBox_NovoTipoAtivo.returnPressed.connect(lambda: self.HMI.CreatePage('27'))
+        self.HMI.TextBox_NovoTipoAtivo.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RenomearAtivo'].page_id))
         self.HMI.TextBox_NovoTipoAtivo.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
 
         self.HMI.Button_Seguinte = QPushButton('Seguinte')
-        self.HMI.Button_Seguinte.pressed.connect(lambda: self.HMI.CreatePage('27'))
+        self.HMI.Button_Seguinte.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RenomearAtivo'].page_id))
         self.HMI.Button_Seguinte.setFont(self.HMI.font16)
         self.HMI.Button_Seguinte.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_Seguinte.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -2322,11 +2322,11 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Label_NovoSubtipoAtivo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.TextBox_NovoSubtipoAtivo = QLineEdit()
-        self.HMI.TextBox_NovoSubtipoAtivo.returnPressed.connect(lambda: self.HMI.CreatePage('27'))
+        self.HMI.TextBox_NovoSubtipoAtivo.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RenomearAtivo'].page_id))
         self.HMI.TextBox_NovoSubtipoAtivo.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
 
         self.HMI.Button_Seguinte = QPushButton('Seguinte')
-        self.HMI.Button_Seguinte.pressed.connect(lambda: self.HMI.CreatePage('27'))
+        self.HMI.Button_Seguinte.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RenomearAtivo'].page_id))
         self.HMI.Button_Seguinte.setFont(self.HMI.font16)
         self.HMI.Button_Seguinte.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_Seguinte.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -2384,7 +2384,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Button_Voltar = QPushButton('Não. Voltar,\nrenomear ativo e\ntentar novamente.')
-        self.HMI.Button_Voltar.pressed.connect(lambda: self.HMI.CreatePage('27'))
+        self.HMI.Button_Voltar.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RenomearAtivo'].page_id))
         self.HMI.Button_Voltar.setFont(self.HMI.font16)
         self.HMI.Button_Voltar.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_Voltar.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -2393,7 +2393,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Voltar.setStyleSheet("background-color: rgb(120, 20, 30)")
 
         self.HMI.Button_AtivarModoManual = QPushButton('Não, mas continue\ne ative o modo manual.')
-        self.HMI.Button_AtivarModoManual.pressed.connect(lambda: self.HMI.CreatePage('_23_'))
+        self.HMI.Button_AtivarModoManual.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['_RegistrosBolsa_'].page_id))
         self.HMI.Button_AtivarModoManual.setFont(self.HMI.font16)
         self.HMI.Button_AtivarModoManual.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_AtivarModoManual.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -2402,7 +2402,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_AtivarModoManual.setStyleSheet("background-color: rgb(120, 120, 30)")
 
         self.HMI.Button_Seguinte = QPushButton('Sim, está correto!')
-        self.HMI.Button_Seguinte.pressed.connect(lambda: self.HMI.CreatePage('23_'))
+        self.HMI.Button_Seguinte.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RegistrosBolsa_'].page_id))
         self.HMI.Button_Seguinte.setFont(self.HMI.font16)
         self.HMI.Button_Seguinte.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_Seguinte.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -2411,7 +2411,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Seguinte.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.HMI.Button_Info1 = QPushButton('O que é modo manual?')
-        self.HMI.Button_Info1.pressed.connect(lambda: self.HMI.CreatePage('Info1'))
+        self.HMI.Button_Info1.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info1'].page_id))
         self.HMI.Button_Info1.setFont(self.HMI.font16)
         self.HMI.Button_Info1.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_Info1.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -2446,7 +2446,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Button_Voltar = QPushButton('Voltar,\nrenomear ativo e\ntentar novamente.')
-        self.HMI.Button_Voltar.pressed.connect(lambda: self.HMI.CreatePage('27'))
+        self.HMI.Button_Voltar.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RenomearAtivo'].page_id))
         self.HMI.Button_Voltar.setFont(self.HMI.font16)
         self.HMI.Button_Voltar.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_Voltar.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -2455,7 +2455,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_Voltar.setStyleSheet("background-color: rgb(120, 20, 30)")
 
         self.HMI.Button_AtivarModoManual = QPushButton('Ative o modo manual\npara esse ativo.')
-        self.HMI.Button_AtivarModoManual.pressed.connect(lambda: self.HMI.CreatePage('23_'))
+        self.HMI.Button_AtivarModoManual.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RegistrosBolsa_'].page_id))
         self.HMI.Button_AtivarModoManual.setFont(self.HMI.font16)
         self.HMI.Button_AtivarModoManual.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_AtivarModoManual.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -2464,7 +2464,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_AtivarModoManual.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.HMI.Button_Info1 = QPushButton('O que é modo manual?')
-        self.HMI.Button_Info1.pressed.connect(lambda: self.HMI.CreatePage('Info1'))
+        self.HMI.Button_Info1.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info1'].page_id))
         self.HMI.Button_Info1.setFont(self.HMI.font16)
         self.HMI.Button_Info1.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
         self.HMI.Button_Info1.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -3020,7 +3020,7 @@ class HMI_Trades_Bolsa(object):
                 returnValue = MessageBox_Msg1.exec()
                 if returnValue == QMessageBox.Yes:
                     self.HMI.DBManager.DeleteDepositoOuSaque(TotalSelecao)
-                    self.HMI.CreatePage('24')
+                    self.HMI.CreatePage(PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id)
             else:
                 MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
 
@@ -3138,9 +3138,9 @@ class HMI_Trades_Bolsa(object):
                     
                     if self.HMI.DBManager.AlterOperacao(Item, Data, Tipo, Qqt, Preco, Corretagem, TaxaB3, TaxaB3Per, Obs):
                         if self.HMI.HMI_Trades.HMI_Trades_Bolsa.item+1 >= len(self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes):
-                            self.HMI.CreatePage('23') # Última alteração da lista
+                            self.HMI.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id) # Última alteração da lista
                         else:
-                            self.HMI.CreatePage('29') # Ir pra próxima alteração
+                            self.HMI.CreatePage(PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id) # Ir pra próxima alteração
                     else:
                         try: self.HMI.Label_Erro1.deleteLater()
                         except: pass
@@ -3165,6 +3165,6 @@ class HMI_Trades_Bolsa(object):
         elif ButtonPressed == 'Deletar Ativos da Pagina 23':
             if not self.HMI.DBManager.CalcularTributacao_is_running:
                 self.HMI.DBManager.DeleteOperacao(self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes)
-                self.HMI.CreatePage('23')
+                self.HMI.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id)
             else:
                 MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')

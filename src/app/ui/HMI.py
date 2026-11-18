@@ -2640,7 +2640,7 @@ class IHMmain(QWidget):
         self.Label_SenhaAtual.setText('Insira a senha atual:'+str((' ')*int(self.frameGeometry().width()*razao)))
 
         self.TextBox_SenhaAtual = QLineEdit()
-        self.TextBox_SenhaAtual.returnPressed.connect(lambda: self.CreatePage('9_'))
+        self.TextBox_SenhaAtual.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Perfil_'].page_id))
         self.TextBox_SenhaAtual.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.TextBox_SenhaAtual.setEchoMode(QLineEdit.Password)
 
@@ -2656,7 +2656,7 @@ class IHMmain(QWidget):
         self.Label_Senha1.setText('Crie uma nova senha:'+str((' ')*int(self.frameGeometry().width()*razao)))
 
         self.TextBox_Senha1 = QLineEdit()
-        self.TextBox_Senha1.returnPressed.connect(lambda: self.CreatePage('9_'))
+        self.TextBox_Senha1.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Perfil_'].page_id))
         self.TextBox_Senha1.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.TextBox_Senha1.setEchoMode(QLineEdit.Password)
 
@@ -2672,12 +2672,12 @@ class IHMmain(QWidget):
         self.Label_Senha2.setText('Confirme a senha:'+str((' ')*int(self.frameGeometry().width()*razao)))
 
         self.TextBox_Senha2 = QLineEdit()
-        self.TextBox_Senha2.returnPressed.connect(lambda: self.CreatePage('9_'))
+        self.TextBox_Senha2.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Perfil_'].page_id))
         self.TextBox_Senha2.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.TextBox_Senha2.setEchoMode(QLineEdit.Password)
 
         self.Button_Alterar = QPushButton()
-        self.Button_Alterar.pressed.connect(lambda: self.CreatePage('9_'))
+        self.Button_Alterar.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Perfil_'].page_id))
         self.Button_Alterar.setFont(self.font16)
         self.Button_Alterar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_Alterar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -2746,7 +2746,7 @@ class IHMmain(QWidget):
         self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_CodigoDeConfirmacao = QLineEdit()
-        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage('9_'))
+        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Perfil_'].page_id))
         self.TextBox_CodigoDeConfirmacao.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Button_ResendEmail = QPushButton("Reenviar email")
@@ -2759,7 +2759,7 @@ class IHMmain(QWidget):
         self.Button_ResendEmail.setStyleSheet('QToolTip {background-color: black; color: white;border: black solid 1px}')
 
         self.Button_ConfirmacaoDeEmail = QPushButton('Alterar')
-        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage('9_'))
+        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Perfil_'].page_id))
         self.Button_ConfirmacaoDeEmail.setFont(self.font16)
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
@@ -3906,7 +3906,7 @@ class IHMmain(QWidget):
         else: self.Button_ShowHideValues.setIcon(QIcon("./images/iconOpenEye.png"))
 
         self.Label_Patrimonio = QPushButton('Patrimônio:')
-        self.Label_Patrimonio.pressed.connect(lambda: self.CreatePage('Info23'))
+        self.Label_Patrimonio.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Info23'].page_id))
         self.Label_Patrimonio.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none; alignment: right')
         self.Label_Patrimonio.setFont(self.font14)
 
@@ -3924,7 +3924,7 @@ class IHMmain(QWidget):
         else: self.TextBox_Patrimonio.setEchoMode(QLineEdit.Password)
 
         self.Label_Rendimento = QPushButton('RNB%:')
-        self.Label_Rendimento.pressed.connect(lambda: self.CreatePage('Info22'))
+        self.Label_Rendimento.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Info22'].page_id))
         self.Label_Rendimento.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none; alignment: right')
         self.Label_Rendimento.setFont(self.font14)
 
@@ -4277,7 +4277,7 @@ class IHMmain(QWidget):
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['34c', '35c']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('42'))
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['IdeiaAbandonada'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -5427,7 +5427,7 @@ class IHMmain(QWidget):
             elif self.PageID in ['42']:
                 self.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id)
             elif self.PageID in ['34c', '35c']:
-                self.CreatePage('42')
+                self.CreatePage(PAGE_BY_NAME['IdeiaAbandonada'].page_id)
             elif self.PageID in [PAGE_BY_NAME['ImportacaoUsuario'].page_id]:
                 self.CreatePage(PAGE_BY_NAME['ImportarUsuario'].page_id)
             elif self.PageID in [PAGE_BY_NAME['ConfirmacaoEmailImportar'].page_id]:

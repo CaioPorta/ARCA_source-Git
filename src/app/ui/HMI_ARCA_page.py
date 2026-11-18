@@ -24,6 +24,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 
+from ui.pages import PAGE_BY_NAME
+
 
 class HMI_ARCA(object):
     def __init__(self, HMI):
@@ -50,22 +52,22 @@ class HMI_ARCA(object):
         self.HMI.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Label_Subtitulo1 = QPushButton('Ações e negócios')
-        self.HMI.Label_Subtitulo1.pressed.connect(lambda: self.HMI.CreatePage('Info24'))
+        self.HMI.Label_Subtitulo1.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info24'].page_id))
         self.HMI.Label_Subtitulo1.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: transparent; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
         self.HMI.Label_Subtitulo1.setFont(self.HMI.font16)
 
         self.HMI.Label_Subtitulo2 = QPushButton('Real Estate')
-        self.HMI.Label_Subtitulo2.pressed.connect(lambda: self.HMI.CreatePage('Info25'))
+        self.HMI.Label_Subtitulo2.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info25'].page_id))
         self.HMI.Label_Subtitulo2.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: transparent; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
         self.HMI.Label_Subtitulo2.setFont(self.HMI.font16)
 
         self.HMI.Label_Subtitulo3 = QPushButton('Caixa')
-        self.HMI.Label_Subtitulo3.pressed.connect(lambda: self.HMI.CreatePage('Info26'))
+        self.HMI.Label_Subtitulo3.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info26'].page_id))
         self.HMI.Label_Subtitulo3.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: transparent; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
         self.HMI.Label_Subtitulo3.setFont(self.HMI.font16)
 
         self.HMI.Label_Subtitulo4 = QPushButton('Ativos internacionais')
-        self.HMI.Label_Subtitulo4.pressed.connect(lambda: self.HMI.CreatePage('Info27'))
+        self.HMI.Label_Subtitulo4.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info27'].page_id))
         self.HMI.Label_Subtitulo4.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: transparent; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
         self.HMI.Label_Subtitulo4.setFont(self.HMI.font16)
 
@@ -74,27 +76,27 @@ class HMI_ARCA(object):
         self.HMI.Label_Subtitulo5.setFont(self.HMI.font16)
 
         self.HMI.Label_Subtitulo1_ = QPushButton('Ações e negócios')
-        self.HMI.Label_Subtitulo1_.pressed.connect(lambda: self.HMI.CreatePage('Info24'))
+        self.HMI.Label_Subtitulo1_.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info24'].page_id))
         self.HMI.Label_Subtitulo1_.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
         self.HMI.Label_Subtitulo1_.setFont(self.HMI.font16)
 
         self.HMI.Label_Subtitulo2_ = QPushButton('Real Estate')
-        self.HMI.Label_Subtitulo2_.pressed.connect(lambda: self.HMI.CreatePage('Info25'))
+        self.HMI.Label_Subtitulo2_.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info25'].page_id))
         self.HMI.Label_Subtitulo2_.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
         self.HMI.Label_Subtitulo2_.setFont(self.HMI.font16)
 
         self.HMI.Label_Subtitulo3_ = QPushButton('Caixa')
-        self.HMI.Label_Subtitulo3_.pressed.connect(lambda: self.HMI.CreatePage('Info26'))
+        self.HMI.Label_Subtitulo3_.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info26'].page_id))
         self.HMI.Label_Subtitulo3_.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
         self.HMI.Label_Subtitulo3_.setFont(self.HMI.font16)
 
         self.HMI.Label_Subtitulo4_ = QPushButton('Ativos internacionais')
-        self.HMI.Label_Subtitulo4_.pressed.connect(lambda: self.HMI.CreatePage('Info27'))
+        self.HMI.Label_Subtitulo4_.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info27'].page_id))
         self.HMI.Label_Subtitulo4_.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
         self.HMI.Label_Subtitulo4_.setFont(self.HMI.font16)
 
         self.HMI.Label_Subtitulo5_ = QPushButton()
-        self.HMI.Label_Subtitulo5_.pressed.connect(lambda: self.HMI.CreatePage('Info28'))
+        self.HMI.Label_Subtitulo5_.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info28'].page_id))
         self.HMI.Label_Subtitulo5_.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
         self.HMI.Label_Subtitulo5_.setFont(self.HMI.font16)
 
@@ -140,7 +142,7 @@ class HMI_ARCA(object):
 
 
         self.HMI.Button_Msg3 = QPushButton('Montante em aplicação\n('+self.HMI.DBManager.GetUserCoinCurrency()+")")
-        self.HMI.Button_Msg3.pressed.connect(lambda: self.HMI.CreatePage('Info21'))
+        self.HMI.Button_Msg3.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info21'].page_id))
         self.HMI.Button_Msg3.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
         self.HMI.Button_Msg3.setFont(self.HMI.font12)
 
@@ -152,7 +154,7 @@ class HMI_ARCA(object):
         self.HMI.TextBox_MontanteEmAplicacao.setEnabled(False)
 
         self.HMI.Button_Msg4 = QPushButton('Montante aplicado\n('+self.HMI.DBManager.GetUserCoinCurrency()+")")
-        self.HMI.Button_Msg4.pressed.connect(lambda: self.HMI.CreatePage('Info20'))
+        self.HMI.Button_Msg4.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info20'].page_id))
         self.HMI.Button_Msg4.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
         self.HMI.Button_Msg4.setFont(self.HMI.font12)
 
@@ -272,22 +274,22 @@ class HMI_ARCA(object):
 
         self.HMI.Button_Msg1 = QPushButton('Nota de equilíbrio: ???/100')
         self.HMI.Button_Msg1.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
-        self.HMI.Button_Msg1.pressed.connect(lambda: self.HMI.CreatePage('Info16'))
+        self.HMI.Button_Msg1.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info16'].page_id))
         self.HMI.Button_Msg1.setFont(self.HMI.font12)
 
         self.HMI.Button_Msg5 = QPushButton('Gasto mensal\n('+self.HMI.DBManager.GetUserCoinCurrency()+")")
         self.HMI.Button_Msg5.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
-        self.HMI.Button_Msg5.pressed.connect(lambda: self.HMI.CreatePage('Info17'))
+        self.HMI.Button_Msg5.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info17'].page_id))
         self.HMI.Button_Msg5.setFont(self.HMI.font12)
 
         self.HMI.Button_Msg6 = QPushButton('Meses de\nreserva')
         self.HMI.Button_Msg6.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
-        self.HMI.Button_Msg6.pressed.connect(lambda: self.HMI.CreatePage('Info18'))
+        self.HMI.Button_Msg6.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info18'].page_id))
         self.HMI.Button_Msg6.setFont(self.HMI.font12)
 
         self.HMI.Button_Msg7 = QPushButton('Aplicar\n('+self.HMI.DBManager.GetUserCoinCurrency()+")")
         self.HMI.Button_Msg7.setStyleSheet('background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;')
-        self.HMI.Button_Msg7.pressed.connect(lambda: self.HMI.CreatePage('Info19'))
+        self.HMI.Button_Msg7.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info19'].page_id))
         self.HMI.Button_Msg7.setFont(self.HMI.font12)
 
         self.HMI.Label_Msg8 = QLabel('Reserva:')
@@ -872,7 +874,7 @@ class HMI_ARCA(object):
         else: self.HMI.TextBox_Retorno.setStyleSheet('QLineEdit {background-color: black; color: red;}')
 
         self.HMI.Button_VerCriptomoedas = QPushButton('Ver criptomoedas ->')
-        self.HMI.Button_VerCriptomoedas.pressed.connect(lambda: self.HMI.CreatePage('50'))
+        self.HMI.Button_VerCriptomoedas.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['CriptoARCA'].page_id))
         self.HMI.Button_VerCriptomoedas.setStyleSheet("background-color: black; color: "+FontColorLineEdit+"; outline: none;")
         self.HMI.Button_VerCriptomoedas.setFont(QFont('Agency FB', 16))
         self.HMI.Button_VerCriptomoedas.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -988,7 +990,7 @@ class HMI_ARCA(object):
         else: self.HMI.TextBox_Retorno.setStyleSheet('QLineEdit {background-color: black; color: red;}')
 
         self.HMI.Button_VerAtivosInternacionais = QPushButton('Ver ativos internacionais ->')
-        self.HMI.Button_VerAtivosInternacionais.pressed.connect(lambda: self.HMI.CreatePage('49'))
+        self.HMI.Button_VerAtivosInternacionais.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['AtivosInternacionais'].page_id))
         self.HMI.Button_VerAtivosInternacionais.setStyleSheet("background-color: black; color: "+FontColorLineEdit+"; outline: none;")
         self.HMI.Button_VerAtivosInternacionais.setFont(QFont('Agency FB', 16))
         self.HMI.Button_VerAtivosInternacionais.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -3373,15 +3375,15 @@ class HMI_ARCA(object):
 
     def CallCreatePage(self):
         if self.GraficoEspecifico_Name in ["Ações Nacionais", "Fundos de investimentos: Ações e Negócios"]:
-            self.HMI.CreatePage('46')
+            self.HMI.CreatePage(PAGE_BY_NAME['AcoesNegocios'].page_id)
         elif self.GraficoEspecifico_Name in ["Fundos Imobiliários", "Terrenos", "Construções"]:
-            self.HMI.CreatePage('47')
+            self.HMI.CreatePage(PAGE_BY_NAME['RealEstate'].page_id)
         elif self.GraficoEspecifico_Name in ["Renda Fixa", "Tesouro Direto e Títulos Públicos", "Previdência Privada", "COE", "Fundos de Investimento: Renda Fixa"]:
-            self.HMI.CreatePage('48')
+            self.HMI.CreatePage(PAGE_BY_NAME['Caixa'].page_id)
         elif self.GraficoEspecifico_Name in ["BDR", "Fundos de Investimento: Ações Internacionais"]:
-            self.HMI.CreatePage('49')
+            self.HMI.CreatePage(PAGE_BY_NAME['AtivosInternacionais'].page_id)
         elif self.GraficoEspecifico_Name in ["Criptomoedas"]:
-            self.HMI.CreatePage('50')
+            self.HMI.CreatePage(PAGE_BY_NAME['CriptoARCA'].page_id)
 
     def ProximoGraficoEspecifico(self, TipoDeAtivo):
         if TipoDeAtivo == "Ações e Negócios":

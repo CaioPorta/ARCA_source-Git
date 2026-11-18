@@ -51,7 +51,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_AddCorretora = QPushButton()
         self.HMI.Button_AddCorretora.setToolTip("Adicionar corretora")
         self.HMI.Button_AddCorretora.setStyleSheet("QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}")
-        self.HMI.Button_AddCorretora.pressed.connect(lambda: self.HMI.CreatePage('37'))
+        self.HMI.Button_AddCorretora.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['AdicionarCorretoraCripto'].page_id))
         self.HMI.Button_AddCorretora.setFixedSize(40,40)
         self.HMI.Button_AddCorretora.setIconSize(QSize(35, 35))
         self.HMI.Button_AddCorretora.setIcon(QIcon("./images/add_user.png"))
@@ -60,7 +60,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_DeleteCorretora = QPushButton()
         self.HMI.Button_DeleteCorretora.setToolTip("Deletar corretora")
         self.HMI.Button_DeleteCorretora.setStyleSheet("QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}")
-        self.HMI.Button_DeleteCorretora.pressed.connect(lambda: self.HMI.CreatePage('38'))
+        self.HMI.Button_DeleteCorretora.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['ConfirmarDeletarCorretoraCripto'].page_id))
         self.HMI.Button_DeleteCorretora.setFixedSize(40,40)
         self.HMI.Button_DeleteCorretora.setIconSize(QSize(35, 35))
         self.HMI.Button_DeleteCorretora.setIcon(QIcon("./images/delete_broker.png"))
@@ -85,7 +85,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_RenameCorretora = QPushButton()
         self.HMI.Button_RenameCorretora.setToolTip("Renomear corretora")
         self.HMI.Button_RenameCorretora.setStyleSheet("QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}")
-        self.HMI.Button_RenameCorretora.pressed.connect(lambda: self.HMI.CreatePage('39'))
+        self.HMI.Button_RenameCorretora.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RenomearCorretoraCripto'].page_id))
         self.HMI.Button_RenameCorretora.setFixedSize(40,40)
         self.HMI.Button_RenameCorretora.setIconSize(QSize(35, 35))
         self.HMI.Button_RenameCorretora.setIcon(QIcon("./images/Rename.png"))
@@ -203,14 +203,14 @@ class HMI_Trades_Criptomoedas(object):
 
         self.HMI.Button_AlterarOPCriptomoedasInvisivel = QPushButton()
         self.HMI.Button_AlterarOPCriptomoedasInvisivel.setToolTip("Alterar operações de criptomoedas")
-        self.HMI.Button_AlterarOPCriptomoedasInvisivel.pressed.connect(lambda: self.HMI.CreatePage('40'))
+        self.HMI.Button_AlterarOPCriptomoedasInvisivel.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id))
         self.HMI.Button_AlterarOPCriptomoedasInvisivel.setStyleSheet('QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_AlterarOPCriptomoedasInvisivel.setFixedSize(int(self.HMI.frameGeometry().width()*12/20),int(self.HMI.frameGeometry().height()*7/10*.95))
         self.HMI.Button_AlterarOPCriptomoedasInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Button_AlterarOPCriptomoedas = QPushButton("Registros")
         self.HMI.Button_AlterarOPCriptomoedas.setToolTip("Alterar operações de criptomoedas")
-        self.HMI.Button_AlterarOPCriptomoedas.pressed.connect(lambda: self.HMI.CreatePage('40'))
+        self.HMI.Button_AlterarOPCriptomoedas.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id))
         self.HMI.Button_AlterarOPCriptomoedas.setStyleSheet('QPushButton{background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.HMI.Button_AlterarOPCriptomoedas.setFont(self.HMI.font16)
         self.HMI.Button_AlterarOPCriptomoedas.setFixedSize(int(self.HMI.frameGeometry().width()*12/20),int(self.HMI.frameGeometry().height()*1/10*.95))
@@ -281,7 +281,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.TextBox_NovaCorretora = QLineEdit()
-        self.HMI.TextBox_NovaCorretora.returnPressed.connect(lambda: self.HMI.CreatePage('19_'))
+        self.HMI.TextBox_NovaCorretora.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesCripto_'].page_id))
         self.HMI.TextBox_NovaCorretora.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
 
         self.HMI.Label_Msg2 = QLabel('Moeda Corrente:')
@@ -301,7 +301,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.ComboBox_Currency.setCurrentIndex(idxUserCoin)
 
         self.HMI.Button_AdicionarCorretora = QPushButton('Seguinte')
-        self.HMI.Button_AdicionarCorretora.pressed.connect(lambda: self.HMI.CreatePage('19_'))
+        self.HMI.Button_AdicionarCorretora.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesCripto_'].page_id))
         self.HMI.Button_AdicionarCorretora.setFont(self.HMI.font16)
         self.HMI.Button_AdicionarCorretora.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_AdicionarCorretora.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -331,7 +331,7 @@ class HMI_Trades_Criptomoedas(object):
         returnValue = MessageBox_Msg1.exec()
         if returnValue == QMessageBox.Yes:
             self.HMI.DBManager.DeleteCorretora()
-            self.HMI.CreatePage('19')
+            self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id)
 
     def CreatePage39(self): # Renomear corretora de criptomoedas
         black = 'rgb(0, 0, 0)'
@@ -357,11 +357,11 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.TextBox_NovoNomeCorretora = QLineEdit()
-        self.HMI.TextBox_NovoNomeCorretora.returnPressed.connect(lambda: self.HMI.CreatePage('19_'))
+        self.HMI.TextBox_NovoNomeCorretora.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesCripto_'].page_id))
         self.HMI.TextBox_NovoNomeCorretora.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
 
         self.HMI.Button_RenomearCorretora = QPushButton('Seguinte')
-        self.HMI.Button_RenomearCorretora.pressed.connect(lambda: self.HMI.CreatePage('19_'))
+        self.HMI.Button_RenomearCorretora.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesCripto_'].page_id))
         self.HMI.Button_RenomearCorretora.setFont(self.HMI.font16)
         self.HMI.Button_RenomearCorretora.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_RenomearCorretora.setFixedWidth(int(self.HMI.frameGeometry().width()/3*0.9))
@@ -394,7 +394,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.HMI.Button_AddOperacao = QPushButton('Adicionar operação')
-        self.HMI.Button_AddOperacao.pressed.connect(lambda: self.HMI.CreatePage('41'))
+        self.HMI.Button_AddOperacao.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id))
         self.HMI.Button_AddOperacao.setFixedSize(160,40)
         self.HMI.Button_AddOperacao.setIconSize(QSize(35, 35))
         self.HMI.Button_AddOperacao.setIcon(QIcon("./images/add_user.png"))
@@ -402,7 +402,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_AddOperacao.setStyleSheet('QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)}')
 
         self.HMI.Button_AlterarOperacao = QPushButton('Alterar operação')
-        self.HMI.Button_AlterarOperacao.pressed.connect(lambda: self.HMI.CreatePage('43'))
+        self.HMI.Button_AlterarOperacao.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['AlterarOperacaoCripto'].page_id))
         self.HMI.Button_AlterarOperacao.setFixedSize(160,40)
         self.HMI.Button_AlterarOperacao.setIconSize(QSize(35, 35))
         self.HMI.Button_AlterarOperacao.setIcon(QIcon("./images/iconeAdjustDB.png"))
@@ -410,7 +410,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_AlterarOperacao.setStyleSheet('QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)}')
 
         self.HMI.Button_DeletarOperacao = QPushButton('Deletar operação')
-        self.HMI.Button_DeletarOperacao.pressed.connect(lambda: self.HMI.CreatePage('44'))
+        self.HMI.Button_DeletarOperacao.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['DeletarOperacaoCripto'].page_id))
         self.HMI.Button_DeletarOperacao.setFixedSize(160,40)
         self.HMI.Button_DeletarOperacao.setIconSize(QSize(35, 35))
         self.HMI.Button_DeletarOperacao.setIcon(QIcon("./images/delete_broker.png"))
@@ -579,7 +579,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.TextBox_Par_Esquerda.setFixedWidth(int(self.HMI.frameGeometry().width()/7*0.9))
         self.HMI.TextBox_Par_Esquerda.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_Par_Esquerda.setFont(self.HMI.font14)
-        self.HMI.TextBox_Par_Esquerda.returnPressed.connect(lambda: self.HMI.CreatePage('41'))
+        self.HMI.TextBox_Par_Esquerda.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id))
         self.HMI.TextBox_Par_Esquerda.textChanged.connect(self.Auto_Capital_Par_Esquerda)
 
         self.HMI.Label_Msg12 = QLabel('/')
@@ -592,7 +592,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.TextBox_Par_Direita.setFixedWidth(int(self.HMI.frameGeometry().width()/7*0.9))
         self.HMI.TextBox_Par_Direita.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_Par_Direita.setFont(self.HMI.font14)
-        self.HMI.TextBox_Par_Direita.returnPressed.connect(lambda: self.HMI.CreatePage('41'))
+        self.HMI.TextBox_Par_Direita.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id))
         self.HMI.TextBox_Par_Direita.textChanged.connect(self.Auto_Capital_Par_Direita)
 
         self.HMI.Label_Msg4 = QLabel('Quantidade:')
@@ -605,7 +605,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.TextBox_Qqt.setFixedWidth(int(self.HMI.frameGeometry().width()/7*0.9))
         self.HMI.TextBox_Qqt.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_Qqt.setFont(self.HMI.font14)
-        self.HMI.TextBox_Qqt.returnPressed.connect(lambda: self.HMI.CreatePage('41'))
+        self.HMI.TextBox_Qqt.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id))
 
         self.HMI.Label_Msg5 = QLabel('Preço:')
         self.HMI.Label_Msg5.setStyleSheet('color: white')
@@ -617,7 +617,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.TextBox_Preco.setFixedWidth(int(self.HMI.frameGeometry().width()/7*0.9))
         self.HMI.TextBox_Preco.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_Preco.setFont(self.HMI.font14)
-        self.HMI.TextBox_Preco.returnPressed.connect(lambda: self.HMI.CreatePage('41'))
+        self.HMI.TextBox_Preco.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id))
 
         self.HMI.Label_Msg6 = QLabel('Taxa:')
         self.HMI.Label_Msg6.setStyleSheet('color: white')
@@ -629,7 +629,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.TextBox_Taxa.setFixedWidth(int(self.HMI.frameGeometry().width()/7*0.9))
         self.HMI.TextBox_Taxa.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_Taxa.setFont(self.HMI.font14)
-        self.HMI.TextBox_Taxa.returnPressed.connect(lambda: self.HMI.CreatePage('41'))
+        self.HMI.TextBox_Taxa.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id))
 
         self.HMI.Label_Msg7 = QLabel('Moeda da taxa:')
         self.HMI.Label_Msg7.setStyleSheet('color: white')
@@ -640,7 +640,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.TextBox_MoedaDaTaxa.setFixedWidth(int(self.HMI.frameGeometry().width()/7*0.9))
         self.HMI.TextBox_MoedaDaTaxa.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_MoedaDaTaxa.setFont(self.HMI.font14)
-        self.HMI.TextBox_MoedaDaTaxa.returnPressed.connect(lambda: self.HMI.CreatePage('41'))
+        self.HMI.TextBox_MoedaDaTaxa.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id))
         self.HMI.TextBox_MoedaDaTaxa.textChanged.connect(self.Auto_Capital_MoedaDaTaxa)
 
         self.HMI.Label_Msg11 = QLabel('Conversão:')
@@ -653,7 +653,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.TextBox_Conversao.setFixedWidth(int(self.HMI.frameGeometry().width()/7*0.9))
         self.HMI.TextBox_Conversao.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_Conversao.setFont(self.HMI.font14)
-        self.HMI.TextBox_Conversao.returnPressed.connect(lambda: self.HMI.CreatePage('41'))
+        self.HMI.TextBox_Conversao.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id))
 
         self.HMI.Button_BuscarConversao = QPushButton('Buscar')
         self.HMI.Button_BuscarConversao.pressed.connect(lambda: self.OnButtonPressed('BuscarConversaoAutomaticamente'))
@@ -671,7 +671,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.TextBox_Obs.setFixedWidth(int(self.HMI.frameGeometry().width()*4/7*0.9))
         self.HMI.TextBox_Obs.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
         self.HMI.TextBox_Obs.setFont(self.HMI.font14)
-        self.HMI.TextBox_Obs.returnPressed.connect(lambda: self.HMI.CreatePage('41'))
+        self.HMI.TextBox_Obs.returnPressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id))
 
         self.HMI.Button_LimparCampos = QPushButton('Limpar\ncampos')
         self.HMI.Button_LimparCampos.pressed.connect(lambda: self.HMI.LimparPage())
@@ -681,7 +681,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_LimparCampos.setStyleSheet("background-color: rgb(100, 100, 100)")
 
         self.HMI.Button_RegistrarOperacao = QPushButton('Registrar\noperação')
-        self.HMI.Button_RegistrarOperacao.pressed.connect(lambda: self.HMI.CreatePage('41'))
+        self.HMI.Button_RegistrarOperacao.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id))
         self.HMI.Button_RegistrarOperacao.setFont(self.HMI.font16)
         self.HMI.Button_RegistrarOperacao.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_RegistrarOperacao.setFixedSize(int(self.HMI.frameGeometry().width()*2/10*0.9),int(self.HMI.frameGeometry().width()*1/10*0.9))
@@ -690,7 +690,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_RegistrarOperacao.setStyleSheet("background-color: rgb(20, 120, 30)")
 
         self.HMI.Button_Info3 = QPushButton()
-        self.HMI.Button_Info3.pressed.connect(lambda: self.HMI.CreatePage('Info3'))
+        self.HMI.Button_Info3.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info3'].page_id))
         self.HMI.Button_Info3.setFixedSize(40,40)
         self.HMI.Button_Info3.setIconSize(QSize(35, 35))
         self.HMI.Button_Info3.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -698,7 +698,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_Info3.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info14 = QPushButton()
-        self.HMI.Button_Info14.pressed.connect(lambda: self.HMI.CreatePage('Info14'))
+        self.HMI.Button_Info14.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info14'].page_id))
         self.HMI.Button_Info14.setFixedSize(40,40)
         self.HMI.Button_Info14.setIconSize(QSize(35, 35))
         self.HMI.Button_Info14.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -706,7 +706,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_Info14.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info15 = QPushButton()
-        self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage('Info15'))
+        self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info15'].page_id))
         self.HMI.Button_Info15.setFixedSize(40,40)
         self.HMI.Button_Info15.setIconSize(QSize(35, 35))
         self.HMI.Button_Info15.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -714,7 +714,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_Info15.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info12 = QPushButton()
-        self.HMI.Button_Info12.pressed.connect(lambda: self.HMI.CreatePage('Info12'))
+        self.HMI.Button_Info12.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info12'].page_id))
         self.HMI.Button_Info12.setFixedSize(40,40)
         self.HMI.Button_Info12.setIconSize(QSize(35, 35))
         self.HMI.Button_Info12.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -722,7 +722,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_Info12.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info13 = QPushButton()
-        self.HMI.Button_Info13.pressed.connect(lambda: self.HMI.CreatePage('Info13'))
+        self.HMI.Button_Info13.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info13'].page_id))
         self.HMI.Button_Info13.setFixedSize(40,40)
         self.HMI.Button_Info13.setIconSize(QSize(35, 35))
         self.HMI.Button_Info13.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -730,7 +730,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_Info13.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info11 = QPushButton()
-        self.HMI.Button_Info11.pressed.connect(lambda: self.HMI.CreatePage('Info11'))
+        self.HMI.Button_Info11.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info11'].page_id))
         self.HMI.Button_Info11.setFixedSize(40,40)
         self.HMI.Button_Info11.setIconSize(QSize(35, 35))
         self.HMI.Button_Info11.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -738,7 +738,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_Info11.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info10 = QPushButton()
-        self.HMI.Button_Info10.pressed.connect(lambda: self.HMI.CreatePage('Info10'))
+        self.HMI.Button_Info10.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info10'].page_id))
         self.HMI.Button_Info10.setFixedSize(40,40)
         self.HMI.Button_Info10.setIconSize(QSize(35, 35))
         self.HMI.Button_Info10.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -746,7 +746,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_Info10.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info9 = QPushButton()
-        self.HMI.Button_Info9.pressed.connect(lambda: self.HMI.CreatePage('Info9'))
+        self.HMI.Button_Info9.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info9'].page_id))
         self.HMI.Button_Info9.setFixedSize(40,40)
         self.HMI.Button_Info9.setIconSize(QSize(35, 35))
         self.HMI.Button_Info9.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -754,7 +754,7 @@ class HMI_Trades_Criptomoedas(object):
         self.HMI.Button_Info9.setIcon(QIcon("./images/Info.png"))
 
         self.HMI.Button_Info8 = QPushButton()
-        self.HMI.Button_Info8.pressed.connect(lambda: self.HMI.CreatePage('Info8'))
+        self.HMI.Button_Info8.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info8'].page_id))
         self.HMI.Button_Info8.setFixedSize(40,40)
         self.HMI.Button_Info8.setIconSize(QSize(35, 35))
         self.HMI.Button_Info8.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1111,7 +1111,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Button_RegistrarOperacao.setStyleSheet("background-color: rgb(20, 120, 30)")
 
             self.HMI.Button_Info3 = QPushButton()
-            self.HMI.Button_Info3.pressed.connect(lambda: self.HMI.CreatePage('Info3'))
+            self.HMI.Button_Info3.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info3'].page_id))
             self.HMI.Button_Info3.setFixedSize(40,40)
             self.HMI.Button_Info3.setIconSize(QSize(35, 35))
             self.HMI.Button_Info3.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1119,7 +1119,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Button_Info3.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info14 = QPushButton()
-            self.HMI.Button_Info14.pressed.connect(lambda: self.HMI.CreatePage('Info14'))
+            self.HMI.Button_Info14.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info14'].page_id))
             self.HMI.Button_Info14.setFixedSize(40,40)
             self.HMI.Button_Info14.setIconSize(QSize(35, 35))
             self.HMI.Button_Info14.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1127,7 +1127,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Button_Info14.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info15 = QPushButton()
-            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage('Info15'))
+            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info15'].page_id))
             self.HMI.Button_Info15.setFixedSize(40,40)
             self.HMI.Button_Info15.setIconSize(QSize(35, 35))
             self.HMI.Button_Info15.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1135,7 +1135,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Button_Info15.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info12 = QPushButton()
-            self.HMI.Button_Info12.pressed.connect(lambda: self.HMI.CreatePage('Info12'))
+            self.HMI.Button_Info12.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info12'].page_id))
             self.HMI.Button_Info12.setFixedSize(40,40)
             self.HMI.Button_Info12.setIconSize(QSize(35, 35))
             self.HMI.Button_Info12.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1143,7 +1143,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Button_Info12.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info13 = QPushButton()
-            self.HMI.Button_Info13.pressed.connect(lambda: self.HMI.CreatePage('Info13'))
+            self.HMI.Button_Info13.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info13'].page_id))
             self.HMI.Button_Info13.setFixedSize(40,40)
             self.HMI.Button_Info13.setIconSize(QSize(35, 35))
             self.HMI.Button_Info13.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1151,7 +1151,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Button_Info13.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info11 = QPushButton()
-            self.HMI.Button_Info11.pressed.connect(lambda: self.HMI.CreatePage('Info11'))
+            self.HMI.Button_Info11.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info11'].page_id))
             self.HMI.Button_Info11.setFixedSize(40,40)
             self.HMI.Button_Info11.setIconSize(QSize(35, 35))
             self.HMI.Button_Info11.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1159,7 +1159,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Button_Info11.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info10 = QPushButton()
-            self.HMI.Button_Info10.pressed.connect(lambda: self.HMI.CreatePage('Info10'))
+            self.HMI.Button_Info10.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info10'].page_id))
             self.HMI.Button_Info10.setFixedSize(40,40)
             self.HMI.Button_Info10.setIconSize(QSize(35, 35))
             self.HMI.Button_Info10.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1167,7 +1167,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Button_Info10.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info9 = QPushButton()
-            self.HMI.Button_Info9.pressed.connect(lambda: self.HMI.CreatePage('Info9'))
+            self.HMI.Button_Info9.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info9'].page_id))
             self.HMI.Button_Info9.setFixedSize(40,40)
             self.HMI.Button_Info9.setIconSize(QSize(35, 35))
             self.HMI.Button_Info9.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1175,7 +1175,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Button_Info9.setIcon(QIcon("./images/Info.png"))
 
             self.HMI.Button_Info8 = QPushButton()
-            self.HMI.Button_Info8.pressed.connect(lambda: self.HMI.CreatePage('Info8'))
+            self.HMI.Button_Info8.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info8'].page_id))
             self.HMI.Button_Info8.setFixedSize(40,40)
             self.HMI.Button_Info8.setIconSize(QSize(35, 35))
             self.HMI.Button_Info8.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1364,7 +1364,7 @@ class HMI_Trades_Criptomoedas(object):
         self.Operacoes = list(dict.fromkeys(self.Operacoes))
 
         self.HMI.Button_Cancelar = QPushButton('Cancelar')
-        self.HMI.Button_Cancelar.pressed.connect(lambda: self.HMI.CreatePage('40'))
+        self.HMI.Button_Cancelar.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id))
         self.HMI.Button_Cancelar.setFont(self.HMI.font16)
         self.HMI.Button_Cancelar.setIconSize(QSize(int(self.HMI.frameGeometry().height()/10*0.9),int(self.HMI.frameGeometry().height()/10*0.9)))
         self.HMI.Button_Cancelar.setFixedSize(int(self.HMI.frameGeometry().width()*2/10*0.9),int(self.HMI.frameGeometry().width()*1/10*0.9))
@@ -1974,7 +1974,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.TextBox_Par_Direita.setFont(self.HMI.font14)
             self.HMI.HBoxLayout_Par.addWidget(self.HMI.TextBox_Par_Direita, Qt.AlignmentFlag.AlignLeft)
             self.HMI.Button_Info15 = QPushButton()
-            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage('Info15'))
+            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info15'].page_id))
             self.HMI.Button_Info15.setFixedSize(40,40)
             self.HMI.Button_Info15.setIconSize(QSize(35, 35))
             self.HMI.Button_Info15.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2082,7 +2082,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.TextBox_Par_Direita.setFont(self.HMI.font14)
             self.HMI.HBoxLayout_Par.addWidget(self.HMI.TextBox_Par_Direita, Qt.AlignmentFlag.AlignLeft)
             self.HMI.Button_Info15 = QPushButton()
-            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage('Info15'))
+            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info15'].page_id))
             self.HMI.Button_Info15.setFixedSize(40,40)
             self.HMI.Button_Info15.setIconSize(QSize(35, 35))
             self.HMI.Button_Info15.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2182,7 +2182,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Label_Msg12 = QLabel('/')
             self.HMI.TextBox_Par_Direita = QLineEdit()
             self.HMI.Button_Info15 = QPushButton()
-            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage('Info15'))
+            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info15'].page_id))
             self.HMI.Button_Info15.setFixedSize(40,40)
             self.HMI.Button_Info15.setIconSize(QSize(35, 35))
             self.HMI.Button_Info15.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2283,7 +2283,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Label_Msg12 = QLabel('/')
             self.HMI.TextBox_Par_Direita = QLineEdit()
             self.HMI.Button_Info15 = QPushButton()
-            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage('Info15'))
+            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info15'].page_id))
             self.HMI.Button_Info15.setFixedSize(40,40)
             self.HMI.Button_Info15.setIconSize(QSize(35, 35))
             self.HMI.Button_Info15.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2382,7 +2382,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Label_Msg12 = QLabel('/')
             self.HMI.TextBox_Par_Direita = QLineEdit()
             self.HMI.Button_Info15 = QPushButton()
-            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage('Info15'))
+            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info15'].page_id))
             self.HMI.Button_Info15.setFixedSize(40,40)
             self.HMI.Button_Info15.setIconSize(QSize(35, 35))
             self.HMI.Button_Info15.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2481,7 +2481,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Label_Msg12 = QLabel('/')
             self.HMI.TextBox_Par_Direita = QLineEdit()
             self.HMI.Button_Info15 = QPushButton()
-            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage('Info15'))
+            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info15'].page_id))
             self.HMI.Button_Info15.setFixedSize(40,40)
             self.HMI.Button_Info15.setIconSize(QSize(35, 35))
             self.HMI.Button_Info15.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2580,7 +2580,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Label_Msg12 = QLabel('/')
             self.HMI.TextBox_Par_Direita = QLineEdit()
             self.HMI.Button_Info15 = QPushButton()
-            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage('Info15'))
+            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info15'].page_id))
             self.HMI.Button_Info15.setFixedSize(40,40)
             self.HMI.Button_Info15.setIconSize(QSize(35, 35))
             self.HMI.Button_Info15.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2679,7 +2679,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Label_Msg12 = QLabel('/')
             self.HMI.TextBox_Par_Direita = QLineEdit()
             self.HMI.Button_Info15 = QPushButton()
-            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage('Info15'))
+            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info15'].page_id))
             self.HMI.Button_Info15.setFixedSize(40,40)
             self.HMI.Button_Info15.setIconSize(QSize(35, 35))
             self.HMI.Button_Info15.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2778,7 +2778,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Label_Msg12 = QLabel('/')
             self.HMI.TextBox_Par_Direita = QLineEdit()
             self.HMI.Button_Info15 = QPushButton()
-            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage('Info15'))
+            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info15'].page_id))
             self.HMI.Button_Info15.setFixedSize(40,40)
             self.HMI.Button_Info15.setIconSize(QSize(35, 35))
             self.HMI.Button_Info15.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2875,7 +2875,7 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.Label_Msg12 = QLabel('/')
             self.HMI.TextBox_Par_Direita = QLineEdit()
             self.HMI.Button_Info15 = QPushButton()
-            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage('Info15'))
+            self.HMI.Button_Info15.pressed.connect(lambda: self.HMI.CreatePage(PAGE_BY_NAME['Info15'].page_id))
             self.HMI.Button_Info15.setFixedSize(40,40)
             self.HMI.Button_Info15.setIconSize(QSize(35, 35))
             self.HMI.Button_Info15.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2945,8 +2945,8 @@ class HMI_Trades_Criptomoedas(object):
 
                     if self.HMI.DBManager.AlterOperacao_Cripto(Item, Data, Tipo, ParEsquerdo, ParDireito, Qqt, Preco, Taxa, MoedaDaTaxa, Conversao, Obs):
                         if self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.item+1 >= len(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes):
-                            self.HMI.CreatePage('40') # Última alteração da lista
-                        else: self.HMI.CreatePage('43') # Ir pra próxima alteração
+                            self.HMI.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id) # Última alteração da lista
+                        else: self.HMI.CreatePage(PAGE_BY_NAME['AlterarOperacaoCripto'].page_id) # Ir pra próxima alteração
                     else:
                         try: self.HMI.Label_Erro1.deleteLater()
                         except: pass
@@ -2971,7 +2971,7 @@ class HMI_Trades_Criptomoedas(object):
         elif ButtonPressed == 'Deletar Ativos da Pagina 44':
             if not self.HMI.DBManager.CalcularTributacao_is_running:
                 self.HMI.DBManager.DeleteOperacao(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes)
-                self.HMI.CreatePage('40')
+                self.HMI.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id)
             else:
                 MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
 
