@@ -60,6 +60,7 @@ PAGES: list[PageInfo] = [
     PageInfo('23_', 'RegistrosBolsa_', "Registros (Bolsa)", parent='TODO'),
     PageInfo('_23_', '_RegistrosBolsa_', "Registros (Bolsa)", parent='TODO'),
     PageInfo('24', 'InformarDepositosSaqBolsa', "Informar depósitos e saques na {Corretora}", parent='18'),
+    PageInfo('24_', 'InformarDepositosSaqBolsa_', "Informar depósitos e saques na {Corretora}", parent='TODO'),
     PageInfo('25', 'SaldoContaCorrenteBolsa', "Saldo em conta-corrente na {Corretora}", parent='18'),
     PageInfo('26', 'AdicionarNovoAtivo', "Adicionar novo ativo", parent='18'),
     PageInfo('27', 'RenomearAtivo', "Renomear ativo {Ativo}", parent='18'),
@@ -91,6 +92,8 @@ PAGES: list[PageInfo] = [
     PageInfo('49', 'AtivosInternacionais', "ARCA: Ativos Internacionais", parent='11'),
     PageInfo('50', 'CriptoARCA', "ARCA: Criptomoedas", parent='11'),
     PageInfo('51', 'Tributacao', "Tributação", parent='1'),
+    PageInfo('52', '52', "TODO", parent='TODO'),
+    PageInfo('53', '53', "TODO", parent='TODO'),
 ]
 
 # Every screen, including aux sub-pages and confirm dialogs. This is the authoritative lookup by the
