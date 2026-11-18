@@ -7,22 +7,23 @@ import tests.libs.ui_helpers as ui
 # os.environ.setdefault("QT_QPA_PLATFORM", "offscreen") # Command to hide the GUI during tests.
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="function", autouse=True)
 def window(qtbot):
     """
     Fixture to launch the application.
     """
     window = IHMmain()
+    window.initialize(check_version=False)
     qtbot.addWidget(window)
     window.show()
     yield window
 
-@pytest.fixture(scope="session", autouse=True)
-def teardown():
+@pytest.fixture(scope="function", autouse=True)
+def teardown(window):
     """
-    Teardown function to clean up after tests.
+    Teardown function to clean up after tests: reset the window to the home page.
     """
-    ui.go_home()
+    ui.go_home(window)
 
 @pytest.fixture(scope="function", autouse=False)
 def login():
