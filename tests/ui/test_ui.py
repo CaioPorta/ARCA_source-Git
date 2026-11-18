@@ -1,6 +1,8 @@
 import pytest
 from time import sleep
 
+from PyQt5.QtWidgets import QApplication
+
 from tests.libs.logging_setup import logger
 
 import tests.libs.ui_helpers as ui
@@ -31,6 +33,13 @@ def test_launch_app_and_go_analise_go_back(window, qtbot, request: pytest.Fixtur
     ui.go_Analise_without_login_page(window, qtbot)
     if for_visual_check: sleep(TIME_TO_VISUAL_CHECK)
     logger.info(f"Navigated to Análise do Mercado (PageID={window.PageID}).")
+
+    # Only the main app window should be visible; no leaked/extra top-level panels may remain open.
+    visible_windows = [w for w in QApplication.topLevelWidgets() if w.isVisible()]
+    assert len(visible_windows) == 1, (
+        f"Expected exactly 1 visible top-level window (the main app), "
+        f"found {len(visible_windows)}: {[type(w).__name__ for w in visible_windows]}"
+    )
 
     # Return to the home page.
     ui.go_back_page(window, qtbot)
