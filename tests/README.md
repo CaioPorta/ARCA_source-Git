@@ -4,10 +4,12 @@
 pip install pytest pytest-qt
 
 ## How to launch
-pytest "tests/ui/test_ui.py::test_launch_app_and_go_analise_go_back" --html=toto.html --self-contained-html -v
-pytest "tests/ui/test_ui.py::test_launch_app_and_go_analise_go_back" --html=toto.html --self-contained-html -v --visual-check
-pytest "tests/ui/test_ui.py" --html=toto.html --self-contained-html -v --visual-check
-pytest "tests" --html=toto.html --self-contained-html -v
+pytest "tests/ui/test_ui.py::test_explore_before_login" --html=test_results.html --self-contained-html -v
+pytest "tests/ui/test_ui.py::test_explore_before_login" --html=test_results.html --self-contained-html -v --visual-check
+pytest "tests/ui/test_ui.py::test_explore_before_login" --html=test_results.html --self-contained-html -v --visual-check --no-teardown   # Works only when a single test has ran
+pytest "tests/ui/test_ui.py::test_explore_before_login" --html=test_results.html --self-contained-html -v --visual-check --no-teardown --use-official-db   # Useful when we want to perfom manual tests in a specific page, so a test lead us there faster
+pytest "tests/ui/test_ui.py" --html=test_results.html --self-contained-html -v --visual-check   # Complete coverage, with visual checking by the tester
+pytest "tests" --html=test_results.html --self-contained-html -v   # For faster results, no visual checking
 
 ## Exemple of some basic generic tests
 ### ui/HMI.py

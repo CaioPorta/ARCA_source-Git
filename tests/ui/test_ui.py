@@ -50,21 +50,44 @@ def test_explore_before_login(window, qtbot, request: pytest.FixtureRequest):
 
     # <Action> Click "Esqueci a senha" <Action>
     # <Result> "Esqueci a senha" page shows up <Result>
+    ui.go_Esqueci_senha_without_login_page(window, qtbot)
+    logger.info(f"Navigated to Esqueci a senha (PageID={window.PageID}).")
+    if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
 
     # <Action> Click "Return" button <Action>
     # <Result> "Page 0" shows up <Result>
+    ui.go_back_page(window, qtbot)
+    logger.info(f"Returned to home page (PageID={window.PageID}).")
+    if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
+    assert window.PageID == '0', f"Expected PageID '0' after returning, but got '{window.PageID}'."
 
     # <Action> Click "Importar usuario" <Action>
     # <Result> "Importar usuario" page shows up <Result>
+    ui.go_Importar_usuario_without_login_page(window, qtbot)
+    logger.info(f"Navigated to Importar usuario (PageID={window.PageID}).")
+    if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
 
     # <Action> Click "Return" button <Action>
     # <Result> "Page 0" shows up <Result>
+    ui.go_back_page(window, qtbot)
+    logger.info(f"Returned to home page (PageID={window.PageID}).")
+    if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
+    assert window.PageID == '0', f"Expected PageID '0' after returning, but got '{window.PageID}'."
 
     # <Action> Click "Criar novo usuario" <Action>
     # <Result> "Criar novo usuario" page shows up <Result>
+    ui.go_Criar_usuario_without_login_page(window, qtbot)
+    logger.info(f"Navigated to Criar novo usuario (PageID={window.PageID}).")
+    if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
 
     # <Action> Click "Return" button <Action>
     # <Result> "Page 0" shows up <Result>
+    ui.go_back_page(window, qtbot)
+    logger.info(f"Returned to home page (PageID={window.PageID}).")
+    if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
+    assert window.PageID == '0', f"Expected PageID '0' after returning, but got '{window.PageID}'."
+
+    logger.info("Test passed: all home-page sub-pages opened and returned home successfully.")
 
 
 def test_all_pages_are_correctly_loaded(window, assure_tester_account_exists, login, request: pytest.FixtureRequest):

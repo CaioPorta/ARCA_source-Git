@@ -113,6 +113,42 @@ def go_Analise_without_login_page(window, qtbot):
     qtbot.mouseClick(window.Button_Mercado, Qt.LeftButton)
     assert window.PageID == '5', f"Expected the analysis page (PageID '5'), got '{window.PageID}'."
 
+def go_Esqueci_senha_without_login_page(window, qtbot):
+    """
+    From the not-logged-in home page (PageID '0'), open the "Esqueci a senha" tab.
+
+    Pre-requisite: be on the not-logged-in home page (PageID '0').
+    """
+    assert getattr(window, 'Button_EsqueciASenha', None) is not None, \
+        "'Esqueci a senha' button not found; expected to be on the page 0."
+    _show_click(window.Button_EsqueciASenha)
+    qtbot.mouseClick(window.Button_EsqueciASenha, Qt.LeftButton)
+    assert window.PageID == '2', f"Expected the forgot-password page (PageID '2'), got '{window.PageID}'."
+
+def go_Importar_usuario_without_login_page(window, qtbot):
+    """
+    From the not-logged-in home page (PageID '0'), open the "Importar usuário" tab.
+
+    Pre-requisite: be on the not-logged-in home page (PageID '0').
+    """
+    assert getattr(window, 'Button_ImportarUsuario', None) is not None, \
+        "'Importar usuário' button not found; expected to be on the page 0."
+    _show_click(window.Button_ImportarUsuario)
+    qtbot.mouseClick(window.Button_ImportarUsuario, Qt.LeftButton)
+    assert window.PageID == '3', f"Expected the import-user page (PageID '3'), got '{window.PageID}'."
+
+def go_Criar_usuario_without_login_page(window, qtbot):
+    """
+    From the not-logged-in home page (PageID '0'), open the "Criar novo usuário" tab.
+
+    Pre-requisite: be on the not-logged-in home page (PageID '0').
+    """
+    assert getattr(window, 'Button_CriarUsuario', None) is not None, \
+        "'Criar novo usuário' button not found; expected to be on the page 0."
+    _show_click(window.Button_CriarUsuario)
+    qtbot.mouseClick(window.Button_CriarUsuario, Qt.LeftButton)
+    assert window.PageID == '4', f"Expected the create-user page (PageID '4'), got '{window.PageID}'."
+
 def go_back_page(window, qtbot):
     """
     Click the header return button to go back to the previous page.
