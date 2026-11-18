@@ -40,10 +40,16 @@ def teardown(window, request):
     Teardown function to clean up after tests: reset the window to the home page.
     With --no-teardown (only allowed with --visual-check for a single test), keep the window open
     on screen until it is closed manually instead of resetting it.
+
+    Both branches must yield so pytest runs this fixture's body during setup and the code below
+    during finalization (after the test). Without the yields pytest would run this body before the
+    test, blocking on page 0 before the test body ever executes.
     """
     if request.config.getoption("--no-teardown", default=False):
+        yield
         _wait_until_window_closed(window)
         return
+    yield
     ui.go_home(window)
 
 
