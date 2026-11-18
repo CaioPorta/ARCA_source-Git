@@ -1,0 +1,3 @@
+# Ruff config for the repo.
+# I001 (import sorting) is not enforced; imports are kept as-is across this legacy codebase.
+lint.ignore = ["I001"]
