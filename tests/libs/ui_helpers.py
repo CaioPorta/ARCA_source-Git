@@ -78,7 +78,7 @@ def go_Analise_without_login_page(window, qtbot):
     Pre-requisite: be on the not-logged-in home page (PageID '0').
     """
     assert getattr(window, 'Button_Mercado', None) is not None, \
-        "'Análise do Mercado' button not found; expected to be on the not-logged-in home page."
+        "'Análise do Mercado' button not found; expected to be on the page 0."
     qtbot.mouseClick(window.Button_Mercado, Qt.LeftButton)
     assert window.PageID == '5', f"Expected the analysis page (PageID '5'), got '{window.PageID}'."
 
