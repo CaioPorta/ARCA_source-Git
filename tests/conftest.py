@@ -1,5 +1,6 @@
 import pytest
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication
 
 from ui.HMI import IHMmain
 import tests.libs.ui_helpers as ui
@@ -12,10 +13,11 @@ def window(qtbot):
     """
     Fixture to launch the application.
     """
+    QApplication.setStyle("fusion")  # ARCA.py sets self.app.setStyle("fusion") before building widgets.
     window = IHMmain()
-    window.initialize(check_version=False)
+    window.initialize(check_version=False)  # initialize() shows the window maximized (HMI.py:113).
+    QApplication.instance().processEvents()  # let showMaximized() and the maximized layout fully apply (real app runs app.exec_()).
     qtbot.addWidget(window)
-    window.show()
     yield window
 
 @pytest.fixture(scope="function", autouse=True)
