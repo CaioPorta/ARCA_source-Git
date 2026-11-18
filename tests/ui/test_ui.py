@@ -1,6 +1,8 @@
 import pytest
 from time import sleep
 
+from tests.libs.logging_setup import logger
+
 import tests.libs.ui_helpers as ui
 
 TIME_TO_VISUAL_CHECK = 1 # Seconds
@@ -23,13 +25,17 @@ def test_launch_app_and_go_analise_go_back(window, qtbot, request: pytest.Fixtur
 
     # The app is launched on the not-logged-in home page (PageID '0').
     assert window.PageID == '0'
+    logger.info(f"App launched on home page (PageID={window.PageID}).")
 
     # Click "Análise do Mercado" to open the analysis tab.
     ui.go_Analise_without_login_page(window, qtbot)
     if for_visual_check: sleep(TIME_TO_VISUAL_CHECK)
+    logger.info(f"Navigated to Análise do Mercado (PageID={window.PageID}).")
 
     # Return to the home page.
     ui.go_back_page(window, qtbot)
     if for_visual_check: sleep(TIME_TO_VISUAL_CHECK)
+    logger.info(f"Returned to home page (PageID={window.PageID}).")
 
     assert window.PageID == '0'
+    logger.info("Test passed: analysis page opened and returned home successfully.")
