@@ -24,7 +24,6 @@ from PIL import Image
 
 import sqlite3
 import random
-from pathlib import Path
 
 from PyQt5.QtGui import (
     QFont, QCursor, QPixmap,

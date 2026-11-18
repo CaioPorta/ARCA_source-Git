@@ -14,7 +14,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     # <Action> Check preconditions <Action>
     # <Result> App is on "HOME" page <Result>
-    expected_page = 'HOME'
+    expected_page = 'Home'
     observed_page = PAGE_BY_ID[window.PageID].name
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
     logger.info(f"App started on {observed_page} page.")
@@ -35,7 +35,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     # <Action> Click "Return" button <Action>
     # <Result> "HOME" page shows up <Result>
     ui.go_previous_page(window, qtbot)
-    expected_page = 'HOME'
+    expected_page = 'Home'
     observed_page = PAGE_BY_ID[window.PageID].name
     if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
@@ -52,7 +52,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     # <Action> Click "Return" button <Action>
     # <Result> "HOME" page shows up <Result>
     ui.go_previous_page(window, qtbot)
-    expected_page = 'HOME'
+    expected_page = 'Home'
     observed_page = PAGE_BY_ID[window.PageID].name
     if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
@@ -69,7 +69,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     # <Action> Click "Return" button <Action>
     # <Result> "HOME" page shows up <Result>
     ui.go_previous_page(window, qtbot)
-    expected_page = 'HOME'
+    expected_page = 'Home'
     observed_page = PAGE_BY_ID[window.PageID].name
     if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
@@ -86,7 +86,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     # <Action> Click "Return" button <Action>
     # <Result> "HOME" page shows up <Result>
     ui.go_previous_page(window, qtbot)
-    expected_page = 'HOME'
+    expected_page = 'Home'
     observed_page = PAGE_BY_ID[window.PageID].name
     if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
