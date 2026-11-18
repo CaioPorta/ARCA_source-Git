@@ -1,6 +1,7 @@
 import os
 import sys
 
+import pytest
 from _pytest.config import UsageError
 
 
@@ -20,6 +21,16 @@ def pytest_addoption(parser):
         help=(
             "Keep the app window open on screen after the test for manual inspection instead of "
             "resetting/closing it. Only valid together with --visual-check and when a single test runs."
+        ),
+    )
+    parser.addoption(
+        "--use-official-db",
+        action="store_true",
+        default=False,
+        help=(
+            "Point the app at Users.db in the project root (like running ARCA.py from the repo root) "
+            "instead of src/assets/Users.db. os.getcwd() is redirected to the project root; image "
+            "loading keeps using src/assets."
         ),
     )
 
@@ -50,3 +61,19 @@ if _SRC_APP not in sys.path:
 _DIST_DIR = os.path.join(os.path.dirname(__file__), "src", "assets")
 if os.path.isdir(_DIST_DIR):
     os.chdir(_DIST_DIR)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def official_db(request):
+    # Tests run from src/assets so images load via relative ./images/... paths. Redirect os.getcwd()
+    # to a dedicated DB directory instead, so Users.db never lands in src/assets by default.
+    # --use-official-db points at the project root (like ARCA.py launched from the repo root).
+    if request.config.getoption("--use-official-db", default=False):
+        db_dir = os.path.dirname(os.path.abspath(__file__))
+    else:
+        db_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tests", "test_output")
+    os.makedirs(db_dir, exist_ok=True)
+    original_getcwd = os.getcwd
+    os.getcwd = lambda: db_dir
+    yield db_dir
+    os.getcwd = original_getcwd
