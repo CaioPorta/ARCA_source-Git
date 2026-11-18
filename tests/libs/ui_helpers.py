@@ -63,3 +63,19 @@ def go_Tributacao_page(window):
     window = go_home(window)
     pass # TODO
     return window
+
+def go_Analise_without_login_page(window):
+    """
+    Navigate to the Analise page of the application without logging in.
+
+    Pre-requisites: to be in login page
+    """
+    pass # TODO
+    return window
+
+def go_back_page(window):
+    """
+    Navigate back to the previous page of the application.
+    """
+    pass # TODO
+    return window
