@@ -1,4 +1,23 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer, QEventLoop
+from PyQt5.QtWidgets import QApplication
+
+from ui.HMI import IHMmain
+
+
+def _count_main_windows():
+    # topLevelWidgets() also returns orphaned home-page controls (parent=None), so count only the
+    # real application main window(s) by class.
+    return sum(1 for w in QApplication.topLevelWidgets() if isinstance(w, IHMmain))
+
+
+def _visual_sleep(seconds):
+    # Block while keeping the Qt event loop running so the window keeps repainting and stays visible
+    # for the duration. time.sleep() freezes the loop, so the page blinks past instead of holding.
+    loop = QEventLoop()
+    timer = QTimer()
+    timer.timeout.connect(loop.quit)
+    timer.start(int(seconds * 1000))
+    loop.exec_()
 
 
 def go_home(window):
