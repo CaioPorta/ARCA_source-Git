@@ -3845,14 +3845,19 @@ class IHMmain(QWidget):
             except: pass
 
         for i in range(self.GCount):
-            for j in reversed(range(self.F_GLayout[i].count())): # Clear all Widgets from the sub Layout
-                self.F_GLayout[i].itemAt(j).widget().setParent(None)
+            while self.F_GLayout[i].count(): # Remove and close every widget from the sub Layout
+                item = self.F_GLayout[i].takeAt(0)
+                w = item.widget()
+                if w is not None:
+                    w.close()
             self.GLayout.removeItem(self.F_GLayout[i]) # Delete each sub Layout
             self.GCount -= 1
 
         try:
-            for i in reversed(range(self.GLayout.count())): # Clear all Widgets from the main Layout
-                self.GLayout.itemAt(i).widget().setParent(None)
+            for i in reversed(range(self.GLayout.count())): # Close any remaining direct widget child of the main Layout
+                w = self.GLayout.itemAt(i).widget()
+                if w is not None:
+                    w.close()
         except:pass
 
     def InsertGridLayout(self, row=1, column=0, panRow=1, panColumn=20): # Adiciona um sub-GridLayout no Grid Principal
