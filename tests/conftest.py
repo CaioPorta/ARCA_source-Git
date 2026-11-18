@@ -1,6 +1,6 @@
 import os
 import pytest
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QEventLoop, QTimer, Qt
 from PyQt5.QtWidgets import QApplication
 
 from ui.HMI import IHMmain
@@ -22,7 +22,7 @@ def pytest_configure(config):
 
 
 @pytest.fixture(scope="function", autouse=True)
-def window(qtbot):
+def window(qtbot, request: pytest.FixtureRequest):
     """
     Fixture to launch the application.
     """
@@ -30,15 +30,33 @@ def window(qtbot):
     window = IHMmain()
     window.initialize(check_version=False)  # initialize() shows the window maximized (HMI.py:113).
     QApplication.instance().processEvents()  # let showMaximized() and the maximized layout fully apply (real app runs app.exec_()).
-    qtbot.addWidget(window)
+    if not request.config.getoption("--no-teardown", default=False):
+        qtbot.addWidget(window)  # Track the window so pytest-qt closes it at end of test. Skipped with --no-teardown.
     yield window
 
 @pytest.fixture(scope="function", autouse=True)
-def teardown(window):
+def teardown(window, request):
     """
     Teardown function to clean up after tests: reset the window to the home page.
+    With --no-teardown (only allowed with --visual-check for a single test), keep the window open
+    on screen until it is closed manually instead of resetting it.
     """
+    if request.config.getoption("--no-teardown", default=False):
+        _wait_until_window_closed(window)
+        return
     ui.go_home(window)
+
+
+def _wait_until_window_closed(window):
+    """Block the event loop, keeping the window visible and responsive until the user closes it."""
+    loop = QEventLoop()
+    timer = QTimer()
+    timer.timeout.connect(lambda: (loop.quit() if not window.isVisible() else None))
+    timer.start(200)
+    window.show()
+    window.raise_()
+    window.activateWindow()
+    loop.exec_()
 
 @pytest.fixture(scope="function", autouse=False)
 def login():
