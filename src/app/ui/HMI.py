@@ -129,8 +129,10 @@ class IHMmain(QWidget):
         self.CalendarWindowOpen = False
         self.VersionUpdate = False
 
+    def initialize(self, check_version=True):
         self.CreatePage('0') # Página inicial do programa
-        self.VersionChecker = VersionChecker.VersionChecker(self)
+        if check_version:
+            self.VersionChecker = VersionChecker.VersionChecker(self)
 
     def InicializacaoUsuario(self):
         # Inicialização usuário
@@ -6037,6 +6039,7 @@ class graphical_thread():
         self.app.setStyle("fusion")
         try:
             self.mIHM = IHMmain()
+            self.mIHM.initialize()
             self.app.exec_()
             if not getattr(self.DBManager, "CalcularTributacao_is_running", False) or self.AtualizarCotacoes_is_running:
                 self.mIHM.DBManager.Disconnect()
