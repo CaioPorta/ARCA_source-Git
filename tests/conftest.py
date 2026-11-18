@@ -1,11 +1,15 @@
+import os
 import pytest
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 
 from ui.HMI import IHMmain
 import tests.libs.ui_helpers as ui
-# import os
-# os.environ.setdefault("QT_QPA_PLATFORM", "offscreen") # Command to hide the GUI during tests.
+
+def pytest_configure(config):
+    # Hide the GUI during normal test runs; reveal it on screen only when --visual-check is passed.
+    if not config.getoption("--visual-check", default=False):
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")  # Run Qt headless unless visually checking.
 
 
 @pytest.fixture(scope="function", autouse=True)
