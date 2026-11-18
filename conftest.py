@@ -13,15 +13,12 @@ def pytest_addoption(parser):
     )
 
 
-# HMI.py imports the app using top-level packages (core.*, ui.*), so src/app must
-# be importable. Add it to sys.path so tests run without setting PYTHONPATH manually.
+# The path to app UI.
 _SRC_APP = os.path.join(os.path.dirname(__file__), "src", "app")
 if _SRC_APP not in sys.path:
     sys.path.insert(0, _SRC_APP)
 
-# The app resolves assets (./images/...) and Users.db relative to the current
-# working directory, which at runtime is dist/. Change into it so icons/GIFs load
-# and the database path matches production during tests.
+# The path to assets.
 _DIST_DIR = os.path.join(os.path.dirname(__file__), "src", "assets")
 if os.path.isdir(_DIST_DIR):
     os.chdir(_DIST_DIR)
