@@ -85,7 +85,7 @@ PAGES: list[PageInfo] = [
 # Every screen, including aux sub-pages and confirm dialogs. This is the authoritative lookup by the
 # exact string HMI assigns to window.PageID.
 ALL_PAGES: list[PageInfo] = PAGES + [
-    PageInfo('9', 'Perfil', "Perfil e ferramentas (via PageIDAux)", is_aux=True, parent='1'),
+    PageInfo('9', 'Perfil', "Perfil e ferramentas (via PageIDAux)", is_aux=True, parent=None),
     PageInfo('14', 'MudarEmail', "Alteração de email (via PageIDAux)", is_aux=True, parent='9'),
     PageInfo('15', 'MudarSenha', "Alteração de senha (via PageIDAux)", is_aux=True, parent='9'),
     PageInfo('17a', 'ConfirmacaoEmailPosMudanca', "Confirmação de email (após mudar email)", is_aux=True, parent='14'),
