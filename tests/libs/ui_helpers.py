@@ -1,7 +1,18 @@
+import os
+
 from PyQt5.QtCore import Qt, QTimer, QEventLoop
+from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QApplication
 
 from ui.HMI import IHMmain
+
+
+def _show_click(widget):
+    # During visual checks (real screen) move the OS cursor to the widget center so the click is
+    # visible. No-op under the headless offscreen Qt platform.
+    if os.environ.get("QT_QPA_PLATFORM") == "offscreen":
+        return
+    QCursor.setPos(widget.mapToGlobal(widget.rect().center()))
 
 
 def _count_main_windows():
@@ -98,6 +109,7 @@ def go_Analise_without_login_page(window, qtbot):
     """
     assert getattr(window, 'Button_Mercado', None) is not None, \
         "'Análise do Mercado' button not found; expected to be on the page 0."
+    _show_click(window.Button_Mercado)
     qtbot.mouseClick(window.Button_Mercado, Qt.LeftButton)
     assert window.PageID == '5', f"Expected the analysis page (PageID '5'), got '{window.PageID}'."
 
@@ -109,4 +121,5 @@ def go_back_page(window, qtbot):
     """
     assert getattr(window, 'Button_Return', None) is not None, \
         "No return button available for this page."
+    _show_click(window.Button_Return)
     qtbot.mouseClick(window.Button_Return, Qt.LeftButton)
