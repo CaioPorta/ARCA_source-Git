@@ -3,6 +3,12 @@
 ### How to install
 pip install pytest pytest-qt
 
+## How to launch
+pytest "tests/ui/test_ui.py::test_launch_app_and_go_analise_go_back" --html=toto.html --self-contained-html -v
+pytest "tests/ui/test_ui.py::test_launch_app_and_go_analise_go_back" --html=toto.html --self-contained-html -v --visual-check
+pytest "tests/ui/test_ui.py" --html=toto.html --self-contained-html -v --visual-check
+pytest "tests" --html=toto.html --self-contained-html -v
+
 ## Exemple of some basic generic tests
 ### ui/HMI.py
 from PyQt5.QtWidgets import QMainWindow

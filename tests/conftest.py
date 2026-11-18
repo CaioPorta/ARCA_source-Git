@@ -11,6 +11,15 @@ def pytest_configure(config):
     if not config.getoption("--visual-check", default=False):
         os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")  # Run Qt headless unless visually checking.
 
+    # pytest-html resolves --html relative to the current directory, but this project chdir's into
+    # src/assets so the app can find its images. Force html output under tests/test_output/ instead.
+    htmlpath = getattr(config.option, "htmlpath", None)
+    if htmlpath:
+        repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        out_dir = os.path.join(repo_root, "tests", "test_output")
+        os.makedirs(out_dir, exist_ok=True)
+        config.option.htmlpath = os.path.join(out_dir, os.path.basename(htmlpath))
+
 
 @pytest.fixture(scope="function", autouse=True)
 def window(qtbot):
