@@ -104,7 +104,7 @@ class IHMmain(QWidget):
 
         # Window creation
         self.setWindowTitle("Finanças")
-        self.setWindowIcon(QIcon(".\images\logoARCA.png"))
+        self.setWindowIcon(QIcon(".\\images\\logoARCA.png"))
         self.setAutoFillBackground(True)
         background = self.palette()
         background.setColor(self.backgroundRole(), QColor(str('#%02x%02x%02x' % (5, 5, 15))))
@@ -188,7 +188,7 @@ class IHMmain(QWidget):
                     MessageBox_Msg1.setIcon(QMessageBox.Warning)
                     MessageBox_Msg1.setStandardButtons(QMessageBox.No|QMessageBox.Yes|QMessageBox.Cancel)
                     MessageBox_Msg1.setDefaultButton(QMessageBox.Yes)
-                    MessageBox_Msg1.setWindowIcon(QIcon(".\images\logoARCA.png"))
+                    MessageBox_Msg1.setWindowIcon(QIcon(".\\images\\logoARCA.png"))
                     returnValue = MessageBox_Msg1.exec()
 
                     if returnValue == QMessageBox.Yes:
@@ -227,7 +227,7 @@ class IHMmain(QWidget):
                     MessageBox_Msg1.setIcon(QMessageBox.Warning)
                     MessageBox_Msg1.setStandardButtons(QMessageBox.No|QMessageBox.Yes|QMessageBox.Cancel)
                     MessageBox_Msg1.setDefaultButton(QMessageBox.Yes)
-                    MessageBox_Msg1.setWindowIcon(QIcon(".\images\logoARCA.png"))
+                    MessageBox_Msg1.setWindowIcon(QIcon(".\\images\\logoARCA.png"))
                     returnValue = MessageBox_Msg1.exec()
 
                     if returnValue == QMessageBox.Yes:
@@ -2703,7 +2703,7 @@ class IHMmain(QWidget):
         MessageBox_Msg1.setIcon(QMessageBox.Warning)
         MessageBox_Msg1.setStandardButtons(QMessageBox.Yes|QMessageBox.Cancel)
         MessageBox_Msg1.setDefaultButton(QMessageBox.Cancel)
-        MessageBox_Msg1.setWindowIcon(QIcon(".\images\logoARCA.png"))
+        MessageBox_Msg1.setWindowIcon(QIcon(".\\images\\logoARCA.png"))
 
         returnValue = MessageBox_Msg1.exec()
         if returnValue == QMessageBox.Yes:
@@ -4672,14 +4672,14 @@ class IHMmain(QWidget):
                 if len(DB_Path)>0:
                     try:
                         copyfile(DB_Path,currdir+"\\images\\ProfilePhoto_"+self.User+'.jpg')
-                        im = Image.open(".\images\ProfilePhoto_"+self.User+'.jpg')
+                        im = Image.open(".\\images\\ProfilePhoto_"+self.User+'.jpg')
                         img_width, img_height = im.size
                         crop_width = min(im.size)
                         crop_height = min(im.size)
                         im.crop(((img_width - crop_width) // 2,
                                  (img_height - crop_height) // 2,
                                  (img_width + crop_width) // 2,
-                                 (img_height + crop_height) // 2)).save(".\images\ProfilePhoto_"+self.User+'.jpg', quality=95)
+                                 (img_height + crop_height) // 2)).save(".\\images\\ProfilePhoto_"+self.User+'.jpg', quality=95)
                     except: pass
                 self.unsetCursor()
                 self.CreatePage('9')
@@ -4815,7 +4815,7 @@ class IHMmain(QWidget):
                             MessageBox_Msg1.setIcon(QMessageBox.Warning)
                             MessageBox_Msg1.setStandardButtons(QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel)
                             MessageBox_Msg1.setDefaultButton(QMessageBox.No)
-                            MessageBox_Msg1.setWindowIcon(QIcon(".\images\logoARCA.png"))
+                            MessageBox_Msg1.setWindowIcon(QIcon(".\\images\\logoARCA.png"))
                             returnValue = MessageBox_Msg1.exec()
 
                             if returnValue == QMessageBox.No: raise ValueError("Usuário já existe.")
@@ -4831,7 +4831,7 @@ class IHMmain(QWidget):
                                     MessageBox_Msg1.setIcon(QMessageBox.Warning)
                                     MessageBox_Msg1.setStandardButtons(QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel)
                                     MessageBox_Msg1.setDefaultButton(QMessageBox.No)
-                                    MessageBox_Msg1.setWindowIcon(QIcon(".\images\logoARCA.png"))
+                                    MessageBox_Msg1.setWindowIcon(QIcon(".\\images\\logoARCA.png"))
                                     returnValue = MessageBox_Msg1.exec()
 
                                     if returnValue == QMessageBox.Cancel: raise ValueError("Operação cancelada.")
@@ -4846,7 +4846,7 @@ class IHMmain(QWidget):
                                     MessageBox_Msg1.setIcon(QMessageBox.Warning)
                                     MessageBox_Msg1.setStandardButtons(QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel)
                                     MessageBox_Msg1.setDefaultButton(QMessageBox.No)
-                                    MessageBox_Msg1.setWindowIcon(QIcon(".\images\logoARCA.png"))
+                                    MessageBox_Msg1.setWindowIcon(QIcon(".\\images\\logoARCA.png"))
                                     returnValue = MessageBox_Msg1.exec()
 
                                     if returnValue == QMessageBox.Cancel: raise ValueError("Operação cancelada.")

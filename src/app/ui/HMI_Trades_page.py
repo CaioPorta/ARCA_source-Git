@@ -339,7 +339,7 @@ class HMI_Trades(object):
         MessageBox_Msg1.setIcon(QMessageBox.Question)
         MessageBox_Msg1.setStandardButtons(QMessageBox.Yes|QMessageBox.Cancel)
         MessageBox_Msg1.setDefaultButton(QMessageBox.Cancel)
-        MessageBox_Msg1.setWindowIcon(QIcon(".\images\logoARCA.png"))
+        MessageBox_Msg1.setWindowIcon(QIcon(".\\images\\logoARCA.png"))
 
         returnValue = MessageBox_Msg1.exec()
         if returnValue == QMessageBox.Yes:
