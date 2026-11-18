@@ -1,6 +1,6 @@
 import pytest
-from time import sleep
 
+from PyQt5.QtCore import QTimer, QEventLoop
 from PyQt5.QtWidgets import QApplication
 
 from ui.HMI import IHMmain
@@ -16,6 +16,16 @@ def _count_main_windows():
     # topLevelWidgets() also returns orphaned home-page controls (parent=None), so count only the
     # real application main window(s) by class.
     return sum(1 for w in QApplication.topLevelWidgets() if isinstance(w, IHMmain))
+
+
+def _visual_sleep(seconds):
+    # Block while keeping the Qt event loop running so the window keeps repainting and stays visible
+    # for the duration. time.sleep() freezes the loop, so the page blinks past instead of holding.
+    loop = QEventLoop()
+    timer = QTimer()
+    timer.timeout.connect(loop.quit)
+    timer.start(int(seconds * 1000))
+    loop.exec_()
 
 
 def test_all_pages_are_correctly_loaded(window, assure_tester_account_exists, login, request: pytest.FixtureRequest):
@@ -42,7 +52,7 @@ def test_launch_app_and_go_analise_go_back(window, qtbot, request: pytest.Fixtur
     # Click "Análise do Mercado" to open the analysis tab.
     ui.go_Analise_without_login_page(window, qtbot)
     assert window.PageID == '5', f"Expected PageID '5' for Análise do Mercado page, but got '{window.PageID}'."
-    if for_visual_check: sleep(TIME_TO_VISUAL_CHECK)
+    if for_visual_check: _visual_sleep(TIME_TO_VISUAL_CHECK)
     logger.info(f"Navigated to Análise do Mercado (PageID={window.PageID}).")
 
     # Regression guard: navigating must not open a second application main window.
@@ -51,3 +61,11 @@ def test_launch_app_and_go_analise_go_back(window, qtbot, request: pytest.Fixtur
         f"Analysis page opened extra main windows: {current_windows}. "
         f"Expected 1."
     )
+
+    # Return to the home page.
+    ui.go_back_page(window, qtbot)
+    if for_visual_check: _visual_sleep(TIME_TO_VISUAL_CHECK)
+    logger.info(f"Returned to home page (PageID={window.PageID}).")
+
+    assert window.PageID == '0'
+    logger.info("Test passed: analysis page opened and returned home successfully.")
