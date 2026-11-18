@@ -10,6 +10,7 @@ from datetime import datetime
 
 from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from ui.pages import PAGE_BY_NAME
 
 from playsound import playsound
 
@@ -166,7 +167,7 @@ class WorkerThread(QThread):
                 ContaCorrente += float(self.HMI.DBManager.GetValorEmContaCorrente(corretora, "Cripto"))
             self.HMI.SumContasCorrentes = ContaCorrente
             self.HMI.HMI_ARCA.MontanteEmAplicacao = round(self.HMI.DBManager.GetMontanteNasCorretoras() - ContaCorrente, 2)
-            if self.HMI.PageID == '11' and self.HMI.PageIDAux == '':
+            if self.HMI.PageID == PAGE_BY_NAME['ARCA'].page_id and self.HMI.PageIDAux == '':
                 self.HMI.TextBox_MontanteEmAplicacao.setText(str('%.2f' % self.HMI.HMI_ARCA.MontanteEmAplicacao))
                 self.HMI.TextBox_MontanteEmAplicacao.setStyleSheet("background-color: black; color: green;")
 

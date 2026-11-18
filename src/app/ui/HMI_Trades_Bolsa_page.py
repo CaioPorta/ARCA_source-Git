@@ -22,6 +22,8 @@ from PyQt5.QtCore import (
     QSize, Qt
 )
 
+from ui.pages import PAGE_BY_NAME
+
 
 class HMI_Trades_Bolsa(object):
     def __init__(self, HMI):
@@ -2941,19 +2943,19 @@ class HMI_Trades_Bolsa(object):
                 self.HMI.Button_AlterarOperacao.setEnabled(False)
                 self.HMI.Button_DeletarOperacao.setEnabled(False)
 
-            if self.HMI.PageID == '23':
+            if self.HMI.PageID == PAGE_BY_NAME['RegistrosBolsa'].page_id:
                 self.HMI.Table_Operacoes_Realizadas_com_Ativo.deleteLater()
                 self.HMI.Table_Operacoes_Realizadas_com_Ativo = QTableWidget()
                 self.HMI.HMI_Trades.HMI_Trades_Bolsa.CreateTable_23_2()
                 self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Operacoes_Realizadas_com_Ativo, 6, 0, 6, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
-            if self.HMI.PageID == '40':
+            if self.HMI.PageID == PAGE_BY_NAME['RegistrosCripto'].page_id:
                 self.HMI.Table_Operacoes_Realizadas.deleteLater()
                 self.HMI.Table_Operacoes_Realizadas = QTableWidget()
                 self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.CreateTable_40_2()
                 self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Operacoes_Realizadas, 6, 0, 6, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
-            elif self.HMI.PageID == '51':
+            elif self.HMI.PageID == PAGE_BY_NAME['Tributacao'].page_id:
                 if self.HMI.DTeST_51 == "DTeST": self.HMI.DTeST_51 = "ST"
                 elif self.HMI.DTeST_51 == "ST": self.HMI.DTeST_51 = "DT"
                 elif self.HMI.DTeST_51 == "DT": self.HMI.DTeST_51 = "DTeST"

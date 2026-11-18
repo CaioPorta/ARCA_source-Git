@@ -16,6 +16,7 @@ from core.BackgroundProcesses import BackgroundProcess as BP
 from core.BackgroundProcesses import WorkerThread
 
 import ui.popup.LoadingWindow as LoadingWindow
+from ui.pages import PAGE_BY_NAME
 
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -447,7 +448,7 @@ class DBManager(object):
         try:
             if self.HMI.BolsaOuCripto == "Bolsa":
                 if self.HMI.PageID in ['36a','36b']: ativo = self.HMI.TextBox_NomeNovoAtivo.text().replace(" ","_")
-                elif self.HMI.PageID == '28': ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
+                elif self.HMI.PageID == PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
                 # Adicionar linha na Table OPs_Ativo_Corretora_Bolsa_DT. (Add novos dados. Células de cálculo automatizado, inserir zero)
                 TableName = str('OPs¨'+ativo+
                                 '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+

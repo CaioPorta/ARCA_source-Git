@@ -58,6 +58,7 @@ import core.YahooFinance as YahooFinance
 import core.Calcular as Calcular
 import ui.popup.LoadingWindow as LoadingWindow
 import core.VersionChecker as VersionChecker
+from ui.pages import PAGE_BY_NAME
 
 from ui.popup.CalendarWindow import CalendarWindow as Calendario
 from ui.popup.RelogioWindow import RelogioWindow as Relogio
@@ -122,7 +123,7 @@ class IHMmain(QWidget):
         self.GCount = 0 # Contador de GridLayouts que tem no GLayout
         self.HBoxCount = 0 # Contador de HBoxLayouts que tem no GLayout
         self.VBoxCount = 0 # Contador de VBoxLayouts que tem no GLayout
-        self.PageID = '0'
+        self.PageID= PAGE_BY_NAME['Home'].page_id
         self.PageIDAux = ''
         self.OutraJanelaAberta = False
         self.ClockWindowOpen = False
@@ -130,7 +131,7 @@ class IHMmain(QWidget):
         self.VersionUpdate = False
 
     def initialize(self, check_version=True):
-        self.CreatePage('0') # Página inicial do programa
+        self.CreatePage(PAGE_BY_NAME['Home'].page_id) # Página inicial do programa
         if check_version:
             self.VersionChecker = VersionChecker.VersionChecker(self)
 
@@ -172,14 +173,14 @@ class IHMmain(QWidget):
         """
             Pages Creation
         """
-        if self.PageID == '26':
+        if self.PageID== PAGE_BY_NAME['AdicionarNovoAtivo'].page_id:
             if len(self.TextBox_NomeNovoAtivo.text())>0 and len(self.TextBox_NomeNovoAtivo.text())<7 and not self.TextBox_NomeNovoAtivo.text().upper() == "USD":
                 self.setCursor(Qt.CursorShape.WaitCursor)
                 if self.TextBox_NomeNovoAtivo.text() in self.DBManager.GetAllTickers(): # Otimizador
                     IsShare, self.Cache_Cotacao = self.YahooFinance.isShare(self.TextBox_NomeNovoAtivo.text())
                     self.unsetCursor()
-                    if IsShare: self.CreatePage('34a')
-                    else: self.CreatePage('35a')
+                    if IsShare: self.CreatePage(PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id)
+                    else: self.CreatePage(PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id)
                 else:
                     # Perguntar se mesmo assim quer buscar
                     MessageBox_Msg1 = QMessageBox()
@@ -194,13 +195,13 @@ class IHMmain(QWidget):
                     if returnValue == QMessageBox.Yes:
                         IsShare, self.Cache_Cotacao = self.YahooFinance.isShare(self.TextBox_NomeNovoAtivo.text())
                         self.unsetCursor()
-                        if IsShare: self.CreatePage('34a')
-                        else: self.CreatePage('35a')
+                        if IsShare: self.CreatePage(PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id)
+                        else: self.CreatePage(PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id)
                     elif returnValue == QMessageBox.No:
                         IsShare = False; self.Cache_Cotacao = 0.
                         self.unsetCursor()
-                        if IsShare: self.CreatePage('34a')
-                        else: self.CreatePage('35a')
+                        if IsShare: self.CreatePage(PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id)
+                        else: self.CreatePage(PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id)
             else:
                 try: self.Label_Erro1.deleteLater()
                 except: pass
@@ -211,14 +212,14 @@ class IHMmain(QWidget):
                 self.Label_Erro1.setText("Insira um ticker válido com até 6 caracteres.\nPara 'USD' utilize 'USDT' ou equivalente.") # Substitui a string do erro mais provável
                 self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 17, 0, 1, 3, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
-        elif self.PageID == '27':
+        elif self.PageID== PAGE_BY_NAME['RenomearAtivo'].page_id:
             if len(self.TextBox_NovoNomeAtivo.text())>0 and len(self.TextBox_NovoNomeAtivo.text())<7 and not self.TextBox_NovoNomeAtivo.text().upper() == "USD":
                 self.setCursor(Qt.CursorShape.WaitCursor)
                 if self.TextBox_NovoNomeAtivo.text() in self.DBManager.GetAllTickers(): # Otimizador
                     IsShare, self.Cache_Cotacao = self.YahooFinance.isShare(self.TextBox_NovoNomeAtivo.text())
                     self.unsetCursor()
-                    if IsShare: self.CreatePage('34b')
-                    else: self.CreatePage('35b')
+                    if IsShare: self.CreatePage(PAGE_BY_NAME['CotacaoEncontradaManualBolsa'].page_id)
+                    else: self.CreatePage(PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id)
                 else:
                     # Perguntar se mesmo assim quer buscar
                     MessageBox_Msg1 = QMessageBox()
@@ -233,13 +234,13 @@ class IHMmain(QWidget):
                     if returnValue == QMessageBox.Yes:
                         IsShare, self.Cache_Cotacao = self.YahooFinance.isShare(self.TextBox_NovoNomeAtivo.text())
                         self.unsetCursor()
-                        if IsShare: self.CreatePage('34b')
-                        else: self.CreatePage('35b')
+                        if IsShare: self.CreatePage(PAGE_BY_NAME['CotacaoEncontradaManualBolsa'].page_id)
+                        else: self.CreatePage(PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id)
                     elif returnValue == QMessageBox.No:
                         IsShare = False; self.Cache_Cotacao = 0.
                         self.unsetCursor()
-                        if IsShare: self.CreatePage('34b')
-                        else: self.CreatePage('35b')
+                        if IsShare: self.CreatePage(PAGE_BY_NAME['CotacaoEncontradaManualBolsa'].page_id)
+                        else: self.CreatePage(PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id)
             else:
                 try: self.Label_Erro1.deleteLater()
                 except: pass
@@ -260,8 +261,8 @@ class IHMmain(QWidget):
                 self.Window_Relogio.close()
                 self.Window_Relogio.show()
         else:
-            if PageID == '0':
-                if self.PageIDAux == '17b':
+            if PageID== PAGE_BY_NAME['Home'].page_id:
+                if self.PageIDAux== PAGE_BY_NAME['ConfirmacaoLogout'].page_id:
                     if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado:
                         if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                             self.LoggedIn = self.DBManager.DeleteUserDB()
@@ -286,7 +287,7 @@ class IHMmain(QWidget):
                 elif self.PageID == "1":
                     self.DBManager.Disconnect()
                     self.ClearPage()
-                    self.PageID = '0'
+                    self.PageID= PAGE_BY_NAME['Home'].page_id
                     self.PageIDAux = ''
                     self.InsertGridLayout(0, 0, 1, 20)
                     self.InicializacaoUsuario()
@@ -295,19 +296,19 @@ class IHMmain(QWidget):
                 else:
                     self.InicializacaoUsuario()
                     self.ClearPage()
-                    self.PageID = '0'
+                    self.PageID= PAGE_BY_NAME['Home'].page_id
                     self.PageIDAux = ''
                     self.InsertGridLayout(0, 0, 1, 20)
                     self.CreatePage0()
                     self.PutHeader()
-            elif PageID == '1':
-                if self.PageID == '7':
+            elif PageID== PAGE_BY_NAME['MinhaCarteira'].page_id:
+                if self.PageID== PAGE_BY_NAME['AlteracaoSenha'].page_id:
                     if (self.TextBox_NovaSenha1.text() == self.TextBox_NovaSenha2.text() and
                         len(self.TextBox_NovaSenha1.text())>3): # Condições para passar pra página 1
                             self.LoggedIn = self.DBManager.ConnectTo(self.User, self.DBManager.GetPasswdByUser(self.User))
                             self.DBManager.ChangePassword(self.TextBox_NovaSenha1.text())
                             self.ClearPage()
-                            self.PageID = '1'
+                            self.PageID= PAGE_BY_NAME['MinhaCarteira'].page_id
                             self.PageIDAux = ''
                             self.InsertGridLayout(1, 0, 1, 20)
                             self.CreatePage1()
@@ -336,7 +337,7 @@ class IHMmain(QWidget):
                             self.Label_Erro1.setText('A senha tem que ter pelo menos 4 caracteres.')
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 13, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                             self.TextBox_NovaSenha1.setFocus()
-                elif self.PageID == '8':
+                elif self.PageID== PAGE_BY_NAME['ConfirmacaoEmailCriar'].page_id:
                     if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado: # Condições para passar pra página 1
                         self.LoggedIn = self.DBManager.CriarNovoPerfil()
                         if self.LoggedIn:
@@ -354,7 +355,7 @@ class IHMmain(QWidget):
                                 UpdateUserPath(self.User, self.TextBox_Path.text())
                                 self.DBManager.ThreadLock.release()
                             self.ClearPage()
-                            self.PageID = '1'
+                            self.PageID= PAGE_BY_NAME['MinhaCarteira'].page_id
                             self.PageIDAux = ''
                             self.InsertGridLayout(1, 0, 1, 20)
                             self.CreatePage1()
@@ -383,7 +384,7 @@ class IHMmain(QWidget):
                         self.Label_Erro1.setText('O código não confere.')
                         self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 12, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
                         self.TextBox_NomeDeUsuario.setFocus()
-                elif self.PageID == '0':
+                elif self.PageID== PAGE_BY_NAME['Home'].page_id:
                     Resposta = self.DBManager.ConnectTo(self.TextBox_NomeDeUsuario.text(), self.TextBox_Senha.text())
                     if Resposta == "Arquivo não existe":
                         self.LoggedIn = False
@@ -401,7 +402,7 @@ class IHMmain(QWidget):
                         self.User = self.DBManager.User
                         self.Email = self.DBManager.Email
                         self.ClearPage()
-                        self.PageID = '1'
+                        self.PageID= PAGE_BY_NAME['MinhaCarteira'].page_id
                         self.PageIDAux = ''
                         self.InsertGridLayout(1, 0, 1, 20)
                         self.CreatePage1()
@@ -422,47 +423,47 @@ class IHMmain(QWidget):
                         self.TextBox_NomeDeUsuario.setFocus()
                 else:
                     self.ClearPage()
-                    self.PageID = '1'
+                    self.PageID= PAGE_BY_NAME['MinhaCarteira'].page_id
                     self.PageIDAux = ''
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.CreatePage1()
                     self.PutHeader()
-            elif PageID == '2':
+            elif PageID== PAGE_BY_NAME['AuxilioSenha'].page_id:
                 self.ClearPage()
-                self.PageID = '2'
+                self.PageID= PAGE_BY_NAME['AuxilioSenha'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePage2()
                 self.PutHeader()
-            elif PageID == '3':
+            elif PageID== PAGE_BY_NAME['ImportarUsuario'].page_id:
                 self.ClearPage()
-                self.PageID = '3'
+                self.PageID= PAGE_BY_NAME['ImportarUsuario'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePage3()
                 self.PutHeader()
-            elif PageID == '3b':
+            elif PageID== PAGE_BY_NAME['ImportacaoUsuario'].page_id:
                 self.ClearPage()
-                self.PageID = '3b'
+                self.PageID= PAGE_BY_NAME['ImportacaoUsuario'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePage3b()
                 self.PutHeader()
-            elif PageID == '4':
+            elif PageID== PAGE_BY_NAME['CriarUsuario'].page_id:
                 self.ClearPage()
-                self.PageID = '4'
+                self.PageID= PAGE_BY_NAME['CriarUsuario'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePage4()
                 self.PutHeader()
-            elif PageID == '5': # Cria a mesma página da 13
+            elif PageID== PAGE_BY_NAME['AnaliseMercado'].page_id: # Cria a mesma página da 13
                 self.ClearPage()
-                self.PageID = '5'
+                self.PageID= PAGE_BY_NAME['AnaliseMercado'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Mercado.CreatePage5()
                 self.PutHeader()
-            elif PageID == '6':
+            elif PageID== PAGE_BY_NAME['RecuperacaoEmail'].page_id:
                 if "@" in self.TextBox_EmailOuUsuario.text(): isEmail = True
                 else: isEmail = False
 
@@ -471,7 +472,7 @@ class IHMmain(QWidget):
                         self.Email = self.TextBox_EmailOuUsuario.text().lower()
                         self.User = self.DBManager.GetUserByEmail(self.TextBox_EmailOuUsuario.text())
                         self.ClearPage()
-                        self.PageID = '6'
+                        self.PageID= PAGE_BY_NAME['RecuperacaoEmail'].page_id
                         self.PageIDAux = ''
                         self.InsertGridLayout(1, 0, 1, 20)
                         self.CreatePage6(self.Email, self.User)
@@ -492,7 +493,7 @@ class IHMmain(QWidget):
                         self.Email = self.DBManager.GetEmailByUser(self.TextBox_EmailOuUsuario.text())
                         self.User = self.TextBox_EmailOuUsuario.text()
                         self.ClearPage()
-                        self.PageID = '6'
+                        self.PageID= PAGE_BY_NAME['RecuperacaoEmail'].page_id
                         self.PageIDAux = ''
                         self.InsertGridLayout(1, 0, 1, 20)
                         self.CreatePage6(self.Email, self.User)
@@ -507,10 +508,10 @@ class IHMmain(QWidget):
                         self.Label_Erro1.setText('Usuário não encontrado.')
                         self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                         self.TextBox_EmailOuUsuario.setFocus()
-            elif PageID == '7':
+            elif PageID== PAGE_BY_NAME['AlteracaoSenha'].page_id:
                 if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado:
                     self.ClearPage()
-                    self.PageID = '7'
+                    self.PageID= PAGE_BY_NAME['AlteracaoSenha'].page_id
                     self.PageIDAux = ''
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.CreatePage7()
@@ -525,7 +526,7 @@ class IHMmain(QWidget):
                     self.Label_Erro1.setText('Código não confere.')
                     self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
                     self.TextBox_CodigoDeConfirmacao.setFocus()
-            elif PageID == '8':
+            elif PageID== PAGE_BY_NAME['ConfirmacaoEmailCriar'].page_id:
                 if (len(self.TextBox_NomeDeUsuario.text())>0 and
                     not "@"  in self.TextBox_NomeDeUsuario.text() and
                     not ","  in self.TextBox_NomeDeUsuario.text() and
@@ -541,7 +542,7 @@ class IHMmain(QWidget):
                     not self.TextBox_Senha1.text().isnumeric() and
                     not self.TextBox_Senha1.text().isalpha()): # Condições para passar pra página 8
                         self.ClearPage()
-                        self.PageID = '8'
+                        self.PageID= PAGE_BY_NAME['ConfirmacaoEmailCriar'].page_id
                         self.PageIDAux = ''
                         self.InsertGridLayout(1, 0, 1, 20)
                         self.CreatePage8()
@@ -601,7 +602,7 @@ class IHMmain(QWidget):
                             self.Label_Erro3.setText('A senha precisa ter pelo menos um número e uma letra ou símbolo.')
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_NomeDeUsuario.setFocus()
-            elif PageID == '8b':
+            elif PageID== PAGE_BY_NAME['ConfirmacaoEmailImportar'].page_id:
                 if (len(self.TextBox_NomeDeUsuario.text())>0 and
                     not "@"  in self.TextBox_NomeDeUsuario.text() and
                     not ","  in self.TextBox_NomeDeUsuario.text() and
@@ -617,7 +618,7 @@ class IHMmain(QWidget):
                     not self.TextBox_Senha1.text().isnumeric() and
                     not self.TextBox_Senha1.text().isalpha()): # Condições para passar pra página 8
                         self.ClearPage()
-                        self.PageID = '8b'
+                        self.PageID= PAGE_BY_NAME['ConfirmacaoEmailImportar'].page_id
                         self.PageIDAux = ''
                         self.InsertGridLayout(1, 0, 1, 20)
                         self.CreatePage8b()
@@ -677,10 +678,10 @@ class IHMmain(QWidget):
                             self.Label_Erro3.setText('A senha precisa ter pelo menos um número e uma letra ou símbolo.')
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro3, 10, 1, 1, 1, Qt.AlignmentFlag.AlignLeft)
                             self.TextBox_NomeDeUsuario.setFocus()
-            elif PageID == 'ImportFromExcel':
+            elif PageID== PAGE_BY_NAME['ImportandoDadosExcel'].page_id:
                 if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado: # Condições para passar pra página 1
                     # self.ClearPage()
-                    # self.PageID = 'ImportFromExcel'
+                    # self.PageID= PAGE_BY_NAME['ImportandoDadosExcel'].page_id
                     # self.PageIDAux = ''
                     # self.InsertGridLayout(1, 0, 1, 20)
                     # self.CreatePageImportFromExcel()
@@ -696,15 +697,15 @@ class IHMmain(QWidget):
                     self.Label_Erro1.setText('O código não confere.')
                     self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 12, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
                     self.TextBox_CodigoDeConfirmacao.setFocus()
-            elif PageID in ['9', '9_']: # Perfil, Tem ID especial
-                if PageID == '9_':
-                    if self.PageIDAux == '15':
+            elif PageID in [PAGE_BY_NAME['Perfil'].page_id, '9_']: # Perfil, Tem ID especial
+                if PageID == PAGE_BY_NAME['Perfil_'].page_id:
+                    if self.PageIDAux== PAGE_BY_NAME['MudarSenha'].page_id:
                         if not self.DBManager.CalcularTributacao_is_running:
                             if self.TextBox_SenhaAtual.text() == self.DBManager.GetPasswdByUser(self.User):
                                 if self.TextBox_Senha1.text() == self.TextBox_Senha2.text() and len(self.TextBox_Senha1.text())>3 and not self.TextBox_Senha1.text().isnumeric() and not self.TextBox_Senha1.text().isalpha():
                                     self.DBManager.ChangePassword(self.TextBox_Senha1.text())
                                     self.ClearPage()
-                                    self.PageIDAux = '9'
+                                    self.PageIDAux= PAGE_BY_NAME['Perfil'].page_id
                                     self.InsertGridLayout(1, 0, 1, 3)
                                     self.CreatePage9()
                                     self.PutHeader()
@@ -730,13 +731,13 @@ class IHMmain(QWidget):
                                 self.TextBox_SenhaAtual.setFocus()
                         else:
                             MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
-                    elif self.PageIDAux == '17a':
+                    elif self.PageIDAux== PAGE_BY_NAME['ConfirmacaoEmailPosMudanca'].page_id:
                         if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                             if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado: # Condições para passar pra página 9
                                 # Mudar Email
                                 self.DBManager.UpdateEmail(self.TextBox_Email.text())
                                 self.ClearPage()
-                                self.PageIDAux = '9'
+                                self.PageIDAux= PAGE_BY_NAME['Perfil'].page_id
                                 self.InsertGridLayout(1, 0, 1, 3)
                                 self.CreatePage9()
                                 self.PutHeader()
@@ -756,80 +757,80 @@ class IHMmain(QWidget):
                             MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                 else:
                     self.ClearPage()
-                    self.PageIDAux = '9'
+                    self.PageIDAux= PAGE_BY_NAME['Perfil'].page_id
                     self.InsertGridLayout(1, 0, 1, 3)
                     self.CreatePage9()
                     self.PutHeader()
-            elif PageID == '10':
+            elif PageID== PAGE_BY_NAME['EdicaoNegociacoes'].page_id:
                 self.ClearPage()
-                self.PageID = '10'
+                self.PageID= PAGE_BY_NAME['EdicaoNegociacoes'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.CreatePage10()
                 self.PutHeader()
-            elif PageID == '11':
+            elif PageID== PAGE_BY_NAME['ARCA'].page_id:
                 self.ClearPage()
-                self.PageID = '11'
+                self.PageID= PAGE_BY_NAME['ARCA'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_ARCA.CreatePage11()
                 self.PutHeader()
-            elif PageID == '12':
+            elif PageID== PAGE_BY_NAME['Desempenho'].page_id:
                 self.ClearPage()
-                self.PageID = '12'
+                self.PageID= PAGE_BY_NAME['Desempenho'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Desempenho.CreatePage12()
                 self.PutHeader()
-            elif PageID == '13':
+            elif PageID== PAGE_BY_NAME['AnaliseMercadoDup'].page_id:
                 self.ClearPage()
-                self.PageID = '13'
+                self.PageID= PAGE_BY_NAME['AnaliseMercadoDup'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Mercado.CreatePage13()
                 self.PutHeader()
-            elif PageID == '14':
+            elif PageID== PAGE_BY_NAME['MudarEmail'].page_id:
                 if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                     self.ClearPage()
-                    self.PageIDAux = '14'
+                    self.PageIDAux= PAGE_BY_NAME['MudarEmail'].page_id
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.CreatePage14()
                     self.PutHeader()
                 else:
                     MessageBox_Msg1 = QMessageBox.about(self, 'Aviso', 'Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
-            elif PageID == '15': # Derivação do perfil, Tem ID especial
+            elif PageID== PAGE_BY_NAME['MudarSenha'].page_id: # Derivação do perfil, Tem ID especial
                 self.ClearPage()
-                self.PageIDAux = '15'
+                self.PageIDAux= PAGE_BY_NAME['MudarSenha'].page_id
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePage15()
                 self.PutHeader()
-            elif PageID == '16': # MessageBox, não tem ID
+            elif PageID== PAGE_BY_NAME['ConfirmarEncerrarConta'].page_id: # MessageBox, não tem ID
                 self.CreatePage16()
                 self.PutHeader()
-            elif PageID == '17a': # Derivação do perfil, Tem ID especial
+            elif PageID== PAGE_BY_NAME['ConfirmacaoEmailPosMudanca'].page_id: # Derivação do perfil, Tem ID especial
                 if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                     self.ClearPage()
-                    self.PageIDAux = '17a'
+                    self.PageIDAux= PAGE_BY_NAME['ConfirmacaoEmailPosMudanca'].page_id
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.CreatePage17a()
                     self.PutHeader()
                 else:
                     MessageBox_Msg1 = QMessageBox.about(self, 'Aviso', 'Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
-            elif PageID == '17b': # Derivação do perfil, Tem ID especial
+            elif PageID== PAGE_BY_NAME['ConfirmacaoLogout'].page_id: # Derivação do perfil, Tem ID especial
                 self.ClearPage()
-                self.PageIDAux = '17b'
+                self.PageIDAux= PAGE_BY_NAME['ConfirmacaoLogout'].page_id
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePage17b()
                 self.PutHeader()
-            elif PageID in ['18','18_']:
-                if PageID == '18_':
-                    if self.PageID == '20':
+            elif PageID in [PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id,'18_']:
+                if PageID == PAGE_BY_NAME['EdicaoNegociacoesBolsa_'].page_id:
+                    if self.PageID== PAGE_BY_NAME['AdicionarCorretoraBolsa'].page_id:
                         if len(self.TextBox_NovaCorretora.text())>0 and len(self.TextBox_NovaCorretora.text())<9:
                             if not self.DBManager.CalcularTributacao_is_running:
                                 Executado = self.DBManager.AddCorretora()
                                 if Executado:
                                     self.ClearPage()
-                                    self.PageID = '18'
+                                    self.PageID= PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id
                                     self.PageIDAux = ''
                                     self.InsertGridLayout(1, 0, 1, 20)
                                     self.HMI_Trades.HMI_Trades_Bolsa.CreatePage18()
@@ -854,13 +855,13 @@ class IHMmain(QWidget):
                             self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Insira um nome válido com até 8 caracteres.') # Substitui a string do erro mais provável
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
-                    elif self.PageID == '22':
+                    elif self.PageID== PAGE_BY_NAME['RenomearCorretoraBolsa'].page_id:
                         if len(self.TextBox_NovoNomeCorretora.text())>0 and len(self.TextBox_NovoNomeCorretora.text())<9:
                             if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                                 Executado = self.DBManager.RenameCorretora()
                                 if Executado:
                                     self.ClearPage()
-                                    self.PageID = '18'
+                                    self.PageID= PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id
                                     self.PageIDAux = ''
                                     self.InsertGridLayout(1, 0, 1, 20)
                                     self.HMI_Trades.HMI_Trades_Bolsa.CreatePage18()
@@ -885,12 +886,12 @@ class IHMmain(QWidget):
                             self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Insira um nome válido com até 8 caracteres.') # Substitui a string do erro mais provável
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
-                    elif self.PageID == '25':
+                    elif self.PageID== PAGE_BY_NAME['SaldoContaCorrenteBolsa'].page_id:
                         try:
                             if not self.DBManager.CalcularTributacao_is_running:
                                 self.DBManager.UpdateContaCorrente()
                                 self.ClearPage()
-                                self.PageID = '18'
+                                self.PageID= PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id
                                 self.PageIDAux = ''
                                 self.InsertGridLayout(1, 0, 1, 20)
                                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage18()
@@ -908,20 +909,20 @@ class IHMmain(QWidget):
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 4, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
                 else:
                     self.ClearPage()
-                    self.PageID = '18'
+                    self.PageID= PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id
                     self.PageIDAux = ''
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.HMI_Trades.HMI_Trades_Bolsa.CreatePage18()
                     self.PutHeader()
-            elif PageID in ['19','19_']:
-                if PageID == '19_':
-                    if self.PageID == '37':
+            elif PageID in [PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id,'19_']:
+                if PageID == PAGE_BY_NAME['EdicaoNegociacoesCripto_'].page_id:
+                    if self.PageID== PAGE_BY_NAME['AdicionarCorretoraCripto'].page_id:
                         if len(self.TextBox_NovaCorretora.text())>0 and len(self.TextBox_NovaCorretora.text())<12:
                             if not self.DBManager.CalcularTributacao_is_running:
                                 Executado = self.DBManager.AddCorretora()
                                 if Executado:
                                     self.ClearPage()
-                                    self.PageID = '19'
+                                    self.PageID= PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id
                                     self.PageIDAux = ''
                                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage19()
                                     self.PutHeader()
@@ -945,13 +946,13 @@ class IHMmain(QWidget):
                             self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Insira um nome válido com até 11 caracteres.') # Substitui a string do erro mais provável
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 14, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
-                    elif self.PageID == '39':
+                    elif self.PageID== PAGE_BY_NAME['RenomearCorretoraCripto'].page_id:
                         if len(self.TextBox_NovoNomeCorretora.text())>0 and len(self.TextBox_NovoNomeCorretora.text())<12:
                             if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                                 Executado = self.DBManager.RenameCorretora()
                                 if Executado:
                                     self.ClearPage()
-                                    self.PageID = '19'
+                                    self.PageID= PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id
                                     self.PageIDAux = ''
                                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage19()
                                     self.PutHeader()
@@ -977,19 +978,19 @@ class IHMmain(QWidget):
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                 else:
                     self.ClearPage()
-                    self.PageID = '19'
+                    self.PageID= PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id
                     self.PageIDAux = ''
                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage19()
                     self.PutHeader()
-            elif PageID in ['Bancos', 'Bancos_']:
-                if PageID == 'Bancos_':
-                    if self.PageID == 'BancosAdd':
+            elif PageID in [PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id, 'Bancos_']:
+                if PageID == PAGE_BY_NAME['EditacaoContasCorrentesBancos_'].page_id:
+                    if self.PageID== PAGE_BY_NAME['AdicionarNovoBanco'].page_id:
                         if len(self.TextBox_NovoBanco.text())>0 and len(self.TextBox_NovoBanco.text())<12:
                             if not self.DBManager.CalcularTributacao_is_running:
                                 Executado = self.DBManager.AddBanco()
                                 if Executado:
                                     self.ClearPage()
-                                    self.PageID = 'Bancos'
+                                    self.PageID= PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id
                                     self.PageIDAux = ''
                                     self.InsertGridLayout(1, 0, 1, 20)
                                     self.HMI_Trades.CreatePageBancos()
@@ -1014,13 +1015,13 @@ class IHMmain(QWidget):
                             self.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
                             self.Label_Erro1.setText('Insira um nome válido com até 11 caracteres.') # Substitui a string do erro mais provável
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 14, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
-                    elif self.PageID == 'BancosRename':
+                    elif self.PageID== PAGE_BY_NAME['RenomearBanco'].page_id:
                         if len(self.TextBox_NovoNomeBanco.text())>0 and len(self.TextBox_NovoNomeBanco.text())<12:
                             if not self.DBManager.CalcularTributacao_is_running:
                                 Executado = self.DBManager.RenameBanco()
                                 if Executado:
                                     self.ClearPage()
-                                    self.PageID = 'Bancos'
+                                    self.PageID= PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id
                                     self.PageIDAux = ''
                                     self.InsertGridLayout(1, 0, 1, 20)
                                     self.HMI_Trades.CreatePageBancos()
@@ -1047,66 +1048,66 @@ class IHMmain(QWidget):
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 11, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
                 else:
                     self.ClearPage()
-                    self.PageID = 'Bancos'
+                    self.PageID= PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id
                     self.PageIDAux = ''
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.HMI_Trades.CreatePageBancos()
                     self.PutHeader()
-            elif PageID == 'BancosAdd':
+            elif PageID== PAGE_BY_NAME['AdicionarNovoBanco'].page_id:
                 self.ClearPage()
-                self.PageID = 'BancosAdd'
+                self.PageID= PAGE_BY_NAME['AdicionarNovoBanco'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.CreatePageBancosAdd()
                 self.PutHeader()
-            elif PageID == 'BancosDelete':
+            elif PageID == PAGE_BY_NAME['BancosDelete'].page_id:
                 self.HMI_Trades.CreatePageBancosDelete()
-            elif PageID == 'BancosRename':
+            elif PageID== PAGE_BY_NAME['RenomearBanco'].page_id:
                 self.ClearPage()
-                self.PageID = 'BancosRename'
+                self.PageID= PAGE_BY_NAME['RenomearBanco'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.CreatePageBancosRename()
                 self.PutHeader()
-            elif PageID == '20':
+            elif PageID== PAGE_BY_NAME['AdicionarCorretoraBolsa'].page_id:
                 self.ClearPage()
-                self.PageID = '20'
+                self.PageID= PAGE_BY_NAME['AdicionarCorretoraBolsa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage20()
                 self.PutHeader()
-            elif PageID == '21': # MessageBox
+            elif PageID == PAGE_BY_NAME['ConfirmarDeletarCorretoraBolsa'].page_id: # MessageBox
                 if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                     self.HMI_Trades.HMI_Trades_Bolsa.CreatePage21()
                 else:
                     MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
-            elif PageID == '22':
+            elif PageID== PAGE_BY_NAME['RenomearCorretoraBolsa'].page_id:
                 self.ClearPage()
-                self.PageID = '22'
+                self.PageID= PAGE_BY_NAME['RenomearCorretoraBolsa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage22()
                 self.PutHeader()
-            elif PageID in ['23', '23_', '_23_']:
-                if self.PageID == '34b':
+            elif PageID in [PAGE_BY_NAME['RegistrosBolsa'].page_id, '23_', '_23_']:
+                if self.PageID== PAGE_BY_NAME['CotacaoEncontradaManualBolsa'].page_id:
                     if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
-                        if PageID == '_23_':
+                        if PageID == PAGE_BY_NAME['_RegistrosBolsa_'].page_id:
                             self.Modo = 'Manual'
                             self.DBManager.RenameAtivo()
-                        elif PageID == '23_':
+                        elif PageID == PAGE_BY_NAME['RegistrosBolsa_'].page_id:
                             self.Modo = 'Auto'
                             self.DBManager.RenameAtivo()
                     else:
                         MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
-                elif self.PageID == '35b':
+                elif self.PageID== PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id:
                     if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
-                        if PageID == '23_':
+                        if PageID == PAGE_BY_NAME['RegistrosBolsa_'].page_id:
                             self.Modo = 'Manual'
                             self.DBManager.RenameAtivo()
                     else:
                         MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                 self.ClearPage()
-                self.PageID = '23'
+                self.PageID= PAGE_BY_NAME['RegistrosBolsa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage23()
@@ -1114,7 +1115,7 @@ class IHMmain(QWidget):
 
                 if self.DBManager.VerificarSeTemEstoqueNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','ESTOQUE NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
                 elif self.DBManager.VerificarSeTemCustoNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','CUSTO NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
-            elif PageID in ['24', '24_']:
+            elif PageID in [PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id, '24_']:
                 if PageID  == '24_':
                     try:
                         Data = str(self.Selecao_Ano+'/'+self.Selecao_Mes+'/'+self.Selecao_Dia+' '+self.Selecao_Hora+':'+self.Selecao_Minuto+':'+self.Selecao_Segundo)
@@ -1138,36 +1139,36 @@ class IHMmain(QWidget):
                         self.TextBox_Valor.setFocus()
                 else:
                     self.ClearPage()
-                    self.PageID = '24'
+                    self.PageID= PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id
                     self.PageIDAux = ''
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.HMI_Trades.HMI_Trades_Bolsa.CreatePage24()
                     self.PutHeader()
-            elif PageID == '25':
+            elif PageID== PAGE_BY_NAME['SaldoContaCorrenteBolsa'].page_id:
                 self.ClearPage()
-                self.PageID = '25'
+                self.PageID= PAGE_BY_NAME['SaldoContaCorrenteBolsa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage25()
                 self.PutHeader()
-            elif PageID == '26':
+            elif PageID== PAGE_BY_NAME['AdicionarNovoAtivo'].page_id:
                 self.ClearPage()
-                self.PageID = '26'
+                self.PageID= PAGE_BY_NAME['AdicionarNovoAtivo'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage26()
                 self.PutHeader()
-            elif PageID == '27':
+            elif PageID== PAGE_BY_NAME['RenomearAtivo'].page_id:
                 self.ClearPage()
-                self.PageID = '27'
+                self.PageID= PAGE_BY_NAME['RenomearAtivo'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage27()
                 self.PutHeader()
-            elif PageID == '28':
+            elif PageID== PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id:
                 try: self.Label_Erro1.deleteLater()
                 except: pass
-                if self.PageID == '28':
+                if self.PageID== PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id:
                     # Registrar na DBManager a operação
                     try:
                         # Verificar se os dados inseridos são coerentes e só então registrar na DB
@@ -1221,7 +1222,7 @@ class IHMmain(QWidget):
                         self.Label_Erro1.setText('Confira os valores inseridos.') # Substitui a string do erro mais provável
                         self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignmentFlag.AlignRight)
 
-                elif self.PageID in ['36a','36b']:
+                elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id,PAGE_BY_NAME['AlterarNovaOperacaoManualBolsa'].page_id]:
                     try: self.Label_Erro1.deleteLater()
                     except: pass
                     # Registrar na DBManager o ativo TextBox_NomeNovoAtivo
@@ -1254,7 +1255,7 @@ class IHMmain(QWidget):
                                     self.ComboBox_Ativos.setCurrentIndex(self.idxAtivo)
 
                                     self.ClearPage()
-                                    self.PageID = '28'
+                                    self.PageID= PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id
                                     self.PageIDAux = ''
                                     self.InsertGridLayout(1, 0, 1, 20)
                                     self.HMI_Trades.HMI_Trades_Bolsa.CreatePage28()
@@ -1285,108 +1286,108 @@ class IHMmain(QWidget):
 
                 elif len(self.ComboBox_Ativos)>0:
                     self.ClearPage()
-                    self.PageID = '28'
+                    self.PageID= PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id
                     self.PageIDAux = ''
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.HMI_Trades.HMI_Trades_Bolsa.CreatePage28()
                     self.PutHeader()
-            elif PageID == '29':
+            elif PageID== PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id:
                 self.ClearPage()
-                self.PageID = '29'
+                self.PageID= PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage29()
                 self.PutHeader()
-            elif PageID == '30':
+            elif PageID== PAGE_BY_NAME['DeletarOperacoesBolsa'].page_id:
                 self.ClearPage()
-                self.PageID = '30'
+                self.PageID= PAGE_BY_NAME['DeletarOperacoesBolsa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage30()
                 self.PutHeader()
-            elif PageID == '31a': MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
-            elif PageID == '31b': MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
-            elif PageID == '32a': MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
-            elif PageID == '32b': MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
-            elif PageID == '33':
+            elif PageID== PAGE_BY_NAME['NaoImplementada31a'].page_id: MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
+            elif PageID== PAGE_BY_NAME['NaoImplementada31b'].page_id: MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
+            elif PageID== PAGE_BY_NAME['NaoImplementada32a'].page_id: MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
+            elif PageID== PAGE_BY_NAME['NaoImplementada32b'].page_id: MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
+            elif PageID == PAGE_BY_NAME['33'].page_id:
                 try:
                     self.LW = LoadingWindow.LoadingWindow(self)
                     self.LW.show()
                     self.Thread_BuscarSetoresExistentes = WorkerThread('Thread_BuscarSetoresExistentes', self)
                     self.Thread_BuscarSetoresExistentes.start()
                 except Exception as e: print(e)
-            elif PageID == '34a':
+            elif PageID== PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id:
                 self.ClearPage()
-                self.PageID = '34a'
+                self.PageID= PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage34a()
                 self.PutHeader()
-            elif PageID == '34b':
+            elif PageID== PAGE_BY_NAME['CotacaoEncontradaManualBolsa'].page_id:
                 self.ClearPage()
-                self.PageID = '34b'
+                self.PageID= PAGE_BY_NAME['CotacaoEncontradaManualBolsa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage34b()
                 self.PutHeader()
-            elif PageID == '35a':
+            elif PageID== PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id:
                 self.ClearPage()
-                self.PageID = '35a'
+                self.PageID= PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage35a()
                 self.PutHeader()
-            elif PageID == '35b':
+            elif PageID== PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id:
                 self.ClearPage()
-                self.PageID = '35b'
+                self.PageID= PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage35b()
                 self.PutHeader()
-            elif PageID == '36a_Auto':
+            elif PageID == PAGE_BY_NAME['InformarNovaOperacaoManualBolsa_Auto'].page_id:
                 self.ClearPage()
-                self.PageID = '36a'
+                self.PageID= PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.ModoManualAtivo = False
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage36a()
                 self.PutHeader()
-            elif PageID == '36a_Manual':
+            elif PageID == PAGE_BY_NAME['InformarNovaOperacaoManualBolsa_Manual'].page_id:
                 self.ClearPage()
-                self.PageID = '36a'
+                self.PageID= PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.ModoManualAtivo = True
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage36a()
                 self.PutHeader()
-            elif PageID == '36b_Manual':
+            elif PageID == PAGE_BY_NAME['ImportarUsuario'].page_id:
                 self.ClearPage()
-                self.PageID = '36b'
+                self.PageID= PAGE_BY_NAME['AlterarNovaOperacaoManualBolsa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.ModoManualAtivo = True
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage36a()
                 self.PutHeader()
-            elif PageID == '37':
+            elif PageID== PAGE_BY_NAME['AdicionarCorretoraCripto'].page_id:
                 self.ClearPage()
-                self.PageID = '37'
+                self.PageID= PAGE_BY_NAME['AdicionarCorretoraCripto'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage37()
                 self.PutHeader()
-            elif PageID == '38': # MessageBox
+            elif PageID == PAGE_BY_NAME['ConfirmarDeletarCorretoraCripto'].page_id: # MessageBox
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage38()
                 self.PutHeader()
-            elif PageID == '39':
+            elif PageID== PAGE_BY_NAME['RenomearCorretoraCripto'].page_id:
                 self.ClearPage()
-                self.PageID = '39'
+                self.PageID= PAGE_BY_NAME['RenomearCorretoraCripto'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage39()
                 self.PutHeader()
-            elif PageID == '40':
+            elif PageID== PAGE_BY_NAME['RegistrosCripto'].page_id:
                 self.ClearPage()
-                self.PageID = '40'
+                self.PageID= PAGE_BY_NAME['RegistrosCripto'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage40()
@@ -1395,10 +1396,10 @@ class IHMmain(QWidget):
                 if self.DBManager.VerificarPrimeiraOperacao(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','A primeira operação deve ser do tipo DEPÓSITO ou DROP.')
                 elif self.DBManager.VerificarSeTemEstoqueNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','ESTOQUE NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
                 elif self.DBManager.VerificarSeTemCustoNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','CUSTO NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
-            elif PageID == '41':
+            elif PageID== PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id:
                 try: self.Label_Erro1.deleteLater()
                 except: pass
-                if self.PageID == '41':
+                if self.PageID== PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id:
                     # Registrar na DBManager a operação
                     try:
                         # Verificar se os dados inseridos são coerentes e só então registrar na DB
@@ -1458,124 +1459,124 @@ class IHMmain(QWidget):
                         self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignmentFlag.AlignCenter)
                 else:
                     self.ClearPage()
-                    self.PageID = '41'
+                    self.PageID= PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id
                     self.PageIDAux = ''
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage41()
                     self.PutHeader()
-            elif PageID == '42': # Ideia abandonada
+            elif PageID == PAGE_BY_NAME['IdeiaAbandonada'].page_id: # Ideia abandonada
                 # self.ClearPage()
-                # self.PageID = '42'
+                # self.PageID = PAGE_BY_NAME['IdeiaAbandonada'].page_id:
                 # self.PageIDAux = ''
                 # self.InsertGridLayout(1, 0, 1, 20)
                 # self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage42()
                 # self.PutHeader()
                 pass
-            elif PageID == '43': # Alter Cripto Operation
+            elif PageID== PAGE_BY_NAME['AlterarOperacaoCripto'].page_id: # Alter Cripto Operation
                 self.ClearPage()
-                self.PageID = '43'
+                self.PageID= PAGE_BY_NAME['AlterarOperacaoCripto'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage43()
                 self.PutHeader()
-            elif PageID == '44': # Delete Cripto Operation
+            elif PageID== PAGE_BY_NAME['DeletarOperacaoCripto'].page_id: # Delete Cripto Operation
                 self.ClearPage()
-                self.PageID = '44'
+                self.PageID= PAGE_BY_NAME['DeletarOperacaoCripto'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage44()
                 self.PutHeader()
-            elif PageID == '45':
+            elif PageID== PAGE_BY_NAME['InsercaoCotacoesManuais'].page_id:
                 if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                     self.ClearPage()
-                    self.PageIDAux = '45' # Tem ID especial, porque é compartilhado com outros ramos
+                    self.PageIDAux= PAGE_BY_NAME['InsercaoCotacoesManuais'].page_id # Tem ID especial, porque é compartilhado com outros ramos
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.CreatePage45()
                     self.PutHeader()
                 else:
                     MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
-            elif PageID == '46':
+            elif PageID== PAGE_BY_NAME['AcoesNegocios'].page_id:
                 self.ClearPage()
-                self.PageID = '46'
+                self.PageID= PAGE_BY_NAME['AcoesNegocios'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_ARCA.CreatePage46()
                 self.PutHeader()
-            elif PageID == '47':
+            elif PageID== PAGE_BY_NAME['RealEstate'].page_id:
                 self.ClearPage()
-                self.PageID = '47'
+                self.PageID= PAGE_BY_NAME['RealEstate'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_ARCA.CreatePage47()
                 self.PutHeader()
-            elif PageID == '48':
+            elif PageID== PAGE_BY_NAME['Caixa'].page_id:
                 self.ClearPage()
-                self.PageID = '48'
+                self.PageID= PAGE_BY_NAME['Caixa'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_ARCA.CreatePage48()
                 self.PutHeader()
-            elif PageID == '49':
+            elif PageID== PAGE_BY_NAME['AtivosInternacionais'].page_id:
                 self.ClearPage()
-                self.PageID = '49'
+                self.PageID= PAGE_BY_NAME['AtivosInternacionais'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_ARCA.CreatePage49()
                 self.PutHeader()
-            elif PageID == '50':
+            elif PageID== PAGE_BY_NAME['CriptoARCA'].page_id:
                 self.ClearPage()
-                self.PageID = '50'
+                self.PageID= PAGE_BY_NAME['CriptoARCA'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_ARCA.CreatePage50()
                 self.PutHeader()
-            elif PageID == '51':
+            elif PageID== PAGE_BY_NAME['Tributacao'].page_id:
                 self.ClearPage()
-                self.PageID = '51'
+                self.PageID= PAGE_BY_NAME['Tributacao'].page_id
                 self.PageIDAux = ''
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Tributacao.CreatePage51()
                 self.PutHeader()
-            elif PageID == 'ChooseCurrency':
+            elif PageID== PAGE_BY_NAME['EscolhaMoeda'].page_id:
                 self.ClearPage()
-                self.PageIDAux = 'ChooseCurrency' # Derivação do perfil, Tem ID especial
+                self.PageIDAux= PAGE_BY_NAME['EscolhaMoeda'].page_id # Derivação do perfil, Tem ID especial
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.CreatePageChooseCurrency()
                 self.PutHeader()
             elif PageID =='Confirmar email':
                 pass
-            elif PageID == 'Inserir nova senha':
+            elif PageID == PAGE_BY_NAME['Inserir nova senha'].page_id:
                 pass
-            elif PageID == 'Info1': self.CreatePageInfo1()
-            elif PageID == 'Info2': self.CreatePageInfo2()
-            elif PageID == 'Info3': self.CreatePageInfo3()
-            elif PageID == 'Info4': self.CreatePageInfo4()
-            elif PageID == 'Info5': self.CreatePageInfo5()
-            elif PageID == 'Info6': self.CreatePageInfo6()
-            elif PageID == 'Info7': self.CreatePageInfo7()
-            elif PageID == 'Info8': self.CreatePageInfo8()
-            elif PageID == 'Info9': self.CreatePageInfo9()
-            elif PageID == 'Info10': self.CreatePageInfo10()
-            elif PageID == 'Info11': self.CreatePageInfo11()
-            elif PageID == 'Info12': self.CreatePageInfo12()
-            elif PageID == 'Info13': self.CreatePageInfo13()
-            elif PageID == 'Info14': self.CreatePageInfo14()
-            elif PageID == 'Info15': self.CreatePageInfo15()
-            elif PageID == 'Info16': self.CreatePageInfo16()
-            elif PageID == 'Info17': self.CreatePageInfo17()
-            elif PageID == 'Info18': self.CreatePageInfo18()
-            elif PageID == 'Info19': self.CreatePageInfo19()
-            elif PageID == 'Info20': self.CreatePageInfo20()
-            elif PageID == 'Info21': self.CreatePageInfo21()
-            elif PageID == 'Info22': self.CreatePageInfo22()
-            elif PageID == 'Info23': self.CreatePageInfo23()
-            elif PageID == 'Info24': self.CreatePageInfo24()
-            elif PageID == 'Info25': self.CreatePageInfo25()
-            elif PageID == 'Info26': self.CreatePageInfo26()
-            elif PageID == 'Info27': self.CreatePageInfo27()
+            elif PageID == PAGE_BY_NAME['Info1'].page_id: self.CreatePageInfo1()
+            elif PageID == PAGE_BY_NAME['Info2'].page_id: self.CreatePageInfo2()
+            elif PageID == PAGE_BY_NAME['Info3'].page_id: self.CreatePageInfo3()
+            elif PageID == PAGE_BY_NAME['Info4'].page_id: self.CreatePageInfo4()
+            elif PageID == PAGE_BY_NAME['Info5'].page_id: self.CreatePageInfo5()
+            elif PageID == PAGE_BY_NAME['Info6'].page_id: self.CreatePageInfo6()
+            elif PageID == PAGE_BY_NAME['Info7'].page_id: self.CreatePageInfo7()
+            elif PageID == PAGE_BY_NAME['Info8'].page_id: self.CreatePageInfo8()
+            elif PageID == PAGE_BY_NAME['Info9'].page_id: self.CreatePageInfo9()
+            elif PageID == PAGE_BY_NAME['Info10'].page_id: self.CreatePageInfo10()
+            elif PageID == PAGE_BY_NAME['Info11'].page_id: self.CreatePageInfo11()
+            elif PageID == PAGE_BY_NAME['Info12'].page_id: self.CreatePageInfo12()
+            elif PageID == PAGE_BY_NAME['Info13'].page_id: self.CreatePageInfo13()
+            elif PageID == PAGE_BY_NAME['Info14'].page_id: self.CreatePageInfo14()
+            elif PageID == PAGE_BY_NAME['Info15'].page_id: self.CreatePageInfo15()
+            elif PageID == PAGE_BY_NAME['Info16'].page_id: self.CreatePageInfo16()
+            elif PageID == PAGE_BY_NAME['Info17'].page_id: self.CreatePageInfo17()
+            elif PageID == PAGE_BY_NAME['Info18'].page_id: self.CreatePageInfo18()
+            elif PageID == PAGE_BY_NAME['Info19'].page_id: self.CreatePageInfo19()
+            elif PageID == PAGE_BY_NAME['Info20'].page_id: self.CreatePageInfo20()
+            elif PageID == PAGE_BY_NAME['Info21'].page_id: self.CreatePageInfo21()
+            elif PageID == PAGE_BY_NAME['Info22'].page_id: self.CreatePageInfo22()
+            elif PageID == PAGE_BY_NAME['Info23'].page_id: self.CreatePageInfo23()
+            elif PageID == PAGE_BY_NAME['Info24'].page_id: self.CreatePageInfo24()
+            elif PageID == PAGE_BY_NAME['Info25'].page_id: self.CreatePageInfo25()
+            elif PageID == PAGE_BY_NAME['Info26'].page_id: self.CreatePageInfo26()
+            elif PageID == PAGE_BY_NAME['Info27'].page_id: self.CreatePageInfo27()
 
     def LimparPage(self):
-        if self.PageID in ['28', '29', '36a']:
+        if self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id, PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id, PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id]:
             self.TextBox_Qqt.setText('')
             self.TextBox_Preco.setText('')
             self.TextBox_Corretagem.setText('')
@@ -1585,7 +1586,7 @@ class IHMmain(QWidget):
             self.TextBox_Qqt.setFocus()
             try: self.Label_Erro1.deleteLater()
             except: pass
-        elif self.PageID in ['41']:
+        elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id]:
             self.TextBox_Par_Esquerda.setText('')
             self.TextBox_Par_Direita.setText('')
             self.TextBox_Qqt.setText('')
@@ -1619,7 +1620,7 @@ class IHMmain(QWidget):
         self.Label_NomeDeUsuario.setFont(self.font16)
 
         self.TextBox_NomeDeUsuario = QLineEdit()
-        self.TextBox_NomeDeUsuario.returnPressed.connect(lambda: self.CreatePage('1'))
+        self.TextBox_NomeDeUsuario.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
         self.TextBox_NomeDeUsuario.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Label_Senha = QLabel()
@@ -1629,11 +1630,11 @@ class IHMmain(QWidget):
 
         self.TextBox_Senha = QLineEdit()
         self.TextBox_Senha.setEchoMode(QLineEdit.Password)
-        self.TextBox_Senha.returnPressed.connect(lambda: self.CreatePage('1'))
+        self.TextBox_Senha.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
         self.TextBox_Senha.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Button_LogIn = QPushButton()
-        self.Button_LogIn.pressed.connect(lambda: self.CreatePage('1'))
+        self.Button_LogIn.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
         self.Button_LogIn.setFont(self.font16)
         self.Button_LogIn.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_LogIn.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -1643,14 +1644,14 @@ class IHMmain(QWidget):
         self.Button_LogIn.setToolTip("Log in")
 
         self.Button_EsqueciASenha = QPushButton("Esqueci a senha")
-        self.Button_EsqueciASenha.pressed.connect(lambda: self.CreatePage('2'))
+        self.Button_EsqueciASenha.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['AuxilioSenha'].page_id))
         self.Button_EsqueciASenha.setFont(self.font12)
         self.Button_EsqueciASenha.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_EsqueciASenha.setToolTip("Esqueci a senha")
         self.Button_EsqueciASenha.setStyleSheet('QToolTip {background-color: black; color: white;border: black solid 1px}')
 
         self.Button_ImportarUsuario = QPushButton("Importar usuário")
-        self.Button_ImportarUsuario.pressed.connect(lambda: self.CreatePage('3'))
+        self.Button_ImportarUsuario.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ImportarUsuario'].page_id))
         # self.Button_ImportarUsuario.pressed.connect(lambda: self.OnButtonPressed('ImportFromDB'))
         self.Button_ImportarUsuario.setFont(self.font12)
         self.Button_ImportarUsuario.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1658,7 +1659,7 @@ class IHMmain(QWidget):
         self.Button_ImportarUsuario.setStyleSheet('QToolTip {background-color: black; color: white;border: black solid 1px}')
 
         self.Button_CriarUsuario = QPushButton("Criar novo usuário")
-        self.Button_CriarUsuario.pressed.connect(lambda: self.CreatePage('4'))
+        self.Button_CriarUsuario.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['CriarUsuario'].page_id))
         self.Button_CriarUsuario.setFont(self.font12)
         self.Button_CriarUsuario.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_CriarUsuario.setToolTip("Criar novo usuário")
@@ -1690,14 +1691,14 @@ class IHMmain(QWidget):
         self.Movie_Mercado.start()
 
         self.Button_MercadoInvisivel = QPushButton()
-        self.Button_MercadoInvisivel.pressed.connect(lambda: self.CreatePage('5'))
+        self.Button_MercadoInvisivel.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['AnaliseMercado'].page_id))
         self.Button_MercadoInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_MercadoInvisivel.setFixedSize(int(self.frameGeometry().width()*3/4*.90),int(self.frameGeometry().height()*3/4*.95))
         self.Button_MercadoInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.Button_MercadoInvisivel.setToolTip("Ir para aba Mercado")
 
         self.Button_Mercado = QPushButton("Análise do\nMercado")
-        self.Button_Mercado.pressed.connect(lambda: self.CreatePage('5'))
+        self.Button_Mercado.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['AnaliseMercado'].page_id))
         self.Button_Mercado.setFont(self.font30)
         self.Button_Mercado.setStyleSheet('QPushButton {background-color: black; color: white; border: none; outline: } QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_Mercado.setFixedSize(int(self.frameGeometry().width()*3/4*.9),int(self.frameGeometry().height()/4*.95))
@@ -1742,7 +1743,7 @@ class IHMmain(QWidget):
         self.Movie_Negociações.start()
 
         self.Button_Negociações = QPushButton("Negociações")
-        self.Button_Negociações.pressed.connect(lambda: self.CreatePage('10'))
+        self.Button_Negociações.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['EdicaoNegociacoes'].page_id))
         self.Button_Negociações.setFont(self.font24)
         self.Button_Negociações.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_Negociações.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
@@ -1750,7 +1751,7 @@ class IHMmain(QWidget):
         self.Button_Negociações.setToolTip("Ir para aba Negociações")
 
         self.Button_NegociaçõesInvisivel = QPushButton()
-        self.Button_NegociaçõesInvisivel.pressed.connect(lambda: self.CreatePage('10'))
+        self.Button_NegociaçõesInvisivel.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['EdicaoNegociacoes'].page_id))
         self.Button_NegociaçõesInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_NegociaçõesInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-160))
         self.Button_NegociaçõesInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1763,7 +1764,7 @@ class IHMmain(QWidget):
         self.Movie_Tributacao.start()
 
         self.Button_Tributacao = QPushButton("Tributação")
-        self.Button_Tributacao.pressed.connect(lambda: self.CreatePage('51'))
+        self.Button_Tributacao.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Tributacao'].page_id))
         self.Button_Tributacao.setFont(self.font24)
         self.Button_Tributacao.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_Tributacao.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
@@ -1771,7 +1772,7 @@ class IHMmain(QWidget):
         self.Button_Tributacao.setToolTip("Ir para aba Tributação")
 
         self.Button_TributacaoInvisivel = QPushButton()
-        self.Button_TributacaoInvisivel.pressed.connect(lambda: self.CreatePage('51'))
+        self.Button_TributacaoInvisivel.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Tributacao'].page_id))
         self.Button_TributacaoInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_TributacaoInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-160))
         self.Button_TributacaoInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1784,7 +1785,7 @@ class IHMmain(QWidget):
         self.Movie_ARCA.start()
 
         self.Button_ARCA = QPushButton("ARCA")
-        self.Button_ARCA.pressed.connect(lambda: self.CreatePage('11'))
+        self.Button_ARCA.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ARCA'].page_id))
         self.Button_ARCA.setFont(self.font24)
         self.Button_ARCA.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_ARCA.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
@@ -1792,7 +1793,7 @@ class IHMmain(QWidget):
         self.Button_ARCA.setToolTip("IR para aba ARCA")
 
         self.Button_ARCAInvisivel = QPushButton()
-        self.Button_ARCAInvisivel.pressed.connect(lambda: self.CreatePage('11'))
+        self.Button_ARCAInvisivel.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ARCA'].page_id))
         self.Button_ARCAInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_ARCAInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.80),int(self.frameGeometry().height()/5*.95-20))
         self.Button_ARCAInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1805,7 +1806,7 @@ class IHMmain(QWidget):
         self.Movie_Desempenho.start()
 
         self.Button_Desempenho = QPushButton("Desempenho")
-        self.Button_Desempenho.pressed.connect(lambda: self.CreatePage('12'))
+        self.Button_Desempenho.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Desempenho'].page_id))
         self.Button_Desempenho.setFont(self.font24)
         self.Button_Desempenho.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_Desempenho.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
@@ -1813,7 +1814,7 @@ class IHMmain(QWidget):
         self.Button_Desempenho.setToolTip("Ir para aba Desempenho")
 
         self.Button_DesempenhoInvisivel = QPushButton()
-        self.Button_DesempenhoInvisivel.pressed.connect(lambda: self.CreatePage('12'))
+        self.Button_DesempenhoInvisivel.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Desempenho'].page_id))
         self.Button_DesempenhoInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_DesempenhoInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.80),int(self.frameGeometry().height()/5*.95-20))
         self.Button_DesempenhoInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1826,7 +1827,7 @@ class IHMmain(QWidget):
         self.Movie_Mercado.start()
 
         self.Button_Mercado = QPushButton("Análise do\nMercado")
-        self.Button_Mercado.pressed.connect(lambda: self.CreatePage('13'))
+        self.Button_Mercado.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['AnaliseMercadoDup'].page_id))
         self.Button_Mercado.setFont(self.font24)
         self.Button_Mercado.setStyleSheet('QPushButton {background-color: black; color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_Mercado.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
@@ -1834,7 +1835,7 @@ class IHMmain(QWidget):
         self.Button_Mercado.setToolTip("Ir para aba Análise do Mercado")
 
         self.Button_MercadoInvisivel = QPushButton()
-        self.Button_MercadoInvisivel.pressed.connect(lambda: self.CreatePage('13'))
+        self.Button_MercadoInvisivel.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['AnaliseMercadoDup'].page_id))
         self.Button_MercadoInvisivel.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_MercadoInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-110))
         self.Button_MercadoInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -1877,11 +1878,11 @@ class IHMmain(QWidget):
         self.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_EmailOuUsuario = QLineEdit()
-        self.TextBox_EmailOuUsuario.returnPressed.connect(lambda: self.CreatePage('6'))
+        self.TextBox_EmailOuUsuario.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['RecuperacaoEmail'].page_id))
         self.TextBox_EmailOuUsuario.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Button_ConfirmacaoDeEmail = QPushButton('Seguinte')
-        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage('6'))
+        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['RecuperacaoEmail'].page_id))
         self.Button_ConfirmacaoDeEmail.setFont(self.font16)
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -1919,7 +1920,7 @@ class IHMmain(QWidget):
         self.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Button_ImportDBToExcel = QPushButton()
-        self.Button_ImportDBToExcel.pressed.connect(lambda: self.CreatePage('3b'))
+        self.Button_ImportDBToExcel.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ImportacaoUsuario'].page_id))
         self.Button_ImportDBToExcel.setStyleSheet('QPushButton {background-color: rgb(0, 0, 0); color: white; border: 1px solid rgb(0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}')
         self.Button_ImportDBToExcel.setFixedSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height()-160))
         self.Button_ImportDBToExcel.setIconSize(QSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height())))
@@ -1966,7 +1967,7 @@ class IHMmain(QWidget):
         self.Label_NomeDeUsuario.setText('Nome de usuário:'+str((' ')*int(self.frameGeometry().width()*razao)))
 
         self.TextBox_NomeDeUsuario = QLineEdit()
-        self.TextBox_NomeDeUsuario.returnPressed.connect(lambda: self.CreatePage('8b'))
+        self.TextBox_NomeDeUsuario.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ConfirmacaoEmailImportar'].page_id))
         self.TextBox_NomeDeUsuario.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Label_Email = QLabel()
@@ -1981,7 +1982,7 @@ class IHMmain(QWidget):
         self.Label_Email.setText('Email:'+str((' ')*int(self.frameGeometry().width()*razao)))
 
         self.TextBox_Email = QLineEdit()
-        self.TextBox_Email.returnPressed.connect(lambda: self.CreatePage('8b'))
+        self.TextBox_Email.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ConfirmacaoEmailImportar'].page_id))
         self.TextBox_Email.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Label_Senha1 = QLabel()
@@ -1996,7 +1997,7 @@ class IHMmain(QWidget):
         self.Label_Senha1.setText('Senha:'+str((' ')*int(self.frameGeometry().width()*razao)))
 
         self.TextBox_Senha1 = QLineEdit()
-        self.TextBox_Senha1.returnPressed.connect(lambda: self.CreatePage('8b'))
+        self.TextBox_Senha1.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ConfirmacaoEmailImportar'].page_id))
         self.TextBox_Senha1.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.TextBox_Senha1.setEchoMode(QLineEdit.Password)
 
@@ -2012,7 +2013,7 @@ class IHMmain(QWidget):
         self.Label_Senha2.setText('Confirme a senha:'+str((' ')*int(self.frameGeometry().width()*razao)))
 
         self.TextBox_Senha2 = QLineEdit()
-        self.TextBox_Senha2.returnPressed.connect(lambda: self.CreatePage('8b'))
+        self.TextBox_Senha2.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ConfirmacaoEmailImportar'].page_id))
         self.TextBox_Senha2.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.TextBox_Senha2.setEchoMode(QLineEdit.Password)
 
@@ -2049,7 +2050,7 @@ class IHMmain(QWidget):
         self.TextBox_Path.setStyleSheet("background-color: black; color: white;")
 
         self.Button_ConfirmacaoDeEmail = QPushButton()
-        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage('8b'))
+        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ConfirmacaoEmailImportar'].page_id))
         self.Button_ConfirmacaoDeEmail.setFont(self.font16)
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -2099,7 +2100,7 @@ class IHMmain(QWidget):
         self.Label_NomeDeUsuario.setText('Nome de usuário:'+str((' ')*int(self.frameGeometry().width()*razao)))
 
         self.TextBox_NomeDeUsuario = QLineEdit()
-        self.TextBox_NomeDeUsuario.returnPressed.connect(lambda: self.CreatePage('8'))
+        self.TextBox_NomeDeUsuario.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ConfirmacaoEmailCriar'].page_id))
         self.TextBox_NomeDeUsuario.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Label_Email = QLabel()
@@ -2114,7 +2115,7 @@ class IHMmain(QWidget):
         self.Label_Email.setText('Email:'+str((' ')*int(self.frameGeometry().width()*razao)))
 
         self.TextBox_Email = QLineEdit()
-        self.TextBox_Email.returnPressed.connect(lambda: self.CreatePage('8'))
+        self.TextBox_Email.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ConfirmacaoEmailCriar'].page_id))
         self.TextBox_Email.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Label_Senha1 = QLabel()
@@ -2129,7 +2130,7 @@ class IHMmain(QWidget):
         self.Label_Senha1.setText('Senha:'+str((' ')*int(self.frameGeometry().width()*razao)))
 
         self.TextBox_Senha1 = QLineEdit()
-        self.TextBox_Senha1.returnPressed.connect(lambda: self.CreatePage('8'))
+        self.TextBox_Senha1.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ConfirmacaoEmailCriar'].page_id))
         self.TextBox_Senha1.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.TextBox_Senha1.setEchoMode(QLineEdit.Password)
 
@@ -2145,7 +2146,7 @@ class IHMmain(QWidget):
         self.Label_Senha2.setText('Confirme a senha:'+str((' ')*int(self.frameGeometry().width()*razao)))
 
         self.TextBox_Senha2 = QLineEdit()
-        self.TextBox_Senha2.returnPressed.connect(lambda: self.CreatePage('8'))
+        self.TextBox_Senha2.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ConfirmacaoEmailCriar'].page_id))
         self.TextBox_Senha2.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.TextBox_Senha2.setEchoMode(QLineEdit.Password)
 
@@ -2182,7 +2183,7 @@ class IHMmain(QWidget):
         self.TextBox_Path.setStyleSheet("background-color: black; color: white;")
 
         self.Button_ConfirmacaoDeEmail = QPushButton()
-        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage('8'))
+        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ConfirmacaoEmailCriar'].page_id))
         self.Button_ConfirmacaoDeEmail.setFont(self.font16)
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -2235,7 +2236,7 @@ class IHMmain(QWidget):
         self.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_CodigoDeConfirmacao = QLineEdit()
-        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage('7'))
+        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['AlteracaoSenha'].page_id))
         self.TextBox_CodigoDeConfirmacao.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Button_ResendEmail = QPushButton("Reenviar email")
@@ -2248,7 +2249,7 @@ class IHMmain(QWidget):
         self.Button_ResendEmail.setStyleSheet('QToolTip {background-color: black; color: white;border: black solid 1px}')
 
         self.Button_ConfirmacaoDeEmail = QPushButton('Seguinte')
-        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage('7'))
+        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['AlteracaoSenha'].page_id))
         self.Button_ConfirmacaoDeEmail.setFont(self.font16)
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
@@ -2280,7 +2281,7 @@ class IHMmain(QWidget):
         self.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_NovaSenha1 = QLineEdit()
-        self.TextBox_NovaSenha1.returnPressed.connect(lambda: self.CreatePage('1'))
+        self.TextBox_NovaSenha1.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
         self.TextBox_NovaSenha1.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.TextBox_NovaSenha1.setEchoMode(QLineEdit.Password)
 
@@ -2290,12 +2291,12 @@ class IHMmain(QWidget):
         self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_NovaSenha2 = QLineEdit()
-        self.TextBox_NovaSenha2.returnPressed.connect(lambda: self.CreatePage('1'))
+        self.TextBox_NovaSenha2.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
         self.TextBox_NovaSenha2.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.TextBox_NovaSenha2.setEchoMode(QLineEdit.Password)
 
         self.Button_ConfirmacaoDeEmail = QPushButton('Recuperar')
-        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage('1'))
+        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
         self.Button_ConfirmacaoDeEmail.setFont(self.font16)
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -2347,7 +2348,7 @@ class IHMmain(QWidget):
         self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_CodigoDeConfirmacao = QLineEdit()
-        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage('1'))
+        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
         self.TextBox_CodigoDeConfirmacao.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Button_ResendEmail = QPushButton("Reenviar email")
@@ -2360,7 +2361,7 @@ class IHMmain(QWidget):
         self.Button_ResendEmail.setStyleSheet('QToolTip {background-color: black; color: white;border: black solid 1px}')
 
         self.Button_ConfirmacaoDeEmail = QPushButton('Confirmar')
-        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage('1'))
+        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
         self.Button_ConfirmacaoDeEmail.setFont(self.font16)
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
@@ -2412,7 +2413,7 @@ class IHMmain(QWidget):
         self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_CodigoDeConfirmacao = QLineEdit()
-        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage('ImportFromExcel'))
+        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ImportandoDadosExcel'].page_id))
         self.TextBox_CodigoDeConfirmacao.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Button_ResendEmail = QPushButton("Reenviar email")
@@ -2425,7 +2426,7 @@ class IHMmain(QWidget):
         self.Button_ResendEmail.setStyleSheet('QToolTip {background-color: black; color: white;border: black solid 1px}')
 
         self.Button_ConfirmacaoDeEmail = QPushButton('Confirmar')
-        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage('ImportFromExcel'))
+        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ImportandoDadosExcel'].page_id))
         self.Button_ConfirmacaoDeEmail.setFont(self.font16)
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
@@ -2502,13 +2503,13 @@ class IHMmain(QWidget):
         self.Label_UserEmail.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Button_MudarEmail = QPushButton("Mudar o email")
-        self.Button_MudarEmail.pressed.connect(lambda: self.CreatePage('14'))
+        self.Button_MudarEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MudarEmail'].page_id))
         self.Button_MudarEmail.setStyleSheet('background-color: rgb(10, 10, 20); color: white')
         self.Button_MudarEmail.setFont(self.font12)
         self.Button_MudarEmail.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.Button_MudarSenha = QPushButton("Mudar a senha")
-        self.Button_MudarSenha.pressed.connect(lambda: self.CreatePage('15'))
+        self.Button_MudarSenha.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MudarSenha'].page_id))
         self.Button_MudarSenha.setStyleSheet('background-color: rgb(10, 10, 20); color: white')
         self.Button_MudarSenha.setFont(self.font12)
         self.Button_MudarSenha.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -2520,7 +2521,7 @@ class IHMmain(QWidget):
         self.Button_MudarPath.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.Button_EndAccount = QPushButton('Encerrar a conta')
-        self.Button_EndAccount.pressed.connect(lambda: self.CreatePage('16'))
+        self.Button_EndAccount.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ConfirmarEncerrarConta'].page_id))
         self.Button_EndAccount.setStyleSheet('background-color: rgb(20, 10, 10); color: white')
         self.Button_EndAccount.setFixedHeight(40)
         self.Button_EndAccount.setIconSize(QSize(35, 35))
@@ -2597,11 +2598,11 @@ class IHMmain(QWidget):
         self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_Email = QLineEdit()
-        self.TextBox_Email.returnPressed.connect(lambda: self.CreatePage('17a'))
+        self.TextBox_Email.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ConfirmacaoEmailPosMudanca'].page_id))
         self.TextBox_Email.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Button_ConfirmacaoDeEmail = QPushButton('Seguinte')
-        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage('17a'))
+        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ConfirmacaoEmailPosMudanca'].page_id))
         self.Button_ConfirmacaoDeEmail.setFont(self.font16)
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -2707,7 +2708,7 @@ class IHMmain(QWidget):
 
         returnValue = MessageBox_Msg1.exec()
         if returnValue == QMessageBox.Yes:
-            self.CreatePage('17b')
+            self.CreatePage(PAGE_BY_NAME['ConfirmacaoLogout'].page_id)
 
         self.unsetCursor()
 
@@ -2810,7 +2811,7 @@ class IHMmain(QWidget):
         self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_CodigoDeConfirmacao = QLineEdit()
-        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage('0'))
+        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
         self.TextBox_CodigoDeConfirmacao.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Button_ResendEmail = QPushButton("Reenviar email")
@@ -2823,7 +2824,7 @@ class IHMmain(QWidget):
         self.Button_ResendEmail.setStyleSheet('QToolTip {background-color: black; color: white;border: black solid 1px}')
 
         self.Button_ConfirmacaoDeEmail = QPushButton('Encerrar conta')
-        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage('0'))
+        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
         self.Button_ConfirmacaoDeEmail.setFont(self.font16)
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
@@ -3061,7 +3062,7 @@ class IHMmain(QWidget):
     def CreatePageInfo27(self): MessageBox_Msg1 = QMessageBox.about(self,'Informação',"                                             Ativos Internacionais\n\nNada mais rentável do que negócios em dólar.\nProteção à crises locais.\n\nO que olhar:\nLucratividade, endividamento, preço, crescimento, governança corporativa.\n\nChecklist:\nP/L; PEG RATIO; P/VP; ROE; ROA; ROIC; MG. BRUTA; MG. LUCRO;\nDL/PL; DL/EBIT; LIQUIDEZ CORRENTE; DIVIDA BRUTA/EBIT;\nCAGR EBIT; CAGR LUCRO; SALDO DOS ACIONISTAS.\n\n                                                 Criptomoedas\n\nExposição de altíssimo risco.\nMuito volátil, aplicação convexa.\n\nDica de estratégia saudável:\n50 a 60% em BTC\n10% em ETH\n10% em BNB\nO restante divide-se nas pimentinhas.")
 
     def UpdatePage(self):
-        if self.PageID == '18':
+        if self.PageID== PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id:
             UserCoin = self.DBManager.GetCorretoraCoinCurrency()
             corretora = self.ComboBox_Corretoras.currentText()
             self.idxCorretora = self.ComboBox_Corretoras.currentIndex()
@@ -3075,7 +3076,7 @@ class IHMmain(QWidget):
             self.TextBox_Msg5.setText(UserCoin+' '+str(valor))
             if valor >= 0: self.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: green;}')
             else: self.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: orange;}')
-        elif self.PageID == '19':
+        elif self.PageID== PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id:
             UserCoin = self.DBManager.GetCorretoraCoinCurrency()
             corretora = self.ComboBox_Corretoras.currentText()
             self.Label_Title2.setText(corretora)
@@ -3088,22 +3089,22 @@ class IHMmain(QWidget):
             self.TextBox_Msg5.setText(UserCoin+' '+str(valor))
             if valor >= 0: self.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: green;}')
             else: self.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: orange;}')
-        elif self.PageID == 'Bancos':
+        elif self.PageID== PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id:
             self.idxBanco = self.ComboBox_Bancos.currentIndex()
             self.Label_Title2.setText(self.ComboBox_Bancos.currentText())
             self.TextBox_Msg2.setText(self.DBManager.GetBancoCoinCurrency(self.ComboBox_Bancos.currentText())+' '+str(self.DBManager.GetValorEmContaCorrente_Banco(self.ComboBox_Bancos.currentText())))
             self.Label_CC.setText("Valor atualizado ("+self.DBManager.GetBancoCoinCurrency(self.ComboBox_Bancos.currentText())+")")
-        elif self.PageID == '23':
+        elif self.PageID== PAGE_BY_NAME['RegistrosBolsa'].page_id:
             self.Label_Msg1.setText('Operações realizadas com '+self.ComboBox_Ativos.currentText())
             self.HMI_Trades.HMI_Trades_Bolsa.CreateTable_23_1() # Table_Operacoes_Realizadas_com_AtivoHeader
             self.HMI_Trades.HMI_Trades_Bolsa.CreateTable_23_2() # Table_Operacoes_Realizadas_com_Ativo (Criada com uma thread)
             self.idxAtivo = self.ComboBox_Ativos.currentIndex()
             self.TextBox_Msg2.setText(str(self.DBManager.GetEstoque()))
-        elif self.PageID == '24':
+        elif self.PageID== PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id:
             self.ComboBox_Dia.clear()
             for idx, dia in enumerate(range(1,monthrange(int(self.ComboBox_Ano.currentText()),int(self.ComboBox_Mes.currentText()))[1]+1)):
                 self.ComboBox_Dia.addItem(str(dia))
-        elif self.PageID == '26':
+        elif self.PageID== PAGE_BY_NAME['AdicionarNovoAtivo'].page_id:
             self.ComboBox_SubtipoDeAtivo.clear()
             for idx, Subtipo in enumerate(self.DBManager.GetSubtiposDeAtivo()):
                 self.ComboBox_SubtipoDeAtivo.addItem(Subtipo)
@@ -3122,7 +3123,7 @@ class IHMmain(QWidget):
                 self.ComboBox_SetorAtivo.setCurrentIndex(self.idxSetorAtivo)
             if self.ComboBox_TipoDeAtivo.currentText() == "Real Estate":
                 self.ComboBox_SetorAtivo.setCurrentIndex(self.ComboBox_SetorAtivo.count()-1)
-        elif self.PageID == '27':
+        elif self.PageID== PAGE_BY_NAME['RenomearAtivo'].page_id:
             self.ComboBox_SubtipoDeAtivo.clear()
             for idx, Subtipo in enumerate(self.DBManager.GetSubtiposDeAtivo()):
                 self.ComboBox_SubtipoDeAtivo.addItem(Subtipo)
@@ -3141,16 +3142,16 @@ class IHMmain(QWidget):
                 self.ComboBox_SetorAtivo.setCurrentIndex(self.idxSetorAtivo)
             if self.ComboBox_TipoDeAtivo.currentText() == "Real Estate":
                 self.ComboBox_SetorAtivo.setCurrentIndex(self.ComboBox_SetorAtivo.count()-1)
-        elif self.PageID == '28':
+        elif self.PageID== PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id:
             self.ComboBox_Dia.clear()
             for idx, dia in enumerate(range(1,monthrange(int(self.ComboBox_Ano.currentText()),int(self.ComboBox_Mes.currentText()))[1]+1)):
                 self.ComboBox_Dia.addItem(str(dia))
-        elif self.PageID == '36a':
+        elif self.PageID== PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id:
             self.ComboBox_Dia.clear()
             for idx, dia in enumerate(range(1,monthrange(int(self.ComboBox_Ano.currentText()),int(self.ComboBox_Mes.currentText()))[1]+1)):
                 self.ComboBox_Dia.addItem(str(dia))
 
-        elif self.PageID == '46':
+        elif self.PageID== PAGE_BY_NAME['AcoesNegocios'].page_id:
             UserCoin = self.DBManager.GetUserCoinCurrency()
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
@@ -3191,7 +3192,7 @@ class IHMmain(QWidget):
             self.GraphWidget_Subtipos = self.HMI_ARCA.CreateGraph_Page46_Subtipos()
             self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
-        elif self.PageID == '47':
+        elif self.PageID== PAGE_BY_NAME['RealEstate'].page_id:
             UserCoin = self.DBManager.GetUserCoinCurrency()
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
@@ -3232,7 +3233,7 @@ class IHMmain(QWidget):
             self.GraphWidget_Subtipos = self.HMI_ARCA.CreateGraph_Page47_Subtipos()
             self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
-        elif self.PageID == '48':
+        elif self.PageID== PAGE_BY_NAME['Caixa'].page_id:
             UserCoin = self.DBManager.GetUserCoinCurrency()
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
@@ -3273,7 +3274,7 @@ class IHMmain(QWidget):
             self.GraphWidget_Subtipos = self.HMI_ARCA.CreateGraph_Page48_Subtipos()
             self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
-        elif self.PageID == '49':
+        elif self.PageID== PAGE_BY_NAME['AtivosInternacionais'].page_id:
             UserCoin = self.DBManager.GetUserCoinCurrency()
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
@@ -3318,7 +3319,7 @@ class IHMmain(QWidget):
             self.GraphWidget_Subtipos = self.HMI_ARCA.CreateGraph_Page49_Subtipos()
             self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
-        elif self.PageID == '50':
+        elif self.PageID== PAGE_BY_NAME['CriptoARCA'].page_id:
             UserCoin = self.DBManager.GetUserCoinCurrency()
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
@@ -3358,7 +3359,7 @@ class IHMmain(QWidget):
 
     def EnableAllButtons(self, condition = True):
         """Ferramentas"""
-        if self.PageID == '28':
+        if self.PageID== PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id:
             self.Button_Compra.setEnabled(condition)
             self.Button_Venda.setEnabled(condition)
             self.Button_LimparCampos.setEnabled(condition)
@@ -3390,7 +3391,7 @@ class IHMmain(QWidget):
             col.append(HHeader[j])
             coluna.append(col)
 
-        if self.PageIDAux == '45':
+        if self.PageIDAux== PAGE_BY_NAME['InsercaoCotacoesManuais'].page_id:
             col = len(max(coluna[0], key=len))*16 # Ativo
             resposta.append(col)
             col = len(max(coluna[1], key=len))*16 # Data
@@ -3398,13 +3399,13 @@ class IHMmain(QWidget):
             col = len(max(coluna[2], key=len))*16 # Cotação em CURRENCY
             resposta.append(col)
 
-        elif self.PageID == '11':
+        elif self.PageID== PAGE_BY_NAME['ARCA'].page_id:
             col = len(max(coluna[0], key=len))*10 # Corretora
             resposta.append(col)
             col = len(max(coluna[1], key=len))*9 # Conta-corrente
             resposta.append(col)
 
-        elif self.PageID in ['23', '29', '30']:
+        elif self.PageID in [PAGE_BY_NAME['RegistrosBolsa'].page_id, PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id, PAGE_BY_NAME['DeletarOperacoesBolsa'].page_id]:
             col7 = int(self.frameGeometry().width())
             col = len(max(coluna[0], key=len))*10
             col7 -= col
@@ -3437,13 +3438,13 @@ class IHMmain(QWidget):
 
             resposta.append(col7)
 
-        elif self.PageID == '24':
+        elif self.PageID== PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id:
             col = len(max(coluna[0], key=len))*9 # Data
             resposta.append(col)
             col = len(max(coluna[1], key=len))*11 # Valores
             resposta.append(col)
 
-        elif self.PageID in ['40']:
+        elif self.PageID in [PAGE_BY_NAME['RegistrosCripto'].page_id]:
             col8 = int(self.frameGeometry().width())
             col = len(max(coluna[0], key=len))*8
             col8 -= col
@@ -3479,7 +3480,7 @@ class IHMmain(QWidget):
 
             resposta.append(col8)
 
-        elif self.PageID in ['43', '44']:
+        elif self.PageID in [PAGE_BY_NAME['AlterarOperacaoCripto'].page_id, PAGE_BY_NAME['DeletarOperacaoCripto'].page_id]:
             col8 = int(self.frameGeometry().width())
             col = len(max(coluna[0], key=len))*8
             col8 -= col
@@ -3515,7 +3516,7 @@ class IHMmain(QWidget):
 
             resposta.append(col8)
 
-        elif self.PageID == '51':
+        elif self.PageID== PAGE_BY_NAME['Tributacao'].page_id:
             if not self.DTeST_51 == "DTeST":
                 if int(self.frameGeometry().width()*6/20*1.4) < 510:
                     col = len(max(coluna[0], key=len))*4 # MesAno
@@ -3746,7 +3747,7 @@ class IHMmain(QWidget):
                 self.Button_Relogio.deleteLater()
                 self.F_GLayout[0].removeItem(self.HBoxLayout_Data)
             except:pass
-        elif self.PageID in ['28', '29'] and self.PageIDAux == '':
+        elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id, PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id] and self.PageIDAux == '':
             try:
                 self.Button_Calendario.deleteLater()
                 self.Button_Relogio.deleteLater()
@@ -3775,7 +3776,7 @@ class IHMmain(QWidget):
                 self.Button_Info8.deleteLater()
                 self.F_GLayout[0].removeItem(self.HBoxLayout_Obs)
             except: pass
-        elif self.PageID in ['36a', '36b'] and self.PageIDAux == '':
+        elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id, PAGE_BY_NAME['AlterarNovaOperacaoManualBolsa'].page_id] and self.PageIDAux == '':
             try:
                 self.Button_Calendario.deleteLater()
                 self.Button_Relogio.deleteLater()
@@ -3800,7 +3801,7 @@ class IHMmain(QWidget):
                 self.Button_Info8.deleteLater()
                 self.F_GLayout[0].removeItem(self.HBoxLayout_Obs)
             except: pass
-        elif self.PageID in ['41', '43'] and self.PageIDAux == '':
+        elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id, PAGE_BY_NAME['AlterarOperacaoCripto'].page_id] and self.PageIDAux == '':
             try:
                 self.Button_Calendario.deleteLater()
                 self.Button_Relogio.deleteLater()
@@ -3886,7 +3887,7 @@ class IHMmain(QWidget):
         self.Button_Return.setToolTip(r"Voltar")
 
         self.Button_Home = QPushButton()
-        self.Button_Home.pressed.connect(lambda: self.CreatePage('1'))
+        self.Button_Home.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
         self.Button_Home.setFixedSize(40,40)
         self.Button_Home.setIconSize(QSize(35, 35))
         self.Button_Home.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -3941,7 +3942,7 @@ class IHMmain(QWidget):
 
         self.Button_Sair = QPushButton()
         self.Button_Sair.setToolTip(r"Sair")
-        self.Button_Sair.pressed.connect(lambda: self.CreatePage('0'))
+        self.Button_Sair.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
         self.Button_Sair.setFixedSize(40,40)
         self.Button_Sair.setIconSize(QSize(35, 35))
         self.Button_Sair.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -3950,7 +3951,7 @@ class IHMmain(QWidget):
 
         self.Button_AttCotacoesManuais = QPushButton()
         self.Button_AttCotacoesManuais.setToolTip(r"Atualizar cotações manuais (C)")
-        self.Button_AttCotacoesManuais.pressed.connect(lambda: self.CreatePage('45'))
+        self.Button_AttCotacoesManuais.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['InsercaoCotacoesManuais'].page_id))
         self.Button_AttCotacoesManuais.setFixedSize(40,40)
         self.Button_AttCotacoesManuais.setIconSize(QSize(35, 35))
         self.Button_AttCotacoesManuais.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -3971,7 +3972,7 @@ class IHMmain(QWidget):
 
         self.Button_Perfil = QPushButton()
         self.Button_Perfil.setToolTip(r"Perfil e ferramentas")
-        self.Button_Perfil.pressed.connect(lambda: self.CreatePage('9'))
+        self.Button_Perfil.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Perfil'].page_id))
         self.Button_Perfil.setFixedSize(40,40)
         self.Button_Perfil.setIconSize(QSize(35, 35))
         self.Button_Perfil.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -3985,7 +3986,7 @@ class IHMmain(QWidget):
         except: self.Button_Perfil.setIcon(QIcon("./images/ProfilePhoto.jpg"))
 
         self.Button_Currency = QPushButton('Moeda corrente: '+self.DBManager.GetUserCoinCurrency())
-        self.Button_Currency.pressed.connect(lambda: self.CreatePage('ChooseCurrency'))
+        self.Button_Currency.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['EscolhaMoeda'].page_id))
         self.Button_Currency.setFixedHeight(40)
         self.Button_Currency.setIconSize(QSize(35, 35))
         self.Button_Currency.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -3994,11 +3995,11 @@ class IHMmain(QWidget):
 
         self.HBoxLayout_Header = QHBoxLayout()
 
-        if self.PageID == '0': pass # Essa não tem cabeçalho
+        if self.PageID== PAGE_BY_NAME['Home'].page_id: pass # Essa não tem cabeçalho
 
-        elif self.PageIDAux == '9':
-            if self.PageID in ['28', '29', '34a', '34b', '35a', '35b', '36a', '36b']: self.Button_Return.pressed.connect(lambda: self.CreatePage('23'))
-            elif self.PageID in ['41', '43']: self.Button_Return.pressed.connect(lambda: self.CreatePage('40'))
+        elif self.PageIDAux== PAGE_BY_NAME['Perfil'].page_id:
+            if self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id, PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id, PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id, PAGE_BY_NAME['CotacaoEncontradaManualBolsa'].page_id, PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id, PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id, PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id, PAGE_BY_NAME['AlterarNovaOperacaoManualBolsa'].page_id]: self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id))
+            elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id, PAGE_BY_NAME['AlterarOperacaoCripto'].page_id]: self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id))
             else: self.Button_Return.pressed.connect(lambda: self.CreatePage(self.PageID))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
             self.HMI_ARCA.Flag_RecalcularGraficos = True
@@ -4015,9 +4016,9 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Currency)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageIDAux == '45':
-            if self.PageID in ['28', '29', '34a', '34b', '35a', '35b', '36a', '36b']: self.Button_Return.pressed.connect(lambda: self.CreatePage('23'))
-            elif self.PageID in ['41', '43']: self.Button_Return.pressed.connect(lambda: self.CreatePage('40'))
+        elif self.PageIDAux== PAGE_BY_NAME['InsercaoCotacoesManuais'].page_id:
+            if self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id, PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id, PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id, PAGE_BY_NAME['CotacaoEncontradaManualBolsa'].page_id, PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id, PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id, PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id, PAGE_BY_NAME['AlterarNovaOperacaoManualBolsa'].page_id]: self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id))
+            elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id, PAGE_BY_NAME['AlterarOperacaoCripto'].page_id]: self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id))
             else: self.Button_Return.pressed.connect(lambda: self.CreatePage(self.PageID))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
             self.HMI_ARCA.Flag_RecalcularGraficos = True
@@ -4034,7 +4035,7 @@ class IHMmain(QWidget):
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageIDAux in ['14', '15', '17a', '17b', 'ChooseCurrency']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('9'))
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Perfil'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4049,42 +4050,42 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID == '2' or self.PageID == '3' or self.PageID == '4' or self.PageID == '7':
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('0'))
+        elif self.PageID== PAGE_BY_NAME['AuxilioSenha'].page_id or self.PageID== PAGE_BY_NAME['ImportarUsuario'].page_id or self.PageID== PAGE_BY_NAME['CriarUsuario'].page_id or self.PageID== PAGE_BY_NAME['AlteracaoSenha'].page_id:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
-        elif self.PageID in ['3b']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('3'))
+        elif self.PageID in [PAGE_BY_NAME['ImportacaoUsuario'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ImportarUsuario'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
-        elif self.PageID == '5':
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('0'))
+        elif self.PageID== PAGE_BY_NAME['AnaliseMercado'].page_id:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
-        elif self.PageID == '6':
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('2'))
+        elif self.PageID== PAGE_BY_NAME['RecuperacaoEmail'].page_id:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['AuxilioSenha'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
-        elif self.PageID == '8':
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('4'))
+        elif self.PageID== PAGE_BY_NAME['ConfirmacaoEmailCriar'].page_id:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['CriarUsuario'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
-        elif self.PageID == '1':
+        elif self.PageID== PAGE_BY_NAME['MinhaCarteira'].page_id:
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
@@ -4097,8 +4098,8 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['11', '12']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('1'))
+        elif self.PageID in [PAGE_BY_NAME['ARCA'].page_id, PAGE_BY_NAME['Desempenho'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4113,8 +4114,8 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['46', '47', '48', '49', '50']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('11'))
+        elif self.PageID in [PAGE_BY_NAME['AcoesNegocios'].page_id, PAGE_BY_NAME['RealEstate'].page_id, PAGE_BY_NAME['Caixa'].page_id, PAGE_BY_NAME['AtivosInternacionais'].page_id, PAGE_BY_NAME['CriptoARCA'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ARCA'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4129,8 +4130,8 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['18', '19', 'Bancos']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('10'))
+        elif self.PageID in [PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id, PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id, PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['EdicaoNegociacoes'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4144,8 +4145,8 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['20', '22', '23', '24', '25']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('18'))
+        elif self.PageID in [PAGE_BY_NAME['AdicionarCorretoraBolsa'].page_id, PAGE_BY_NAME['RenomearCorretoraBolsa'].page_id, PAGE_BY_NAME['RegistrosBolsa'].page_id, PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id, PAGE_BY_NAME['SaldoContaCorrenteBolsa'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4159,8 +4160,8 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['26', '27', '28', '29', '30']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('23'))
+        elif self.PageID in [PAGE_BY_NAME['AdicionarNovoAtivo'].page_id, PAGE_BY_NAME['RenomearAtivo'].page_id, PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id, PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id, PAGE_BY_NAME['DeletarOperacoesBolsa'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4174,8 +4175,8 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['31a', '32a', '33a', '34a', '35a']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('26'))
+        elif self.PageID in [PAGE_BY_NAME['NaoImplementada31a'].page_id, PAGE_BY_NAME['NaoImplementada32a'].page_id, '33a', PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id, PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['AdicionarNovoAtivo'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4188,8 +4189,8 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['36a']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('34a'))
+        elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4202,8 +4203,8 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['36b']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('35a'))
+        elif self.PageID in [PAGE_BY_NAME['AlterarNovaOperacaoManualBolsa'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4216,8 +4217,8 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['31b', '32b', '33b', '34b', '35b']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('27'))
+        elif self.PageID in [PAGE_BY_NAME['NaoImplementada31b'].page_id, PAGE_BY_NAME['NaoImplementada32b'].page_id, '33b', PAGE_BY_NAME['CotacaoEncontradaManualBolsa'].page_id, PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['RenomearAtivo'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4230,8 +4231,8 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['37', '39', '40']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('19'))
+        elif self.PageID in [PAGE_BY_NAME['AdicionarCorretoraCripto'].page_id, PAGE_BY_NAME['RenomearCorretoraCripto'].page_id, PAGE_BY_NAME['RegistrosCripto'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4245,8 +4246,8 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['41', '43', '44']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('40'))
+        elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id, PAGE_BY_NAME['AlterarOperacaoCripto'].page_id, PAGE_BY_NAME['DeletarOperacaoCripto'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4261,7 +4262,7 @@ class IHMmain(QWidget):
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in ['42']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('41'))
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4289,8 +4290,8 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['10', '13', '51']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('1'))
+        elif self.PageID in [PAGE_BY_NAME['EdicaoNegociacoes'].page_id, PAGE_BY_NAME['AnaliseMercadoDup'].page_id, PAGE_BY_NAME['Tributacao'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4304,8 +4305,8 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['BancosAdd','BancosDelete','BancosRename']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('Bancos'))
+        elif self.PageID in [PAGE_BY_NAME['AdicionarNovoBanco'].page_id,'BancosDelete',PAGE_BY_NAME['RenomearBanco'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4319,15 +4320,15 @@ class IHMmain(QWidget):
             self.HBoxLayout_Header.addWidget(self.Button_Perfil, Qt.AlignmentFlag.AlignRight)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
-        elif self.PageID in ['3b']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('3'))
+        elif self.PageID in [PAGE_BY_NAME['ImportacaoUsuario'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ImportarUsuario'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
-        elif self.PageID in ['8b']:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage('3b'))
+        elif self.PageID in [PAGE_BY_NAME['ConfirmacaoEmailImportar'].page_id]:
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['ImportacaoUsuario'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -4345,7 +4346,7 @@ class IHMmain(QWidget):
                 self.Button_ShowHideValues.setIcon(QIcon("./images/iconOpenEye.png"))
                 self.TextBox_Patrimonio.setEchoMode(QLineEdit.Normal)
 
-            if self.PageID == '11': # ARCA
+            if self.PageID== PAGE_BY_NAME['ARCA'].page_id: # ARCA
                 try:
                     if self.ShowValues:
                         self.TextBox_Aplicar.setEchoMode(QLineEdit.Normal)
@@ -4395,7 +4396,7 @@ class IHMmain(QWidget):
                     self.HMI_ARCA.CreateTable_11_2() # Table_ContasCorrente (Criada com uma thread)
                 except: pass
 
-            elif self.PageID == '18': # BolsaPage
+            elif self.PageID== PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id: # BolsaPage
                 if self.ShowValues:
                     self.TextBox_Msg2.setEchoMode(QLineEdit.Normal)
                     self.TextBox_Msg3.setEchoMode(QLineEdit.Normal)
@@ -4407,7 +4408,7 @@ class IHMmain(QWidget):
                     self.TextBox_Msg5.setEchoMode(QLineEdit.Password)
                     self.TextBox_Msg6.setEchoMode(QLineEdit.Password)
 
-            elif self.PageID == '19': # CriptomoedasPage
+            elif self.PageID== PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id: # CriptomoedasPage
                 if self.ShowValues:
                     self.TextBox_Msg2.setEchoMode(QLineEdit.Normal)
                     self.TextBox_Msg3.setEchoMode(QLineEdit.Normal)
@@ -4419,32 +4420,32 @@ class IHMmain(QWidget):
                     self.TextBox_Msg5.setEchoMode(QLineEdit.Password)
                     self.TextBox_Msg6.setEchoMode(QLineEdit.Password)
 
-            elif self.PageID == 'Bancos': # BancosPage
+            elif self.PageID== PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id: # BancosPage
                 if self.ShowValues:
                     self.TextBox_Msg2.setEchoMode(QLineEdit.Normal)
                 else:
                     self.TextBox_Msg2.setEchoMode(QLineEdit.Password)
 
-            elif self.PageID == '23': # RegistrosPage
+            elif self.PageID== PAGE_BY_NAME['RegistrosBolsa'].page_id: # RegistrosPage
                 if self.ShowValues:
                     self.TextBox_Msg2.setEchoMode(QLineEdit.Normal) # Estoque
                 else:
                     self.TextBox_Msg2.setEchoMode(QLineEdit.Password) # Estoque
                 self.HMI_Trades.HMI_Trades_Bolsa.CreateTable_23_2() # Table
 
-            elif self.PageID == '24': # Depositos e Saques Page
+            elif self.PageID== PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id: # Depositos e Saques Page
                 if self.ShowValues:
                     self.HMI_Trades.HMI_Trades_Bolsa.CreateTable_24_2() # Table
                 else:
                     self.HMI_Trades.HMI_Trades_Bolsa.CreateTable_24_2() # Table
 
-            elif self.PageID == '25': # Conta-corrente Page
+            elif self.PageID== PAGE_BY_NAME['SaldoContaCorrenteBolsa'].page_id: # Conta-corrente Page
                 if self.ShowValues:
                     self.TextBox_Msg2.setEchoMode(QLineEdit.Normal)
                 else:
                     self.TextBox_Msg2.setEchoMode(QLineEdit.Password)
 
-            elif self.PageID == '40':
+            elif self.PageID== PAGE_BY_NAME['RegistrosCripto'].page_id:
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreateTable_40_2() # Table
 
             elif self.PageID == "46":
@@ -4589,7 +4590,7 @@ class IHMmain(QWidget):
                 self.GraphWidget_Distribuicao = self.HMI_ARCA.CreateGraph_Page50_Distribuicao()
                 self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Distribuicao, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
-            elif self.PageID == '51': # Tributação Page
+            elif self.PageID== PAGE_BY_NAME['Tributacao'].page_id: # Tributação Page
                 if self.ShowValues:
                     self.TextBox_Msg2.setEchoMode(QLineEdit.Normal)
                     self.TextBox_Msg3.setEchoMode(QLineEdit.Normal)
@@ -4682,7 +4683,7 @@ class IHMmain(QWidget):
                                  (img_height + crop_height) // 2)).save(".\\images\\ProfilePhoto_"+self.User+'.jpg', quality=95)
                     except: pass
                 self.unsetCursor()
-                self.CreatePage('9')
+                self.CreatePage(PAGE_BY_NAME['Perfil'].page_id)
 
         elif ButtonPressed == "ExportToExcel":
             if not self.filedialogIsOpen:
@@ -5388,63 +5389,63 @@ class IHMmain(QWidget):
         key = event.key()
         if key == Qt.Key_Escape:
             if self.PageIDAux in ['9', '45']:
-                if self.PageID in ['28', '29', '34a', '34b', '35a', '35b', '36a', '36b']: self.CreatePage('23')
-                elif self.PageID in ['41', '43']: self.CreatePage('40')
+                if self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id, PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id, PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id, PAGE_BY_NAME['CotacaoEncontradaManualBolsa'].page_id, PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id, PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id, PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id, PAGE_BY_NAME['AlterarNovaOperacaoManualBolsa'].page_id]: self.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id)
+                elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id, PAGE_BY_NAME['AlterarOperacaoCripto'].page_id]: self.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id)
                 else: self.CreatePage(self.PageID)
             elif self.PageIDAux in ['14', '15', '17a', '17b', 'ChooseCurrency']:
-                self.CreatePage('9')
-            elif self.PageID in ['2', '3', '4', '5', '7']:
-                self.CreatePage('0')
-            elif self.PageID in ['6']:
-                self.CreatePage('2')
-            elif self.PageID in ['8']:
-                self.CreatePage('4')
-            elif self.PageID in ['10', '11', '13', '12', '51']:
-                self.CreatePage('1')
-            elif self.PageID in ['46', '47', '48', '49', '50']:
-                self.CreatePage('11')
-            elif self.PageID in ['18', '19', 'Bancos']:
-                self.CreatePage('10')
+                self.CreatePage(PAGE_BY_NAME['Perfil'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['AuxilioSenha'].page_id, PAGE_BY_NAME['ImportarUsuario'].page_id, PAGE_BY_NAME['CriarUsuario'].page_id, PAGE_BY_NAME['AnaliseMercado'].page_id, PAGE_BY_NAME['AlteracaoSenha'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['Home'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['RecuperacaoEmail'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['AuxilioSenha'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['ConfirmacaoEmailCriar'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['CriarUsuario'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['EdicaoNegociacoes'].page_id, PAGE_BY_NAME['ARCA'].page_id, PAGE_BY_NAME['AnaliseMercadoDup'].page_id, PAGE_BY_NAME['Desempenho'].page_id, PAGE_BY_NAME['Tributacao'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['AcoesNegocios'].page_id, PAGE_BY_NAME['RealEstate'].page_id, PAGE_BY_NAME['Caixa'].page_id, PAGE_BY_NAME['AtivosInternacionais'].page_id, PAGE_BY_NAME['CriptoARCA'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['ARCA'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id, PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id, PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['EdicaoNegociacoes'].page_id)
             elif self.PageID in['BancosAdd','BancosRename']:
-                self.CreatePage('Bancos')
-            elif self.PageID in ['20', '22', '23', '24', '25']:
-                self.CreatePage('18')
-            elif self.PageID in ['26', '27', '28', '29', '30']:
-                self.CreatePage('23')
-            elif self.PageID in ['31a', '32a', '33a', '34a', '35a']:
-                self.CreatePage('26')
-            elif self.PageID in ['36a']:
-                self.CreatePage('34a')
-            elif self.PageID in ['36b']:
-                self.CreatePage('35a')
-            elif self.PageID in ['31b', '32b', '33b', '34b', '35b']:
-                self.CreatePage('27')
-            elif self.PageID in ['37', '39', '40']:
-                self.CreatePage('19')
-            elif self.PageID in ['41', '43', '44']:
-                self.CreatePage('40')
+                self.CreatePage(PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['AdicionarCorretoraBolsa'].page_id, PAGE_BY_NAME['RenomearCorretoraBolsa'].page_id, PAGE_BY_NAME['RegistrosBolsa'].page_id, PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id, PAGE_BY_NAME['SaldoContaCorrenteBolsa'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['AdicionarNovoAtivo'].page_id, PAGE_BY_NAME['RenomearAtivo'].page_id, PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id, PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id, PAGE_BY_NAME['DeletarOperacoesBolsa'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['NaoImplementada31a'].page_id, PAGE_BY_NAME['NaoImplementada32a'].page_id, '33a', PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id, PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['AdicionarNovoAtivo'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['AlterarNovaOperacaoManualBolsa'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['NaoImplementada31b'].page_id, PAGE_BY_NAME['NaoImplementada32b'].page_id, '33b', PAGE_BY_NAME['CotacaoEncontradaManualBolsa'].page_id, PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['RenomearAtivo'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['AdicionarCorretoraCripto'].page_id, PAGE_BY_NAME['RenomearCorretoraCripto'].page_id, PAGE_BY_NAME['RegistrosCripto'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id, PAGE_BY_NAME['AlterarOperacaoCripto'].page_id, PAGE_BY_NAME['DeletarOperacaoCripto'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id)
             elif self.PageID in ['42']:
-                self.CreatePage('41')
+                self.CreatePage(PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id)
             elif self.PageID in ['34c', '35c']:
                 self.CreatePage('42')
-            elif self.PageID in ['3b']:
-                self.CreatePage('3')
-            elif self.PageID in ['8b']:
-                self.CreatePage('3b')
+            elif self.PageID in [PAGE_BY_NAME['ImportacaoUsuario'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['ImportarUsuario'].page_id)
+            elif self.PageID in [PAGE_BY_NAME['ConfirmacaoEmailImportar'].page_id]:
+                self.CreatePage(PAGE_BY_NAME['ImportacaoUsuario'].page_id)
         elif key == Qt.Key_H: self.OnButtonPressed('ShowHideValues')
-        elif key == Qt.Key_P: self.CreatePage('9')
-        elif key == Qt.Key_C: self.CreatePage('45')
-        elif key == Qt.Key_M: self.CreatePage('1')
-        elif key == Qt.Key_N: self.CreatePage('10')
-        elif key == Qt.Key_T: self.CreatePage('51')
-        elif key == Qt.Key_A: self.CreatePage('11')
-        elif key == Qt.Key_D: self.CreatePage('12')
+        elif key == Qt.Key_P: self.CreatePage(PAGE_BY_NAME['Perfil'].page_id)
+        elif key == Qt.Key_C: self.CreatePage(PAGE_BY_NAME['InsercaoCotacoesManuais'].page_id)
+        elif key == Qt.Key_M: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id)
+        elif key == Qt.Key_N: self.CreatePage(PAGE_BY_NAME['EdicaoNegociacoes'].page_id)
+        elif key == Qt.Key_T: self.CreatePage(PAGE_BY_NAME['Tributacao'].page_id)
+        elif key == Qt.Key_A: self.CreatePage(PAGE_BY_NAME['ARCA'].page_id)
+        elif key == Qt.Key_D: self.CreatePage(PAGE_BY_NAME['Desempenho'].page_id)
 
     #%% Resizing HMI
     def eventFilter(self, obj, event): # Função pra redimensionar alguns elementos do IHM dinamicamente
         if event.type() == QEvent.Resize:
             try:
-                if self.PageIDAux == '9':
+                if self.PageIDAux== PAGE_BY_NAME['Perfil'].page_id:
                     self.Button_ProfilePhoto.setFixedSize(int(self.frameGeometry().width()/8),int(self.frameGeometry().width()/8))
                     self.Button_ProfilePhoto.setIconSize(QSize(int(self.frameGeometry().width()/8*.95),int(self.frameGeometry().width()/8*.95)))
 
@@ -5454,7 +5455,7 @@ class IHMmain(QWidget):
                     self.Button_ExportDBToExcel.setFixedSize(int(self.frameGeometry().width()*15/20/2),int(self.frameGeometry().height()-160))
                     self.Button_ExportDBToExcel.setIconSize(QSize(int(self.frameGeometry().width()*15/20/2*.98),int(self.frameGeometry().height())))
 
-                elif self.PageIDAux == '45':
+                elif self.PageIDAux== PAGE_BY_NAME['InsercaoCotacoesManuais'].page_id:
                     HHeader = ['Ativo',
                                'Última atualização',
                                'Cotação em '+self.DBManager.GetUserCoinCurrency()]
@@ -5462,7 +5463,7 @@ class IHMmain(QWidget):
                     self.SetTableWidth_45_1(SizeCol0, SizeCol1, SizeCol2)
                     self.Table_CotaçõesManuais.setFixedHeight(int(self.frameGeometry().height()*6/10))
 
-                elif self.PageID == '0': # Home Page Not Logged In
+                elif self.PageID== PAGE_BY_NAME['Home'].page_id: # Home Page Not Logged In
                     self.Button_Mercado.setFixedSize(int(self.frameGeometry().width()*3/4*.9),int(self.frameGeometry().height()/4*.95))
                     self.Movie_Mercado.setScaledSize(QSize().scaled(int(self.frameGeometry().width()*3/4*.90),int(self.frameGeometry().height()*3/4*.95), Qt.KeepAspectRatio))
                     self.TextBox_NomeDeUsuario.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -5471,7 +5472,7 @@ class IHMmain(QWidget):
                     self.Button_LogIn.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_MercadoInvisivel.setFixedSize(int(self.frameGeometry().width()*3/4*.90),int(self.frameGeometry().height()*3/4*.95))
 
-                elif self.PageID == '1':
+                elif self.PageID== PAGE_BY_NAME['MinhaCarteira'].page_id:
                     self.Movie_Negociações.setScaledSize(QSize().scaled(int(self.frameGeometry().width()/3*.80),int(self.frameGeometry().height()/5*.95-20), Qt.KeepAspectRatio))
                     self.Button_Negociações.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
                     self.Button_NegociaçõesInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-160))
@@ -5492,11 +5493,11 @@ class IHMmain(QWidget):
                     self.Button_Mercado.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
                     self.Button_MercadoInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-110))
 
-                elif self.PageID == '3':
+                elif self.PageID== PAGE_BY_NAME['ImportarUsuario'].page_id:
                     self.Button_ExportDBToExcel.setFixedSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height()-160))
                     self.Button_ExportDBToDB.setFixedSize(int(self.frameGeometry().width()*2/5),int(self.frameGeometry().height()-160))
 
-                elif self.PageID == '4':
+                elif self.PageID== PAGE_BY_NAME['CriarUsuario'].page_id:
                     minimo = 24
                     maximo = 36
                     a = (int(self.screen_width*0.5))/((1/minimo)-(1/maximo))
@@ -5534,7 +5535,7 @@ class IHMmain(QWidget):
                     self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '10':
+                elif self.PageID== PAGE_BY_NAME['EdicaoNegociacoes'].page_id:
                     self.Button_TradesCriptomoedasInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-160))
                     self.Button_TradesCriptomoedas.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
                     self.Movie_TradesCriptomoedas.setScaledSize(QSize().scaled(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-160), Qt.KeepAspectRatio))
@@ -5545,19 +5546,19 @@ class IHMmain(QWidget):
                     self.Button_Bancos.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
                     self.Movie_Bancos.setScaledSize(QSize().scaled(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-160), Qt.KeepAspectRatio))
 
-                elif self.PageID == 'Bancos':
+                elif self.PageID== PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id:
                     self.Button_AtuatizarCC.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_AtuatizarCC.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == 'BancosAdd':
+                elif self.PageID== PAGE_BY_NAME['AdicionarNovoBanco'].page_id:
                     self.Button_AdicionarBanco.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_AdicionarBanco.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == 'BancosRename':
+                elif self.PageID== PAGE_BY_NAME['RenomearBanco'].page_id:
                     self.Button_RenomearBanco.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_RenomearBanco.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '11':
+                elif self.PageID== PAGE_BY_NAME['ARCA'].page_id:
                     if self.frameGeometry().width()/self.frameGeometry().height() < 1.9577: proporcao = 1/6
                     elif self.frameGeometry().width()/self.frameGeometry().height() < 2.6202: proporcao = 1/8
                     else: proporcao = 1/10
@@ -5584,11 +5585,11 @@ class IHMmain(QWidget):
 
                     self.Table_ContasCorrente.setFixedHeight(int(self.frameGeometry().height()*3/10))
 
-                elif self.PageID == '12':
+                elif self.PageID== PAGE_BY_NAME['Desempenho'].page_id:
                     self.Movie_Grafico2.setScaledSize(QSize().scaled(int(self.frameGeometry().width()),int(self.frameGeometry().height()/5*.95), Qt.KeepAspectRatio))
                     self.Movie_Grafico1.setScaledSize(QSize().scaled(int(self.frameGeometry().width()),int(self.frameGeometry().height()/5*.95), Qt.KeepAspectRatio))
 
-                elif self.PageID in ['5','13']:
+                elif self.PageID in [PAGE_BY_NAME['AnaliseMercado'].page_id,PAGE_BY_NAME['AnaliseMercadoDup'].page_id]:
                     self.Movie_Mercado1.setScaledSize(QSize().scaled(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-110), Qt.KeepAspectRatio))
                     self.Button_Mercado1.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
                     self.Button_MercadoInvisivel1.setFixedSize(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-110))
@@ -5607,7 +5608,7 @@ class IHMmain(QWidget):
                         self.Button_Mercado2.setFont(self.font24)
                         self.Button_Mercado3.setFont(self.font24)
 
-                elif self.PageID == '15':
+                elif self.PageID== PAGE_BY_NAME['MudarSenha'].page_id:
                     minimo = 23
                     maximo = 43
                     a = (int(self.screen_width*0.5))/((1/minimo)-(1/maximo))
@@ -5629,7 +5630,7 @@ class IHMmain(QWidget):
                     razao = (self.frameGeometry().width()-b)/a
                     self.Label_Senha2.setText('Confirme a senha:'+str((' ')*int(self.frameGeometry().width()*razao)))
 
-                elif self.PageID == '18':
+                elif self.PageID== PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id:
                     self.Movie_AlterarOPBolsa.setScaledSize(QSize().scaled(int(self.frameGeometry().width()*12/20/2),int(self.frameGeometry().height()*7/10*.95-30), Qt.KeepAspectRatio))
                     self.Button_AlterarOPBolsaInvisivel.setFixedSize(int(self.frameGeometry().width()*12/20/2),int(self.frameGeometry().height()*7/10*.95))
                     self.Button_AlterarOPBolsa.setFixedSize(int(self.frameGeometry().width()*12/20/2),int(self.frameGeometry().height()*1/10*.95))
@@ -5640,24 +5641,24 @@ class IHMmain(QWidget):
                     self.Button_ContaCorrenteBolsaInvisivel.setFixedSize(int(self.frameGeometry().width()*12/20/2),int(self.frameGeometry().height()*3/10*.95))
                     self.Button_ContaCorrenteBolsa.setFixedSize(int(self.frameGeometry().width()*12/20/2),int(self.frameGeometry().height()*1/10*.95))
 
-                elif self.PageID == '19':
+                elif self.PageID== PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id:
                     self.Movie_AlterarOPCriptomoedas.setScaledSize(QSize().scaled(int(self.frameGeometry().width()*12/20),int(self.frameGeometry().height()*7/10*.95-60), Qt.KeepAspectRatio))
                     self.Button_AlterarOPCriptomoedasInvisivel.setFixedSize(int(self.frameGeometry().width()*12/20),int(self.frameGeometry().height()*7/10*.95))
                     self.Button_AlterarOPCriptomoedas.setFixedSize(int(self.frameGeometry().width()*12/20),int(self.frameGeometry().height()*1/10*.95))
 
-                elif self.PageID == '20':
+                elif self.PageID== PAGE_BY_NAME['AdicionarCorretoraBolsa'].page_id:
                     self.TextBox_NovaCorretora.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_AdicionarCorretora.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_AdicionarCorretora.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '21':pass
+                elif self.PageID == PAGE_BY_NAME['ConfirmarDeletarCorretoraBolsa'].page_id:pass
 
-                elif self.PageID == '22':
+                elif self.PageID== PAGE_BY_NAME['RenomearCorretoraBolsa'].page_id:
                     self.TextBox_NovoNomeCorretora.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_RenomearCorretora.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_RenomearCorretora.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '23':
+                elif self.PageID== PAGE_BY_NAME['RegistrosBolsa'].page_id:
                     HHeader = ['Data',
                                'Tipo',
                                'Qqt',
@@ -5692,30 +5693,30 @@ class IHMmain(QWidget):
                     self.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(6, SizeCol6)
                     self.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(7, SizeCol7)
 
-                elif self.PageID == '24':
+                elif self.PageID== PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id:
                     self.Button_Voltar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Voltar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Registrar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Registrar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Table_DepositosESaques.setFixedHeight(int(self.frameGeometry().height()*5/20*1.4))
 
-                elif self.PageID == '25':
+                elif self.PageID== PAGE_BY_NAME['SaldoContaCorrenteBolsa'].page_id:
                     self.Button_Voltar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Voltar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Atualizar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Atualizar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '26':
+                elif self.PageID== PAGE_BY_NAME['AdicionarNovoAtivo'].page_id:
                     self.TextBox_NomeNovoAtivo.setFixedWidth(int(self.frameGeometry().width()/8*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '27':
+                elif self.PageID== PAGE_BY_NAME['RenomearAtivo'].page_id:
                     self.TextBox_NovoNomeAtivo.setFixedWidth(int(self.frameGeometry().width()/8*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '28':
+                elif self.PageID== PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id:
                     self.TextBox_Qqt.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
                     self.TextBox_Preco.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
                     self.TextBox_Corretagem.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
@@ -5725,7 +5726,7 @@ class IHMmain(QWidget):
                     self.Button_RegistrarOperacao.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_RegistrarOperacao.setFixedSize(int(self.frameGeometry().width()*2/10*0.9),int(self.frameGeometry().width()*1/10*0.9))
 
-                elif self.PageID == '29':
+                elif self.PageID== PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id:
                     HHeader = ['Data',
                                'Tipo',
                                'Qqt',
@@ -5770,7 +5771,7 @@ class IHMmain(QWidget):
                     self.TextBox_TaxaB3.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
                     self.TextBox_Obs.setFixedWidth(int(self.frameGeometry().width()*4/7*0.9))
 
-                elif self.PageID == '30':
+                elif self.PageID== PAGE_BY_NAME['DeletarOperacoesBolsa'].page_id:
                     HHeader = ['Data',
                                'Tipo',
                                'Qqt',
@@ -5810,37 +5811,37 @@ class IHMmain(QWidget):
                     self.Button_DeletarOperacoes.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_DeletarOperacoes.setFixedSize(int(self.frameGeometry().width()*2/10*0.9),int(self.frameGeometry().width()*1/10*0.9))
 
-                elif self.PageID == '31a':
+                elif self.PageID== PAGE_BY_NAME['NaoImplementada31a'].page_id:
                     self.TextBox_NovoTipoDeAtivo.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '31b':
+                elif self.PageID== PAGE_BY_NAME['NaoImplementada31b'].page_id:
                     self.TextBox_NovoTipoDeAtivo.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '32a':
+                elif self.PageID== PAGE_BY_NAME['NaoImplementada32a'].page_id:
                     self.TextBox_NovoSubtipoDeAtivo.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '32b':
+                elif self.PageID== PAGE_BY_NAME['NaoImplementada32b'].page_id:
                     self.TextBox_NovoSubtipoDeAtivo.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '33a':
+                elif self.PageID == PAGE_BY_NAME['33a'].page_id:
                     self.TextBox_NovoTipoSetor.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '33b':
+                elif self.PageID == PAGE_BY_NAME['33b'].page_id:
                     self.TextBox_NovoSetor.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Seguinte.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Seguinte.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '34a':
+                elif self.PageID== PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id:
                     self.Button_Voltar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Voltar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_AtivarModoManual.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
@@ -5850,7 +5851,7 @@ class IHMmain(QWidget):
                     self.Button_Info1.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Info1.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '34b':
+                elif self.PageID== PAGE_BY_NAME['CotacaoEncontradaManualBolsa'].page_id:
                     self.Button_Voltar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Voltar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_AtivarModoManual.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
@@ -5860,21 +5861,21 @@ class IHMmain(QWidget):
                     self.Button_Info1.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Info1.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '35a':
+                elif self.PageID== PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id:
                     self.Button_Voltar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Voltar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_AtivarModoManual.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_AtivarModoManual.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Info1.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
 
-                elif self.PageID == '35b':
+                elif self.PageID== PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id:
                     self.Button_Voltar.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_Voltar.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_AtivarModoManual.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_AtivarModoManual.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
                     self.Button_Info1.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
-                elif self.PageID == '36a':
+                elif self.PageID== PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id:
                     self.TextBox_Modo.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
                     self.TextBox_Qqt.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
                     self.TextBox_Preco.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
@@ -5885,7 +5886,7 @@ class IHMmain(QWidget):
                     self.Button_RegistrarOperacao.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_RegistrarOperacao.setFixedSize(int(self.frameGeometry().width()*2/10*0.9),int(self.frameGeometry().width()*1/10*0.9))
 
-                elif self.PageID == '40':
+                elif self.PageID== PAGE_BY_NAME['RegistrosCripto'].page_id:
                     HHeader = ['Data',
                                'Par',
                                'Tipo',
@@ -5923,7 +5924,7 @@ class IHMmain(QWidget):
                     self.Table_Operacoes_Realizadas.setColumnWidth(7, SizeCol7)
                     self.Table_Operacoes_Realizadas.setColumnWidth(8, SizeCol8)
 
-                elif self.PageID == '41':
+                elif self.PageID== PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id:
                     self.TextBox_Par_Esquerda.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
                     self.TextBox_Par_Direita.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
                     self.TextBox_Qqt.setFixedWidth(int(self.frameGeometry().width()/7*0.9))
@@ -5937,7 +5938,7 @@ class IHMmain(QWidget):
                     self.Button_RegistrarOperacao.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_RegistrarOperacao.setFixedSize(int(self.frameGeometry().width()*2/10*0.9),int(self.frameGeometry().width()*1/10*0.9))
 
-                elif self.PageID == '43':
+                elif self.PageID== PAGE_BY_NAME['AlterarOperacaoCripto'].page_id:
                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreateTable_43_1() # Table_Operacoes_SelecionadasHeader
                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreateTable_43_2() # Table_Operacoes_Selecionadas (Mostra apenas o item selecionado)
 
@@ -5953,7 +5954,7 @@ class IHMmain(QWidget):
                     self.Button_RegistrarOperacao.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_RegistrarOperacao.setFixedSize(int(self.frameGeometry().width()*2/10*0.9),int(self.frameGeometry().width()*1/10*0.9))
 
-                elif self.PageID == '44':
+                elif self.PageID== PAGE_BY_NAME['DeletarOperacaoCripto'].page_id:
                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreateTable_44_1() # Table_Operacoes_SelecionadasHeader
                     self.HMI_Trades.HMI_Trades_Criptomoedas.CreateTable_44_2() # Table_Operacoes_Selecionadas (Mostra apenas o item selecionado)
 
@@ -5962,7 +5963,7 @@ class IHMmain(QWidget):
                     self.Button_DeletarOperacoes.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_DeletarOperacoes.setFixedSize(int(self.frameGeometry().width()*2/10*0.9),int(self.frameGeometry().width()*1/10*0.9))
 
-                elif self.PageID == '51':
+                elif self.PageID== PAGE_BY_NAME['Tributacao'].page_id:
                     self.Table_Tributacao.setFixedHeight(int(self.frameGeometry().height()*6/20*1.4))
                     if not self.DTeST_51 == "DTeST":
                         HHeader = ['Mês/Ano',
