@@ -1,8 +1,6 @@
-import pytest
-
 from tests.libs.logging_setup import logger
 import tests.libs.ui_helpers as ui
-from ui.pages import PAGE_BY_NAME, PAGE_BY_ID
+from ui.pages import PAGE_BY_ID
 
 TIME_TO_VISUAL_CHECK = 1 # Seconds
 
