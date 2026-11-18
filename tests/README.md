@@ -4,9 +4,9 @@
 pip install pytest pytest-qt
 
 ## How to launch
-pytest "tests/ui/workflow/test_workflow.py::test_explore_before_login" --html=test_results.html --self-contained-html -v
-pytest "tests/ui/workflow/test_workflow.py::test_explore_before_login" --html=test_results.html --self-contained-html -v --visual-check --no-teardown   # Works only when a single test has ran
-pytest "tests/ui/workflow/test_workflow.py::test_explore_before_login" --html=test_results.html --self-contained-html -v --visual-check --no-teardown --use-official-db   # Useful when we want to perfom manual tests in a specific page, so a test lead us there faster
+pytest "tests/ui/workflow/test_workflow.py::test_explore_parent_home_no_logging" --html=test_results.html --self-contained-html -v
+pytest "tests/ui/workflow/test_workflow.py::test_explore_parent_home_no_logging" --html=test_results.html --self-contained-html -v --visual-check --no-teardown   # Works only when a single test has ran
+pytest "tests/ui/workflow/test_workflow.py::test_explore_parent_home_no_logging" --html=test_results.html --self-contained-html -v --visual-check --no-teardown --use-official-db   # Useful when we want to perfom manual tests in a specific page, so a test lead us there faster
 pytest "tests/ui/workflow/test_workflow.py" --html=test_results.html --self-contained-html -v --visual-check
 pytest "tests" --html=test_results.html --self-contained-html -v --visual-check   # Complete coverage, with visual checking by the tester
 pytest "tests" --html=test_results.html --self-contained-html -v   # For faster results, no visual checking
