@@ -150,8 +150,6 @@ The `Guia de Desenvolvimento` folder contains developer notes, sequence diagrams
 
 ## TODOs
 (Architecture is the most important thing to modify today, so to be easier to give maintenance to the project)
-- Mon graphical_thread crée la QApplication et lance la boucle d’événements (exec_()) dans run(). Du coup, je ne peux pas instancier la fenêtre dans un test sans bloquer. De plus, Qt exige que la QApplication et les widgets vivent dans le thread principal : lancer l’UI dans un thread secondaire est fragile.
-Je dois séparer la fenêtre du lancement
 - Create Functional Tests for the UI
 - Create Functional Tests for the APP
 - Create Unit Tests
