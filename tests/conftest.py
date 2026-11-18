@@ -79,6 +79,10 @@ def _wait_until_window_closed(window):
     loop.exec_()
 
 @pytest.fixture(scope="function", autouse=False)
+def for_visual_check(request: pytest.FixtureRequest):
+    yield request.config.getoption("--visual-check", default=False)
+
+@pytest.fixture(scope="function", autouse=False)
 def login():
     """
     Fixture to log in to the application.

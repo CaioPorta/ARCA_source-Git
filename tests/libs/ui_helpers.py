@@ -149,7 +149,7 @@ def go_Criar_usuario_without_login_page(window, qtbot):
     qtbot.mouseClick(window.Button_CriarUsuario, Qt.LeftButton)
     assert window.PageID == '4', f"Expected the create-user page (PageID '4'), got '{window.PageID}'."
 
-def go_back_page(window, qtbot):
+def go_previous_page(window, qtbot):
     """
     Click the header return button to go back to the previous page.
 
