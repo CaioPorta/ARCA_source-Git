@@ -19,6 +19,7 @@ def test_launch_app_and_go_analise_go_back(window, qtbot, request: pytest.Fixtur
     """
     for_visual_check = request.config.getoption("--visual-check", default=False)
 
+    if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     # The app is launched on the not-logged-in home page (PageID '0').
     assert window.PageID == '0', f"Expected PageID '0' on launch, but got '{window.PageID}'."
     logger.info(f"App launched on home page (PageID={window.PageID}).")
@@ -30,9 +31,9 @@ def test_launch_app_and_go_analise_go_back(window, qtbot, request: pytest.Fixtur
 
     # Click "Análise do Mercado" to open the analysis tab.
     ui.go_Analise_without_login_page(window, qtbot)
-    assert window.PageID == '5', f"Expected PageID '5' for Análise do Mercado page, but got '{window.PageID}'."
-    if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     logger.info(f"Navigated to Análise do Mercado (PageID={window.PageID}).")
+    if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
+    assert window.PageID == '5', f"Expected PageID '5' for Análise do Mercado page, but got '{window.PageID}'."
 
     # Regression guard: navigating must not open a second application main window.
     current_windows = ui._count_main_windows()
@@ -43,8 +44,8 @@ def test_launch_app_and_go_analise_go_back(window, qtbot, request: pytest.Fixtur
 
     # Return to the home page.
     ui.go_back_page(window, qtbot)
-    if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     logger.info(f"Returned to home page (PageID={window.PageID}).")
+    if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
 
     assert window.PageID == '0'
     logger.info("Test passed: analysis page opened and returned home successfully.")
