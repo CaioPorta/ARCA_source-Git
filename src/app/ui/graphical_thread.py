@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QCoreApplication
 
 from core import DBManager
-from ui.before_login.HMI import IHMmain
+from ui.HMI import IHMmain
 
 
 class graphical_thread:

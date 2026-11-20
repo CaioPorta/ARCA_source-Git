@@ -36,10 +36,10 @@ import ui.desempenho.HMI_Desempenho_page as HMI_Desempenho_page
 import ui.mercado.HMI_Mercado_page as HMI_Mercado_page
 from ui.pages import PAGE_BY_NAME
 
-from ui.before_login.HMI_PageNavigation import HMI_PageNavigation
-from ui.before_login.HMI_Presentation import HMI_Presentation
-from ui.before_login.HMI_PageBuilders import HMI_PageBuilders
-from ui.before_login.HMI_Events import HMI_Events
+from ui.home_and_parameters.HMI_PageNavigation import HMI_PageNavigation
+from ui.home_and_parameters.HMI_Presentation import HMI_Presentation
+from ui.home_and_parameters.HMI_PageBuilders import HMI_PageBuilders
+from ui.home_and_parameters.HMI_Events import HMI_Events
 
 
 class IHMmain(HMI_PageNavigation, HMI_Presentation, HMI_PageBuilders, HMI_Events, QWidget):
