@@ -24,7 +24,7 @@ APPS_DIR, ASSETS_DIR = _locate()
 sys.path.insert(0, APPS_DIR)
 os.chdir(ASSETS_DIR)
 
-from ui.HMI import graphical_thread
+from ui.graphical_thread import graphical_thread
 import threading
 
 ThreadLock = threading.Lock()

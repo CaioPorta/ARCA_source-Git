@@ -13,11 +13,11 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QCoreApplication
 
-import core.DBManager as DBManager
+from core import DBManager
 from ui.HMI import IHMmain
 
 
-class graphical_thread():
+class graphical_thread:
     def __init__(self,):
         self.mIHM = None
         self.app = None
