@@ -62,17 +62,20 @@ The app follows a layered design: a PyQt5 GUI front-end, a data-access layer ove
 Within the GUI layer, `src/app/ui/HMI.py` defines the entry point (`graphical_thread`) and composes the main window `IHMmain` from four small mixin modules (one file per concern). This keeps the public surface unchanged while making each UI concern easy to find and maintain — see "IHMmain composition" below.
 
 ```
-ARCA.py  ─────────────▶  HMI.graphical_thread()   (entry point / main window)
-                              │
-        ┌─────────────────────┼──────────────────┐──────────────────────────┐
-        ▼                     ▼                  ▼                          ▼
- DBManager.py       YahooFinance.py       Calcular.py          BackgroundProcesses.py
- (SQLite access)    (market data API)     (financial math)     (Thread / QThread pool)
-        │                                                   │
-        └──────────► HMI sub-modules (pages/UI) ◄───────────┘
-                     HMI_Trades · HMI_Tributacao · HMI_ARCA ·
-                     HMI_Desempenho · HMI_Mercado ·
-                     HMI_Trades_Bolsa · HMI_Trades_Criptomoedas
+ARCA.py  ──▶  ui/graphical_thread.py    (entry point / main window)
+                          │
+                          ▼
+                 ui/HMI.py: IHMmain         (global variables)
+                  ├── HMI_PageNavigation    (page navigation)
+                  ├── HMI_PageBuilders      (page creation)
+                  ├── HMI_Events            (button/slider/event handlers)
+                  └── HMI_Presentation      (display & loading updates)
+                  └── HMI_X_page            (the page X manager)
+                          │
+        ┌─────────────────┼───────────────────────────────┐───────────────────────┐
+        ▼                 ▼                               ▼                       ▼
+  core/DBManager.py   core/YahooFinance.py    core/Calcular.py    core/BackgroundProcesses.py
+  (SQLite access)     (market data API)       (financial math)      (Thread + QThread pool)
 ```
 
 ### IHMmain composition

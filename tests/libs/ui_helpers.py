@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt, QTimer, QEventLoop
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QApplication
 
-from ui.HMI import IHMmain
+from ui.before_login.HMI import IHMmain
 
 
 def _show_click(widget):

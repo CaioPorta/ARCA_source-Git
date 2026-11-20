@@ -18,8 +18,8 @@ from PyQt5.QtCore import (
 
 from ui.pages import PAGE_BY_NAME
 
-import ui.HMI_Trades_Bolsa_page as HMI_Trades_Bolsa_page
-import ui.HMI_Trades_Criptomoedas_page as HMI_Trades_Criptomoedas_page
+import ui.trades.trades_bolsa.HMI_Trades_Bolsa_page as HMI_Trades_Bolsa_page
+import ui.trades.trades_criptomoedas.HMI_Trades_Criptomoedas_page as HMI_Trades_Criptomoedas_page
 
 
 class HMI_Trades(object):

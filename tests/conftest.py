@@ -4,7 +4,7 @@ import pytest
 from PyQt5.QtCore import QEventLoop, QTimer, Qt, qInstallMessageHandler
 from PyQt5.QtWidgets import QApplication
 
-from ui.HMI import IHMmain
+from ui.before_login.HMI import IHMmain
 import tests.libs.ui_helpers as ui
 
 def _suppress_font_database_warning():

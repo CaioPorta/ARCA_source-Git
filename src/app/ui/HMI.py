@@ -29,17 +29,17 @@ import core.DBManager as DBManager
 import core.YahooFinance as YahooFinance
 import core.Calcular as Calcular
 import core.VersionChecker as VersionChecker
-import ui.HMI_Trades_page as HMI_Trades_page
-import ui.HMI_Tributacao_page as HMI_Tributacao_page
-import ui.HMI_ARCA_page as HMI_ARCA_page
-import ui.HMI_Desempenho_page as HMI_Desempenho_page
-import ui.HMI_Mercado_page as HMI_Mercado_page
+import ui.trades.HMI_Trades_page as HMI_Trades_page
+import ui.tributacao.HMI_Tributacao_page as HMI_Tributacao_page
+import ui.arca.HMI_ARCA_page as HMI_ARCA_page
+import ui.desempenho.HMI_Desempenho_page as HMI_Desempenho_page
+import ui.mercado.HMI_Mercado_page as HMI_Mercado_page
 from ui.pages import PAGE_BY_NAME
 
-from ui.HMI_PageNavigation import HMI_PageNavigation
-from ui.HMI_Presentation import HMI_Presentation
-from ui.HMI_PageBuilders import HMI_PageBuilders
-from ui.HMI_Events import HMI_Events
+from ui.before_login.HMI_PageNavigation import HMI_PageNavigation
+from ui.before_login.HMI_Presentation import HMI_Presentation
+from ui.before_login.HMI_PageBuilders import HMI_PageBuilders
+from ui.before_login.HMI_Events import HMI_Events
 
 
 class IHMmain(HMI_PageNavigation, HMI_Presentation, HMI_PageBuilders, HMI_Events, QWidget):
