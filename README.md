@@ -100,27 +100,22 @@ ARCA_source-Git/
 ├── ARCA.py                 # Launcher: fixes sys.path + chdir into assets, then starts GUI
 ├── ARCA.spec               # PyInstaller build config
 ├── requirements.txt        # Python dependencies
-├── .gitignore
 ├── src/
-│   ├── __init__.py
 │   ├── app/
-│   │   ├── __init__.py
-│   │   ├── core/           # backend business logic (package)
-│   │   │   ├── __init__.py
-│   │   │   ├── DBManager.py          # SQLite data-access layer
-│   │   │   ├── YahooFinance.py       # market-data fetching
-│   │   │   ├── Calcular.py           # financial math
-│   │   │   ├── BackgroundProcesses.py  # threading model (Thread / QThread pool)
-│   │   │   └── VersionChecker.py     # online version check
+│   │   ├── core/                         # backend business logic (package)
+│   │   │   ├── DBManager.py              # SQLite data-access layer
+│   │   │   ├── YahooFinance.py           # market-data fetching
+│   │   │   ├── Calcular.py               # financial math
+│   │   │   ├── BackgroundProcesses.py    # threading model (Thread / QThread pool)
+│   │   │   └── VersionChecker.py         # online version check
 │   │   ├── ui/               # PyQt5 front-end (package)
-│   │   │   ├── __init__.py
 │   │   │   ├── HMI.py                    # entry point + composed IHMmain window (see "IHMmain composition")
 │   │   │   ├── pages.py                  # PAGE_BY_NAME / PAGE_BY_ID registry
 │   │   │   ├── graphical_thread.py       # QApplication lifecycle / main-window runner
 │   │   │   ├── home_and_parameters/      # IHMmain mixin modules (one file per concern)
-│   │   │   │   ├── HMI_PageNavigation.py  # CreatePage dispatcher + navigation decisions
-│   │   │   │   ├── HMI_Presentation.py    # page rendering, layout, header, quote tables
-│   │   │   │   ├── HMI_PageBuilders.py    # per-page widget builders (CreatePage0..17)
+│   │   │   │   ├── HMI_PageNavigation.py # CreatePage dispatcher + navigation decisions
+│   │   │   │   ├── HMI_Presentation.py   # page rendering, layout, header, quote tables
+│   │   │   │   ├── HMI_PageBuilders.py   # per-page widget builders (CreatePage0..17)
 │   │   │   │   └── HMI_Events.py         # button/key/event handlers
 │   │   │   ├── arca/                     # core portfolio pages by asset class
 │   │   │   │   └── HMI_ARCA_page.py
@@ -142,8 +137,10 @@ ARCA_source-Git/
 │   │   │       ├── LoadingWindow.py
 │   │   │       ├── RelogioWindow.py
 │   │   │       └── OperacaoRegistradaComSucesso.py
-│   │   └── assets/             # images, sounds, Bonus/, chromedriver.exe
-└── docs/  # TODO
+│   │   └── assets/                       # images, sounds, chromedriver.exe
+└── docs/
+    ├─── Bonus                            # Legacy: How I used to do before this app
+    └─── Guia de Desenvolvimento          # The project HMI arquichecture, some instructions about compiling
 ```
 
 ### Key modules
