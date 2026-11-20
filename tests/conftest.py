@@ -1,12 +1,15 @@
+from tests.libs.logging_setup import logger
 import os
 import sys
 import pytest
 import toml
+import sqlite3
 from PyQt5.QtCore import QEventLoop, QTimer, Qt, qInstallMessageHandler
 from PyQt5.QtWidgets import QApplication
 
 from ui.HMI import IHMmain
 import tests.libs.ui_helpers as ui
+from ui.pages import PAGE_BY_ID
 
 def _suppress_font_database_warning():
     # Headless (offscreen) Qt has no font directory, so it prints a spurious QFontDatabase warning.
@@ -18,7 +21,6 @@ def _suppress_font_database_warning():
         sys.stderr.flush()
 
     qInstallMessageHandler(_handler)
-
 
 def pytest_configure(config):
     # Hide the GUI during normal test runs; reveal it on screen only when --visual-check is passed.
@@ -34,6 +36,17 @@ def pytest_configure(config):
         out_dir = os.path.join(repo_root, "tests", "test_output")
         os.makedirs(out_dir, exist_ok=True)
         config.option.htmlpath = os.path.join(out_dir, os.path.basename(htmlpath))
+
+def _wait_until_window_closed(window):
+    """Block the event loop, keeping the window visible and responsive until the user closes it."""
+    loop = QEventLoop()
+    timer = QTimer()
+    timer.timeout.connect(lambda: (loop.quit() if not window.isVisible() else None))
+    timer.start(200)
+    window.show()
+    window.raise_()
+    window.activateWindow()
+    loop.exec_()
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -67,29 +80,30 @@ def teardown(window, request):
     yield
     ui.go_home(window)
 
-
-def _wait_until_window_closed(window):
-    """Block the event loop, keeping the window visible and responsive until the user closes it."""
-    loop = QEventLoop()
-    timer = QTimer()
-    timer.timeout.connect(lambda: (loop.quit() if not window.isVisible() else None))
-    timer.start(200)
-    window.show()
-    window.raise_()
-    window.activateWindow()
-    loop.exec_()
-
 @pytest.fixture(scope="function", autouse=False)
 def for_visual_check(request: pytest.FixtureRequest):
     yield request.config.getoption("--visual-check", default=False)
 
 @pytest.fixture(scope="function", autouse=False)
-def login(user_info):
+def login(user_info, window, qtbot, request: pytest.FixtureRequest):
     """
     Fixture to log in to the application.
+    Ensures the tester account exists and authenticates through the UI, landing on the logged-in
+    MinaCarteira page so tests can explore the authenticated workflow.
     """
     NomeDeUsuario, Senha, Email = user_info
-    yield Email, NomeDeUsuario
+    
+    expected_page = 'Home'
+    observed_page = PAGE_BY_ID[window.PageID].name
+    assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
+    logger.info(f"[OK] App started on {observed_page} page.")
+    for attr in ('TextBox_NomeDeUsuario', 'TextBox_Senha', 'Button_LogIn'):
+        assert getattr(window, attr, None) is not None, \
+            f"'{attr}' not found; expected the home/login page."
+    window.TextBox_NomeDeUsuario.setText(NomeDeUsuario)
+    window.TextBox_Senha.setText(Senha)
+    qtbot.mouseClick(window.Button_LogIn, Qt.LeftButton)
+    yield NomeDeUsuario, Senha, Email
 
 @pytest.fixture(scope="function", autouse=False)
 def delete_users_db():
@@ -108,13 +122,46 @@ def delete_tester_account():
     """
     pass
 
-@pytest.fixture(scope="function", autouse=False)
-def assure_tester_account_exists():
+@pytest.fixture
+def assure_tester_account_exists(user_info):
     """
     Helper function to assure that the tester account exists in the database.
     Shall be called when argument "--assure-account-exists" is passed to pytest.
     """
-    pass
+    """
+    Create a minimal tester account (Users.db + per-user db) when it does not already exist, so the
+    app can authenticate during tests. Uses os.getcwd() -- redirected to tests/test_output by the
+    session fixture -- as both the Users.db location and the user's Path, which keeps logout's
+    Disconnect() from deleting the account (it only removes the db when Path differs from cwd).
+    """
+    user, password, email = user_info
+    cwd = os.getcwd()
+    users_db = os.path.join(cwd, "Users.db")
+    if not os.path.exists(users_db):
+        conn = sqlite3.connect(users_db)
+        conn.execute("CREATE TABLE IF NOT EXISTS 'Usuários' ('Usuário' TEXT, 'Email' TEXT, 'Path' TEXT)")
+        conn.execute(
+            "INSERT INTO 'Usuários' ('Usuário', 'Email', 'Path') VALUES (?, ?, ?)",
+            (user, email, cwd),
+        )
+        conn.commit()
+        conn.close()
+
+    user_db = os.path.join(cwd, user + ".db")
+    if not os.path.exists(user_db):
+        conn = sqlite3.connect(user_db)
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS 'Perfil' "
+            "('Usuário' TEXT, 'Senha' TEXT, 'Email' TEXT, 'TaxaB3Per' REAL, "
+            "'MoedaCorrente' TEXT, 'GastoMensal' REAL, 'MesesDeReserva' REAL)"
+        )
+        conn.execute(
+            "INSERT INTO 'Perfil' ('Usuário', 'Senha', 'Email', 'TaxaB3Per', 'MoedaCorrente', 'GastoMensal', 'MesesDeReserva') "
+            "VALUES (?, ?, ?, 0.03, 'BRL', 0, 6)",
+            (user, password, email),
+        )
+        conn.commit()
+        conn.close()
 
 @pytest.fixture(scope="function", autouse=False)
 def user_info(request: pytest.FixtureRequest):
