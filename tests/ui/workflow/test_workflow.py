@@ -15,7 +15,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     expected_page = 'Home'
     observed_page = PAGE_BY_ID[window.PageID].name
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
-    logger.info(f"App started on {observed_page} page.")
+    logger.info(f"[OK] App started on {observed_page} page.")
 
     # Non-regression check: always keep 1 window opened
     amount_of_windows = ui._count_main_windows()
@@ -26,7 +26,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     ui.go_Analise_without_login_page(window, qtbot)
     expected_page = 'AnaliseMercado'
     observed_page = PAGE_BY_ID[window.PageID].name
-    logger.info(f"Navigated to {expected_page}.")
+    logger.info(f"[OK] Navigated to {expected_page}.")
     if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
     
@@ -35,6 +35,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     ui.go_previous_page(window, qtbot)
     expected_page = 'Home'
     observed_page = PAGE_BY_ID[window.PageID].name
+    logger.info(f"[OK] Navigated to {expected_page}.")
     if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
 
@@ -43,7 +44,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     ui.go_Esqueci_senha_without_login_page(window, qtbot)
     expected_page = 'AuxilioSenha'
     observed_page = PAGE_BY_ID[window.PageID].name
-    logger.info(f"Navigated to {expected_page}.")
+    logger.info(f"[OK] Navigated to {expected_page}.")
     if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
 
@@ -52,6 +53,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     ui.go_previous_page(window, qtbot)
     expected_page = 'Home'
     observed_page = PAGE_BY_ID[window.PageID].name
+    logger.info(f"[OK] Navigated to {expected_page}.")
     if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
 
@@ -60,7 +62,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     ui.go_Importar_usuario_without_login_page(window, qtbot)
     expected_page = 'ImportarUsuario'
     observed_page = PAGE_BY_ID[window.PageID].name
-    logger.info(f"Navigated to {expected_page}.")
+    logger.info(f"[OK] Navigated to {expected_page}.")
     if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
 
@@ -69,6 +71,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     ui.go_previous_page(window, qtbot)
     expected_page = 'Home'
     observed_page = PAGE_BY_ID[window.PageID].name
+    logger.info(f"[OK] Navigated to {expected_page}.")
     if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
 
@@ -77,7 +80,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     ui.go_Criar_usuario_without_login_page(window, qtbot)
     expected_page = 'CriarUsuario'
     observed_page = PAGE_BY_ID[window.PageID].name
-    logger.info(f"Navigated to {expected_page}.")
+    logger.info(f"[OK] Navigated to {expected_page}.")
     if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
 
@@ -86,6 +89,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     ui.go_previous_page(window, qtbot)
     expected_page = 'Home'
     observed_page = PAGE_BY_ID[window.PageID].name
+    logger.info(f"[OK] Navigated to {expected_page}.")
     if for_visual_check: ui._visual_sleep(TIME_TO_VISUAL_CHECK)
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
 
@@ -104,27 +108,39 @@ def test_explore_parent_minha_carteira(window, assure_tester_account_exists, log
     expected_page = 'MinhaCarteira'
     observed_page = PAGE_BY_ID[window.PageID].name
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
-    logger.info(f"App started on {observed_page} page.")
+    logger.info(f"[OK] App started on {observed_page} page.")
 
-    # <Action> Click "ARCA" button <Action>
+    # <Action> Click "Negociacoes" button <Action>
     # <Result> "ARCA" page shows up <Result>
 
     # <Action> Click "Return" button <Action>
     # <Result> "MinhaCarteira" page shows up <Result>
 
-    # <Action> Click "TODO" button <Action>
+    # <Action> Click "ARCA" button <Action>
     # <Result> "CriarUsuario" page shows up <Result>
 
     # <Action> Click "Return" button <Action>
     # <Result> "MinhaCarteira" page shows up <Result>
     
-    # <Action> Click "TODO" button <Action>
+    # <Action> Click "Tributacao" button <Action>
     # <Result> "CriarUsuario" page shows up <Result>
 
     # <Action> Click "Return" button <Action>
     # <Result> "MinhaCarteira" page shows up <Result>
     
-    # <Action> Click "TODO" button <Action>
+    # <Action> Click "Desempenho" button <Action>
+    # <Result> "CriarUsuario" page shows up <Result>
+
+    # <Action> Click "Return" button <Action>
+    # <Result> "MinhaCarteira" page shows up <Result>
+    
+    # <Action> Click "Analise do Mercado" button <Action>
+    # <Result> "CriarUsuario" page shows up <Result>
+
+    # <Action> Click "Return" button <Action>
+    # <Result> "MinhaCarteira" page shows up <Result>
+    
+    # <Action> Click "Perfil" button <Action>
     # <Result> "CriarUsuario" page shows up <Result>
 
     # <Action> Click "Return" button <Action>
