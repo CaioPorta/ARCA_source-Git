@@ -189,16 +189,37 @@ The `Guia de Desenvolvimento` folder contains developer notes, sequence diagrams
 
 ## TODOs
 (Architecture is the most important thing to modify today, so to be easier to give maintenance to the project)
-- Create Functional Tests for the UI
-- Create Functional Tests for the APP
-- Create Unit Tests
-- Unrelate DBManager from HMI
-- ~~Modularize HMI.py~~ (done: `IHMmain` behaviour is now split across `ui/HMI_PageNavigation`, `ui/HMI_Presentation`, `ui/HMI_PageBuilders`, `ui/HMI_Events`)
-- Make DBManager.ThreadLock to be private only
-- Cybersecurity, even if the app will run offline
+01 - Create Functional Tests for the UI
+02 - Create Functional Tests for the APP
+03 - Create Unit Tests
+04 - Make DBManager to be independent from HMI thread
+05 - Modularize HMI.py -> DONE: `IHMmain` behaviour is now split in `src\app\ui\home_and_parameters` across `HMI_PageNavigation`, `HMI_Presentation`, `HMI_PageBuilders`, `HMI_Events`
+06 - Modularize HMI_ARCA_page.py -> `HMI_ARCA` behaviour needs to split in `src\app\ui\arca` across `PageNavigation`, `Presentation`, `PageBuilders`, `Events`
+07 - Modularize HMI_Desempenho_page.py -> `HMI_Desempenho` behaviour needs to split in `src\app\ui\desempenho` across `PageNavigation`, `Presentation`, `PageBuilders`, `Events`
+08 - Modularize HMI_Mercado_page.py -> `HMI_Mercado` behaviour needs to split in `src\app\ui\mercado` across `PageNavigation`, `Presentation`, `PageBuilders`, `Events`
+09 - Modularize HMI_Tributacao_page.py -> `HMI_Tributacao` behaviour needs to split in `src\app\ui\tributacao` across `PageNavigation`, `Presentation`, `PageBuilders`, `Events`
+10 - Modularize HMI_Trades_page.py -> `HMI_Trades` behaviour needs to split in `src\app\ui\trades` across `PageNavigation`, `Presentation`, `PageBuilders`, `Events`
+11 - Modularize HMI_Trades_Bolsa_page.py -> `HMI_Trades_Bolsa` behaviour needs to split in `src\app\ui\trades_bolsa` across `PageNavigation`, `Presentation`, `PageBuilders`, `Events`
+12 - Modularize HMI_Trades_Criptomoedas_page.py -> `HMI_Trades_Criptomoedas` behaviour needs to split in `src\app\ui\trades_criptomoedas` across `PageNavigation`, `Presentation`, `PageBuilders`, `Events`
+13 - Make DBManager.ThreadLock to be private only
+14 - Cybersecurity, even if the app will run offline
 
 Crashes:
-- self.HMI.Movie_AlterarOPBolsa.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20/2,self.HMI.frameGeometry().height()*7/10*.95-30, Qt.KeepAspectRatio))
-- GetAllTickers 
- HTTP Error 403: Forbidden
-- WebDriver.__init__() got an unexpected keyword argument 'chrome_options'
+1 - self.HMI.Movie_AlterarOPBolsa.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20/2,self.HMI.frameGeometry().height()*7/10*.95-30, Qt.KeepAspectRatio))
+2 - GetAllTickers 
+   HTTP Error 403: Forbidden
+3 - WebDriver.__init__() got an unexpected keyword argument 'chrome_options'
+4 - When sending a verification email, when creating a new account: QObject::startTimer: Timers cannot be started from another thread
+5 - When trying to go to page Desempenho:
+   Traceback (most recent call last):
+   File "f:\Projetos_pessoais_offline\ARCA_source-Git\src\app\ui\home_and_parameters\HMI_PageBuilders.py", line 257, in <lambda>
+      self.Button_DesempenhoInvisivel.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Desempenho'].page_id))
+                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   File "f:\Projetos_pessoais_offline\ARCA_source-Git\src\app\ui\home_and_parameters\HMI_PageNavigation.py", line 631, in CreatePage
+      self.HMI_Desempenho.CreatePage12()
+   File "f:\Projetos_pessoais_offline\ARCA_source-Git\src\app\ui\desempenho\HMI_Desempenho_page.py", line 71, in CreatePage12
+      self.HMI.Movie_Grafico1.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width(),self.HMI.frameGeometry().height()/5*.95, Qt.KeepAspectRatio))
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   TypeError: arguments did not match any overloaded call:
+   scaled(self, s: QSize, mode: Qt.AspectRatioMode): argument 1 has unexpected type 'int'
+   scaled(self, w: int, h: int, mode: Qt.AspectRatioMode): argument 2 has unexpected type 'float'
