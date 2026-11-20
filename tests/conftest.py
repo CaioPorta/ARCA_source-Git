@@ -1,6 +1,7 @@
 import os
 import sys
 import pytest
+import toml
 from PyQt5.QtCore import QEventLoop, QTimer, Qt, qInstallMessageHandler
 from PyQt5.QtWidgets import QApplication
 
@@ -83,11 +84,11 @@ def for_visual_check(request: pytest.FixtureRequest):
     yield request.config.getoption("--visual-check", default=False)
 
 @pytest.fixture(scope="function", autouse=False)
-def login():
+def login(user_info):
     """
     Fixture to log in to the application.
     """
-    Email, NomeDeUsuario = "moreiraporta@gmail.com", "Caio_tester"
+    NomeDeUsuario, Senha, Email = user_info
     yield Email, NomeDeUsuario
 
 @pytest.fixture(scope="function", autouse=False)
@@ -114,3 +115,27 @@ def assure_tester_account_exists():
     Shall be called when argument "--assure-account-exists" is passed to pytest.
     """
     pass
+
+@pytest.fixture(scope="function", autouse=False)
+def user_info(request: pytest.FixtureRequest):
+    """
+    A fixture to get from tests/login_tester.toml or from tests/login_official.toml the user, password and email.
+    Depends on --use-official-db.
+    """
+    if request.config.getoption("--use-official-db", default=False):
+        # Load official user info from tests/login_official.toml.
+        login_file = os.path.join(os.path.dirname(__file__), "login_official.toml")
+        with open(login_file, "r") as f:
+            login_data = toml.load(f)
+        NomeDeUsuario = login_data["USER"]
+        Senha = login_data["PASSWORD"]
+        Email = login_data["EMAIL"]
+    else:
+        # Load tester user info from tests/login_tester.toml.
+        login_file = os.path.join(os.path.dirname(__file__), "login_tester.toml")
+        with open(login_file, "r") as f:
+            login_data = toml.load(f)
+        NomeDeUsuario = login_data["USER"]
+        Senha = login_data["PASSWORD"]
+        Email = login_data["EMAIL"]
+    return NomeDeUsuario, Senha, Email
