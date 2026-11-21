@@ -86,13 +86,13 @@ def for_visual_check(request: pytest.FixtureRequest) -> bool:
     return request.config.getoption("--visual-check", default=False)
 
 @pytest.fixture(scope="function", autouse=False)
-def login(user_info, window, qtbot, for_visual_check) -> tuple[str, str, str]:
+def login(user_info, window, qtbot, for_visual_check) -> tuple[str, str]:
     """
     Fixture to log in to the application.
     Ensures the tester account exists and authenticates through the UI, landing on the logged-in
     MinaCarteira page so tests can explore the authenticated workflow.
     """
-    NomeDeUsuario, Senha, _, _, _ = user_info
+    NomeDeUsuario, Senha, _, _ = user_info
     
     expected_page = 'Home'
     observed_page = PAGE_BY_ID[window.PageID].name
@@ -114,15 +114,15 @@ def delete_users_db() -> None:
     """
     pass
 
-def delete_account(user: str, password: str, email: str) -> None:
+def delete_account(window) -> None:
     """
     Helper function to delete the tester account from the database.
     Shall be executed only if Users.db exists.
     """
-    pass
+    assert not window.DBManager.DeleteUserDB()
 
 @pytest.fixture(scope="function", autouse=False)
-def assure_account_exists(user_info) -> None:
+def assure_account_exists(window, user_info) -> None:
     """
     Helper function to assure that the tester account exists in the database.
     Shall be called when argument "--assure-account-exists" is passed to pytest.
@@ -133,39 +133,16 @@ def assure_account_exists(user_info) -> None:
     session fixture -- as both the Users.db location and the user's Path, which keeps logout's
     Disconnect() from deleting the account (it only removes the db when Path differs from cwd).
     """
-    user, password, email = user_info
-    cwd = os.getcwd()
-    users_db = os.path.join(cwd, "Users.db")
-    if not os.path.exists(users_db):
-        conn = sqlite3.connect(users_db)
-        conn.execute("CREATE TABLE IF NOT EXISTS 'Usuários' ('Usuário' TEXT, 'Email' TEXT, 'Path' TEXT)")
-        conn.execute(
-            "INSERT INTO 'Usuários' ('Usuário', 'Email', 'Path') VALUES (?, ?, ?)",
-            (user, email, cwd),
-        )
-        conn.commit()
-        conn.close()
-
-    user_db = os.path.join(cwd, user + ".db")
-    if not os.path.exists(user_db):
-        conn = sqlite3.connect(user_db)
-        conn.execute(
-            "CREATE TABLE IF NOT EXISTS 'Perfil' "
-            "('Usuário' TEXT, 'Senha' TEXT, 'Email' TEXT, 'TaxaB3Per' REAL, "
-            "'MoedaCorrente' TEXT, 'GastoMensal' REAL, 'MesesDeReserva' REAL)"
-        )
-        conn.execute(
-            "INSERT INTO 'Perfil' ('Usuário', 'Senha', 'Email', 'TaxaB3Per', 'MoedaCorrente', 'GastoMensal', 'MesesDeReserva') "
-            "VALUES (?, ?, ?, 0.03, 'BRL', 0, 6)",
-            (user, password, email),
-        )
-        conn.commit()
-        conn.close()
+    user, password, email, moedacorrente = user_info
+    currdir = os.getcwd()
+    logger.info(f"currdir: {currdir}")
+    test_result = window.DBManager.CriarNovoPerfil(user, password, email, moedacorrente, currdir)
+    assert test_result == True, f"Expected True, but got {test_result}"
     yield
-    # delete_account(user, password, email)
+    delete_account(window)
 
 @pytest.fixture(scope="function", autouse=False)
-def user_info(request: pytest.FixtureRequest) -> tuple[str, str, str]:
+def user_info(request: pytest.FixtureRequest) -> tuple[str, str, str, str]:
     """
     A fixture to get from tests/login_tester.toml or from tests/login_official.toml the user, password and email.
     Depends on --use-official-db.
@@ -179,7 +156,6 @@ def user_info(request: pytest.FixtureRequest) -> tuple[str, str, str]:
         Senha = login_data["PASSWORD"]
         Email = login_data["EMAIL"]
         Currency = login_data["CURRENCY"]
-        Userpath = login_data["USERPATH"]
     else:
         # Load tester user info from tests/login_tester.toml.
         login_file = os.path.join(os.path.dirname(__file__), "login_tester.toml")
@@ -189,6 +165,5 @@ def user_info(request: pytest.FixtureRequest) -> tuple[str, str, str]:
         Senha = login_data["PASSWORD"]
         Email = login_data["EMAIL"]
         Currency = login_data["CURRENCY"]
-        Userpath = login_data["USERPATH"]
     logger.info(f"Using user {NomeDeUsuario}")
-    return NomeDeUsuario, Senha, Email, Currency, Userpath
+    return NomeDeUsuario, Senha, Email, Currency
