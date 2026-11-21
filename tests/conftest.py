@@ -1,5 +1,5 @@
 import pytestqt
-from tests.libs.logging_setup import logger
+from tests.libs.logger_setup import logger
 import os
 import sys
 import pytest

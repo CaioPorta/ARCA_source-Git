@@ -1,4 +1,4 @@
-from tests.libs.logging_setup import logger
+from tests.libs.logger_setup import logger
 import tests.libs.ui_helpers as ui
 from ui.pages import PAGE_BY_ID
 
