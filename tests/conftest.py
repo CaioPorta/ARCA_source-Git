@@ -92,7 +92,7 @@ def login(user_info, window, qtbot, for_visual_check) -> tuple[str, str, str]:
     Ensures the tester account exists and authenticates through the UI, landing on the logged-in
     MinaCarteira page so tests can explore the authenticated workflow.
     """
-    NomeDeUsuario, Senha, Email = user_info
+    NomeDeUsuario, Senha, _, _, _ = user_info
     
     expected_page = 'Home'
     observed_page = PAGE_BY_ID[window.PageID].name
@@ -105,7 +105,7 @@ def login(user_info, window, qtbot, for_visual_check) -> tuple[str, str, str]:
     window.TextBox_Senha.setText(Senha)
     ui.visual_sleep(for_visual_check)
     qtbot.mouseClick(window.Button_LogIn, Qt.LeftButton)
-    yield NomeDeUsuario, Senha, Email
+    yield NomeDeUsuario, Senha
 
 @pytest.fixture(scope="function", autouse=False)
 def delete_users_db() -> None:
@@ -178,6 +178,8 @@ def user_info(request: pytest.FixtureRequest) -> tuple[str, str, str]:
         NomeDeUsuario = login_data["USER"]
         Senha = login_data["PASSWORD"]
         Email = login_data["EMAIL"]
+        Currency = login_data["CURRENCY"]
+        Userpath = login_data["USERPATH"]
     else:
         # Load tester user info from tests/login_tester.toml.
         login_file = os.path.join(os.path.dirname(__file__), "login_tester.toml")
@@ -186,4 +188,7 @@ def user_info(request: pytest.FixtureRequest) -> tuple[str, str, str]:
         NomeDeUsuario = login_data["USER"]
         Senha = login_data["PASSWORD"]
         Email = login_data["EMAIL"]
-    return NomeDeUsuario, Senha, Email
+        Currency = login_data["CURRENCY"]
+        Userpath = login_data["USERPATH"]
+    logger.info(f"Using user {NomeDeUsuario}")
+    return NomeDeUsuario, Senha, Email, Currency, Userpath
