@@ -205,12 +205,12 @@ The `Guia de Desenvolvimento` folder contains developer notes, sequence diagrams
 14 - Cybersecurity, even if the app will run offline
 
 Crashes:
-1 - self.HMI.Movie_AlterarOPBolsa.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20/2,self.HMI.frameGeometry().height()*7/10*.95-30, Qt.KeepAspectRatio))
-2 - GetAllTickers 
+DEFECT 1 - self.HMI.Movie_AlterarOPBolsa.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20/2,self.HMI.frameGeometry().height()*7/10*.95-30, Qt.KeepAspectRatio))
+DEFECT 2 - GetAllTickers 
    HTTP Error 403: Forbidden
-3 - WebDriver.__init__() got an unexpected keyword argument 'chrome_options'
-4 - When sending a verification email, when creating a new account: QObject::startTimer: Timers cannot be started from another thread
-5 - When trying to go to page Desempenho:
+DEFECT 3 - WebDriver.__init__() got an unexpected keyword argument 'chrome_options'
+DEFECT 4 - When sending a verification email, when creating a new account: QObject::startTimer: Timers cannot be started from another thread
+DEFECT 5 - When trying to go to page Desempenho:
    Traceback (most recent call last):
    File "f:\Projetos_pessoais_offline\ARCA_source-Git\src\app\ui\home_and_parameters\HMI_PageBuilders.py", line 257, in <lambda>
       self.Button_DesempenhoInvisivel.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Desempenho'].page_id))
