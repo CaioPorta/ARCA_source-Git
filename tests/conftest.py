@@ -85,7 +85,7 @@ def for_visual_check(request: pytest.FixtureRequest):
     yield request.config.getoption("--visual-check", default=False)
 
 @pytest.fixture(scope="function", autouse=False)
-def login(user_info, window, qtbot, request: pytest.FixtureRequest):
+def login(user_info, window, qtbot, for_visual_check):
     """
     Fixture to log in to the application.
     Ensures the tester account exists and authenticates through the UI, landing on the logged-in
@@ -102,6 +102,7 @@ def login(user_info, window, qtbot, request: pytest.FixtureRequest):
             f"'{attr}' not found; expected the home/login page."
     window.TextBox_NomeDeUsuario.setText(NomeDeUsuario)
     window.TextBox_Senha.setText(Senha)
+    ui.visual_sleep(for_visual_check)
     qtbot.mouseClick(window.Button_LogIn, Qt.LeftButton)
     yield NomeDeUsuario, Senha, Email
 

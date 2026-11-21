@@ -96,3 +96,6 @@ def test_smoke(qtbot):
     w.show()
     QTimer.singleShot(500, w.close)
     qtbot.waitExposed(w)
+
+# TODOs
+window, qtbot, for_visual_check to be autouse, always yield to tests.

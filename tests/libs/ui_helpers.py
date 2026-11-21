@@ -6,6 +6,8 @@ from PyQt5.QtWidgets import QApplication
 
 from ui.HMI import IHMmain
 
+TIME_TO_VISUAL_CHECK = 1 # Seconds
+
 
 def _show_click(widget):
     # During visual checks (real screen) move the OS cursor to the widget center so the click is
@@ -21,14 +23,15 @@ def _count_main_windows():
     return sum(1 for w in QApplication.topLevelWidgets() if isinstance(w, IHMmain))
 
 
-def _visual_sleep(seconds):
+def visual_sleep(for_visual_check=True, seconds=TIME_TO_VISUAL_CHECK):
     # Block while keeping the Qt event loop running so the window keeps repainting and stays visible
     # for the duration. time.sleep() freezes the loop, so the page blinks past instead of holding.
-    loop = QEventLoop()
-    timer = QTimer()
-    timer.timeout.connect(loop.quit)
-    timer.start(int(seconds * 1000))
-    loop.exec_()
+    if for_visual_check:
+        loop = QEventLoop()
+        timer = QTimer()
+        timer.timeout.connect(loop.quit)
+        timer.start(int(seconds * 1000))
+        loop.exec_()
 
 
 def go_home(window):
@@ -47,26 +50,38 @@ def go_home(window):
 
 def go_ARCA_page(window):
     """
-    Navigate to the ARCA page of the application.
+    Navigate to the ARCA page from the MinhaCarteira page (PageID '1').
+
+    Pre-requisite: be on the MinhaCarteira page, where the 'ARCA' button lives.
     """
-    window = go_home(window)
-    pass # TODO
+    assert getattr(window, 'Button_ARCA', None) is not None, \
+        "'ARCA' button not found; expected to be on the MinhaCarteira page."
+    _show_click(window.Button_ARCA)
+    window.Button_ARCA.pressed.emit()
     return window
 
 def go_Desempenho_page(window):
     """
-    Navigate to the Desempenho page of the application.
+    Navigate to the Desempenho page from the MinhaCarteira page (PageID '1').
+
+    Pre-requisite: be on the MinhaCarteira page, where the 'Desempenho' button lives.
     """
-    window = go_home(window)
-    pass # TODO
+    assert getattr(window, 'Button_Desempenho', None) is not None, \
+        "'Desempenho' button not found; expected to be on the MinhaCarteira page."
+    _show_click(window.Button_Desempenho)
+    window.Button_Desempenho.pressed.emit()
     return window
 
 def go_Mercado_page(window):
     """
-    Navigate to the Mercado page of the application.
+    Navigate to the Análise do Mercado page from the MinhaCarteira page (PageID '1').
+
+    Pre-requisite: be on the MinhaCarteira page, where the 'Análise do Mercado' button lives.
     """
-    window = go_home(window)
-    pass # TODO
+    assert getattr(window, 'Button_Mercado', None) is not None, \
+        "'Análise do Mercado' button not found; expected to be on the MinhaCarteira page."
+    _show_click(window.Button_Mercado)
+    window.Button_Mercado.pressed.emit()
     return window
 
 def go_Trades_page(window):
@@ -95,10 +110,38 @@ def go_Trades_Criptomoedas_page(window):
 
 def go_Tributacao_page(window):
     """
-    Navigate to the Tributacao page of the application.
+    Navigate to the Tributacao page from the MinhaCarteira page (PageID '1').
+
+    Pre-requisite: be on the MinhaCarteira page, where the 'Tributacao' button lives.
     """
-    window = go_home(window)
-    pass # TODO
+    assert getattr(window, 'Button_Tributacao', None) is not None, \
+        "'Tributacao' button not found; expected to be on the MinhaCarteira page."
+    _show_click(window.Button_Tributacao)
+    window.Button_Tributacao.pressed.emit()
+    return window
+
+def go_Negociacoes_page(window):
+    """
+    Navigate to the EdicaoNegociacoes page from the MinhaCarteira page (PageID '1').
+
+    Pre-requisite: be on the MinhaCarteira page, where the 'Negociações' button lives.
+    """
+    assert getattr(window, 'Button_Negociações', None) is not None, \
+        "'Negociações' button not found; expected to be on the MinhaCarteira page."
+    _show_click(window.Button_Negociações)
+    window.Button_Negociações.pressed.emit()
+    return window
+
+def go_Perfil_page(window):
+    """
+    Navigate to the Perfil (auxiliary) page from any logged-in page via the header button.
+
+    Pre-requisite: be on a logged-in page that shows the header, where the 'Perfil' button lives.
+    """
+    assert getattr(window, 'Button_Perfil', None) is not None, \
+        "Perfil header button not found."
+    _show_click(window.Button_Perfil)
+    window.Button_Perfil.pressed.emit()
     return window
 
 def go_Analise_without_login_page(window, qtbot):
