@@ -92,7 +92,7 @@ def login(user_info, window, qtbot, for_visual_check) -> tuple[str, str]:
     Ensures the tester account exists and authenticates through the UI, landing on the logged-in
     MinaCarteira page so tests can explore the authenticated workflow.
     """
-    NomeDeUsuario, Senha, _, _ = user_info
+    NomeDeUsuario, Senha, _, _, _ = user_info
     
     expected_page = 'Home'
     observed_page = PAGE_BY_ID[window.PageID].name
@@ -133,10 +133,10 @@ def assure_account_exists(window, user_info) -> None:
     session fixture -- as both the Users.db location and the user's Path, which keeps logout's
     Disconnect() from deleting the account (it only removes the db when Path differs from cwd).
     """
-    user, password, email, moedacorrente = user_info
-    currdir = os.getcwd()
-    logger.info(f"currdir: {currdir}")
-    test_result = window.DBManager.CriarNovoPerfil(user, password, email, moedacorrente, currdir)
+    user, password, email, moedacorrente, userpath = user_info
+    
+    logger.info(f"currdir: {userpath}")
+    test_result = window.DBManager.CriarNovoPerfil(user, password, email, moedacorrente, userpath)
     assert test_result == True, f"Expected True, but got {test_result}"
     yield
 
@@ -154,7 +154,8 @@ def user_info(request: pytest.FixtureRequest) -> tuple[str, str, str, str]:
         NomeDeUsuario = login_data["USER"]
         Senha = login_data["PASSWORD"]
         Email = login_data["EMAIL"]
-        Currency = login_data["CURRENCY"]
+        Currency = None
+        userpath = None
     else:
         # Load tester user info from tests/login_tester.toml.
         login_file = os.path.join(os.path.dirname(__file__), "login_tester.toml")
@@ -164,5 +165,6 @@ def user_info(request: pytest.FixtureRequest) -> tuple[str, str, str, str]:
         Senha = login_data["PASSWORD"]
         Email = login_data["EMAIL"]
         Currency = login_data["CURRENCY"]
+        userpath = os.getcwd()
     logger.info(f"Using user {NomeDeUsuario}")
-    return NomeDeUsuario, Senha, Email, Currency
+    return NomeDeUsuario, Senha, Email, Currency, userpath
