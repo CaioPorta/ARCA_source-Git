@@ -139,7 +139,6 @@ def assure_account_exists(window, user_info) -> None:
     test_result = window.DBManager.CriarNovoPerfil(user, password, email, moedacorrente, currdir)
     assert test_result == True, f"Expected True, but got {test_result}"
     yield
-    delete_account(window)
 
 @pytest.fixture(scope="function", autouse=False)
 def user_info(request: pytest.FixtureRequest) -> tuple[str, str, str, str]:
