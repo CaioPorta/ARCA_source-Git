@@ -187,6 +187,15 @@ This produces the distributable in `dist/`, bundled with `logoARCA.ico`.
 
 The `Guia de Desenvolvimento` folder contains developer notes, sequence diagrams (`Sequencial Diagram.drawio`), DB/HMI maps (PDFs), and screenshot references. 
 
+## Versioning
+Beta A.B.C.D.E.F
+A: Mercado
+B: Desempenho
+C: Bolsa
+D: Cripto
+E: ARCA
+F: Tributação
+
 ## TODOs
 (Architecture is the most important thing to modify today, so to be easier to give maintenance to the project)
 01 - Create Functional Tests for the UI
