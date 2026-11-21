@@ -203,6 +203,8 @@ The `Guia de Desenvolvimento` folder contains developer notes, sequence diagrams
 12 - Modularize HMI_Trades_Criptomoedas_page.py -> `HMI_Trades_Criptomoedas` behaviour needs to split in `src\app\ui\trades_criptomoedas` across `PageNavigation`, `Presentation`, `PageBuilders`, `Events`
 13 - Make DBManager.ThreadLock to be private only
 14 - Cybersecurity, even if the app will run offline
+15 - Rename Home page is login_page
+16 - Rename MinhaCarteira is Home
 
 Crashes:
 DEFECT 1 - self.HMI.Movie_AlterarOPBolsa.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20/2,self.HMI.frameGeometry().height()*7/10*.95-30, Qt.KeepAspectRatio))
