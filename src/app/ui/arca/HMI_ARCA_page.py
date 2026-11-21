@@ -1041,7 +1041,7 @@ class HMI_ARCA(object):
             plt.pie(data, startangle=90, shadow=True, normalize=normalize, explode=explode,
                     autopct = lambda pct: self.getPercentage(pct, data), colors=['orange','purple','green','blue'])
         else:
-            plt.pie(data, startangle=90, shadow=True, normalize=normalize)
+            plt.pie([1], startangle=90, shadow=True, normalize=normalize)
         plt.axis('equal')
         plt.tight_layout()
 
