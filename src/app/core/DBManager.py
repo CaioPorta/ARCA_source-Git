@@ -210,7 +210,7 @@ class DBManager(object):
             self.Disconnect()
             return False
 
-    def DeleteUserDB (self):
+    def DeleteUserDB(self):
         self.Disconnect()
         os.remove(self.UserPath+"\\"+self.User+".db")
         currdir = os.getcwd()
