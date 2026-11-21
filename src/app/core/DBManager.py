@@ -10,6 +10,7 @@ import copy
 from datetime import datetime,timedelta
 import pandas as pd
 import sqlite3
+import traceback
 
 from threading import Lock
 from core.BackgroundProcesses import BackgroundProcess as BP
@@ -142,7 +143,7 @@ class DBManager(object):
 
             return True
         except Exception as e:
-            print(e)
+            print(e, traceback.format_exception(None, e, e.__traceback__))
 
     def CheckIfEmailExists(self, EmailToCheck):
         Exists = False
