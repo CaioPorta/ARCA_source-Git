@@ -95,7 +95,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     amount_of_windows = ui._count_main_windows()
     assert amount_of_windows == 1, f"Expected 1 window opened, but got {amount_of_windows}."
 
-def test_login(window, assure_tester_account_exists, login, qtbot, for_visual_check):
+def test_login(window, qtbot, for_visual_check, assure_tester_account_exists, login):
     """
     Test that all pages are correctly loaded.
     """
@@ -107,7 +107,7 @@ def test_login(window, assure_tester_account_exists, login, qtbot, for_visual_ch
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
     logger.info(f"[OK] App started on {observed_page} page.")
 
-def test_explore_parent_minha_carteira(window, assure_tester_account_exists, login, qtbot, for_visual_check):
+def test_explore_parent_minha_carteira(window, qtbot, for_visual_check, assure_tester_account_exists, login):
     """
     Test that all pages directly under MinhaCarteira are correctly loaded.
     """
