@@ -223,3 +223,10 @@ DEFECT 5 - When trying to go to page Desempenho:
    TypeError: arguments did not match any overloaded call:
    scaled(self, s: QSize, mode: Qt.AspectRatioMode): argument 1 has unexpected type 'int'
    scaled(self, w: int, h: int, mode: Qt.AspectRatioMode): argument 2 has unexpected type 'float'
+DEFECT 6 - If HMI_ARCA_page is generated at least once, evt_finished_progress_11_2 will crash an error when closing the app:
+   CALL ERROR: Exceptions caught in Qt event loop:
+   Traceback (most recent call last):
+   File "F:\Projetos_pessoais_offline\ARCA_source-Git\src\app\ui\arca\HMI_ARCA_page.py", line 3359, in evt_finished_progress_11_2
+      SizeCol0,SizeCol1 = self.HMI.GetSizeOfTableColumns(data, HHeader)
+      ^^^^^^^^^^^^^^^^^
+   ValueError: not enough values to unpack (expected 2, got 0)

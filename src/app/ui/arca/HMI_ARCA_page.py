@@ -3356,7 +3356,7 @@ class HMI_ARCA(object):
             coin = self.HMI.DBManager.GetUserCoinCurrency()
             HHeader = ['Corretora',
                        'Conta-corrente ('+coin+')']
-            SizeCol0,SizeCol1 = self.HMI.GetSizeOfTableColumns(data, HHeader)
+            SizeCol0,SizeCol1 = self.HMI.GetSizeOfTableColumns(data, HHeader) # DEFECT 6
 
             self.Table_ContasCorrenteHeader.adjustSize()
             self.Table_ContasCorrenteHeader.setColumnWidth(0, SizeCol0)
