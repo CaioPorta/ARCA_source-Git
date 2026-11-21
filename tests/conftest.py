@@ -1,3 +1,4 @@
+import pytestqt
 from tests.libs.logging_setup import logger
 import os
 import sys
@@ -50,7 +51,7 @@ def _wait_until_window_closed(window):
 
 
 @pytest.fixture(scope="function", autouse=True)
-def window(qtbot, request: pytest.FixtureRequest):
+def window(qtbot, request: pytest.FixtureRequest) -> IHMmain:
     """
     Fixture to launch the application.
     """
@@ -60,10 +61,10 @@ def window(qtbot, request: pytest.FixtureRequest):
     QApplication.instance().processEvents()  # let showMaximized() and the maximized layout fully apply (real app runs app.exec_()).
     if not request.config.getoption("--no-teardown", default=False):
         qtbot.addWidget(window)  # Track the window so pytest-qt closes it at end of test. Skipped with --no-teardown.
-    yield window
+    return window
 
 @pytest.fixture(scope="function", autouse=True)
-def teardown(window, request):
+def teardown(window, request) -> None:
     """
     Teardown function to clean up after tests: reset the window to the home page.
     With --no-teardown (only allowed with --visual-check for a single test), keep the window open
@@ -80,12 +81,12 @@ def teardown(window, request):
     yield
     ui.go_home(window)
 
-@pytest.fixture(scope="function", autouse=False)
-def for_visual_check(request: pytest.FixtureRequest):
-    yield request.config.getoption("--visual-check", default=False)
+@pytest.fixture(scope="session", autouse=True)
+def for_visual_check(request: pytest.FixtureRequest) -> bool:
+    return request.config.getoption("--visual-check", default=False)
 
 @pytest.fixture(scope="function", autouse=False)
-def login(user_info, window, qtbot, for_visual_check):
+def login(user_info, window, qtbot, for_visual_check) -> tuple[str, str, str]:
     """
     Fixture to log in to the application.
     Ensures the tester account exists and authenticates through the UI, landing on the logged-in
@@ -107,24 +108,21 @@ def login(user_info, window, qtbot, for_visual_check):
     yield NomeDeUsuario, Senha, Email
 
 @pytest.fixture(scope="function", autouse=False)
-def delete_users_db():
+def delete_users_db() -> None:
     """
     Helper function to delete the users.db file.
-    Shall be called when argument "--delete-users-db" is passed to pytest.
     """
     pass
 
-@pytest.fixture(scope="function", autouse=False)
-def delete_tester_account():
+def delete_account(user: str, password: str, email: str) -> None:
     """
     Helper function to delete the tester account from the database.
-    Shall be called when argument "--delete-tester-account" is passed to pytest.
     Shall be executed only if Users.db exists.
     """
     pass
 
-@pytest.fixture
-def assure_tester_account_exists(user_info):
+@pytest.fixture(scope="function", autouse=False)
+def assure_account_exists(user_info) -> None:
     """
     Helper function to assure that the tester account exists in the database.
     Shall be called when argument "--assure-account-exists" is passed to pytest.
@@ -163,9 +161,11 @@ def assure_tester_account_exists(user_info):
         )
         conn.commit()
         conn.close()
+    yield
+    # delete_account(user, password, email)
 
 @pytest.fixture(scope="function", autouse=False)
-def user_info(request: pytest.FixtureRequest):
+def user_info(request: pytest.FixtureRequest) -> tuple[str, str, str]:
     """
     A fixture to get from tests/login_tester.toml or from tests/login_official.toml the user, password and email.
     Depends on --use-official-db.
