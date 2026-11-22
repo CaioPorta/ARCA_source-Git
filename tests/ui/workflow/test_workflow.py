@@ -116,12 +116,12 @@ def test_explore_parent_minha_carteira(window, qtbot, for_visual_check, assure_a
 
     # <Action> Click "Desempenho" button <Action>
     # <Result> "Desempenho" page shows up <Result>
-    # ui.go_Desempenho_page(window, qtbot, for_visual_check)
+    ui.go_Desempenho_page(window, qtbot, for_visual_check)
 
     # <Action> Click "Return" button <Action>
     # <Result> "MinhaCarteira" page shows up <Result>
-    # expected_page = 'MinhaCarteira'
-    # ui.go_previous_page(window, qtbot, for_visual_check, expected_page)
+    expected_page = 'MinhaCarteira'
+    ui.go_previous_page(window, qtbot, for_visual_check, expected_page)
 
     # <Action> Click "Análise do Mercado" button <Action>
     # <Result> "AnaliseMercadoDup" page shows up <Result>
