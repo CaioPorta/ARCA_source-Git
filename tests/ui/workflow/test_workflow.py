@@ -195,7 +195,6 @@ def test_trades_criptomoedas(window, qtbot, for_visual_check, assure_account_exi
 
     # <Action> Click "Criptomoedas" button (via the Trades page) <Action>
     # <Result> "EdicaoNegociacoesCripto" page shows up <Result>
-    expected_page = 'EdicaoNegociacoesCripto'
     ui.go_Trades_Criptomoedas_page(window, qtbot, for_visual_check)
 
     # <Action> Click "Return" button <Action>

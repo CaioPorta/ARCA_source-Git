@@ -176,7 +176,7 @@ def go_Trades_Bolsa_page(window, qtbot, for_visual_check, expected_page = 'Edica
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
     logger.info(f"[OK] Navigated to {expected_page}.")
 
-def go_Trades_Criptomoedas_page(window, qtbot, for_visual_check, expected_page):
+def go_Trades_Criptomoedas_page(window, qtbot, for_visual_check, expected_page='EdicaoNegociacoesCripto'):
     """
     Navigate to the EdicaoNegociacoesCripto page (Trades -> Criptomoedas) from the MinhaCarteira page.
     """
