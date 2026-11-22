@@ -13,3 +13,5 @@ Commentar a acao e resultado esperado antes das principais acoes de teste.
 Manter o mesmo padrao entre os diferentes testes.
 
 This file has the mapping of the pages ID and Names: src\app\ui\pages.py
+
+Prefira usar qtbot.mouseClick. Não use pressed.emit.
