@@ -63,7 +63,7 @@ def test_explore_parent_home_no_logging(window, qtbot, for_visual_check):
     amount_of_windows = ui._count_main_windows()
     assert amount_of_windows == 1, f"Expected 1 window opened, but got {amount_of_windows}."
 
-def test_login(window, qtbot, for_visual_check, assure_account_exists, login):
+def test_login(window, for_visual_check, assure_account_exists, login):
     """
     Test that all pages are correctly loaded.
     """
