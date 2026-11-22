@@ -63,7 +63,7 @@ def window(qtbot, request: pytest.FixtureRequest) -> IHMmain:
     return window
 
 @pytest.fixture(scope="function", autouse=True)
-def teardown(window, request) -> None:
+def teardown(window, qtbot, request) -> None:
     """
     Teardown function to clean up after tests: reset the window to the home page.
     With --no-teardown (only allowed with --visual-check for a single test), keep the window open
@@ -78,7 +78,7 @@ def teardown(window, request) -> None:
         _wait_until_window_closed(window)
         return
     yield
-    ui.go_home(window)
+    ui.go_home(window, qtbot, for_visual_check, assure=True)
 
 @pytest.fixture(scope="session", autouse=True)
 def for_visual_check(request: pytest.FixtureRequest) -> bool:
