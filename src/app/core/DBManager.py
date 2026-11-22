@@ -1245,7 +1245,8 @@ class DBManager(object):
         corretorasCripto = list(map(lambda corretora: corretora.replace("¨Cripto",""), corretorasCripto))
         for corretora in corretorasCripto:
             try: Ativos.extend(self.GetAtivos(corretora, "Cripto"))
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         Ativos = list(set(Ativos))
         return sorted(Ativos)
 
@@ -1271,7 +1272,8 @@ class DBManager(object):
         corretorasBolsa = list(map(lambda corretora: corretora.replace("¨Bolsa",""), corretorasBolsa))
         for corretora in corretorasBolsa:
             try: Ativos.extend(self.GetAtivos(corretora, "Bolsa"))
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         Ativos = list(set(Ativos))
         return Ativos
 
@@ -1435,7 +1437,8 @@ class DBManager(object):
                 try:
                     if not retorno[-1][8] == "NULL":
                         estoque += retorno[-1][8]
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
 
         elif BolsaOuCripto == "Cripto":
             for corretoraCripto in corretorasCripto:
@@ -1451,7 +1454,8 @@ class DBManager(object):
                     # column = headers.index("StakeDe¨"+ativo)
                     if not retorno[-1][column+2] == "NULL":
                         estoque += retorno[-1][column+2] # Stake
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
         return estoque
 
     def GetCusto(self, ativo = '', corretora = '', BolsaOuCripto = ''):

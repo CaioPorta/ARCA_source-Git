@@ -51,7 +51,8 @@ class BackgroundProcess(Thread):
                         Cotacao = [item[3] for item in Cotacoes if item[2] == ativo][0]
                         if Cotacao>0: return True
                         else: return False
-                    except: pass
+                    except Exception as e:
+                        print(e, traceback.format_exception(None, e, e.__traceback__))
 
                 if not self.ativo == self.currency and not AtivoExisteNaTabelaDeCotacoes(self.ativo):
                         Cotacao = 0.
