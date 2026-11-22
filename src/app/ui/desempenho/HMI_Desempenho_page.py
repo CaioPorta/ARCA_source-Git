@@ -68,7 +68,7 @@ class HMI_Desempenho(object):
 
         self.HMI.Gif_Grafico1 = QLabel()
         self.HMI.Movie_Grafico1 = QMovie("./images/Loading4.gif")
-        self.HMI.Movie_Grafico1.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width(),self.HMI.frameGeometry().height()/5*.95, Qt.KeepAspectRatio))
+        self.HMI.Movie_Grafico1.setScaledSize(QSize().scaled(int(self.HMI.frameGeometry().width()),int(self.HMI.frameGeometry().height()/5*.95), Qt.KeepAspectRatio))
         self.HMI.Gif_Grafico1.setMovie(self.HMI.Movie_Grafico1)
         self.HMI.Movie_Grafico1.start()
 
@@ -91,7 +91,7 @@ class HMI_Desempenho(object):
 
         self.HMI.Gif_Grafico2 = QLabel()
         self.HMI.Movie_Grafico2 = QMovie("./images/Loading4.gif")
-        self.HMI.Movie_Grafico2.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width(),self.HMI.frameGeometry().height()/5*.95, Qt.KeepAspectRatio))
+        self.HMI.Movie_Grafico2.setScaledSize(QSize().scaled(int(self.HMI.frameGeometry().width()),int(self.HMI.frameGeometry().height()/5*.95), Qt.KeepAspectRatio))
         self.HMI.Gif_Grafico2.setMovie(self.HMI.Movie_Grafico2)
         self.HMI.Movie_Grafico2.start()
 

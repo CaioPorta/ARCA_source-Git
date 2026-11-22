@@ -200,7 +200,7 @@ class HMI_Trades_Bolsa(object):
 
         self.HMI.Gif_AlterarOPBolsa = QLabel()
         self.HMI.Movie_AlterarOPBolsa = QMovie("./images/GIF_Registro.gif")
-        self.HMI.Movie_AlterarOPBolsa.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20/2,self.HMI.frameGeometry().height()*7/10*.95-30, Qt.KeepAspectRatio))
+        self.HMI.Movie_AlterarOPBolsa.setScaledSize(QSize().scaled(int(self.HMI.frameGeometry().width()*12/20/2),int(self.HMI.frameGeometry().height()*7/10*.95-30), Qt.KeepAspectRatio))
         self.HMI.Gif_AlterarOPBolsa.setMovie(self.HMI.Movie_AlterarOPBolsa)
         self.HMI.Movie_AlterarOPBolsa.start()
 
@@ -226,7 +226,7 @@ class HMI_Trades_Bolsa(object):
 
         self.HMI.Gif_DepositosESaquesBolsa = QLabel()
         self.HMI.Movie_DepositosESaquesBolsa = QMovie("./images/GIF_Depósitos e Saques.gif")
-        self.HMI.Movie_DepositosESaquesBolsa.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20/2,self.HMI.frameGeometry().height()*3/10*.95-30, Qt.KeepAspectRatio))
+        self.HMI.Movie_DepositosESaquesBolsa.setScaledSize(QSize().scaled(int(self.HMI.frameGeometry().width()*12/20/2),int(self.HMI.frameGeometry().height()*3/10*.95-30), Qt.KeepAspectRatio))
         self.HMI.Gif_DepositosESaquesBolsa.setMovie(self.HMI.Movie_DepositosESaquesBolsa)
         self.HMI.Movie_DepositosESaquesBolsa.start()
 
@@ -247,7 +247,7 @@ class HMI_Trades_Bolsa(object):
 
         self.HMI.Gif_ContaCorrenteBolsa = QLabel()
         self.HMI.Movie_ContaCorrenteBolsa = QMovie("./images/GIF_Em conta-corrente.gif")
-        self.HMI.Movie_ContaCorrenteBolsa.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20/2,self.HMI.frameGeometry().height()*3/10*.95-30, Qt.KeepAspectRatio))
+        self.HMI.Movie_ContaCorrenteBolsa.setScaledSize(QSize().scaled(int(self.HMI.frameGeometry().width()*12/20/2),int(self.HMI.frameGeometry().height()*3/10*.95-30), Qt.KeepAspectRatio))
         self.HMI.Gif_ContaCorrenteBolsa.setMovie(self.HMI.Movie_ContaCorrenteBolsa)
         self.HMI.Movie_ContaCorrenteBolsa.start()
 

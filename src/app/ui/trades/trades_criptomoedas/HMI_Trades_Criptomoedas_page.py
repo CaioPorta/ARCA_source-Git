@@ -199,7 +199,7 @@ class HMI_Trades_Criptomoedas(object):
 
         self.HMI.Gif_AlterarOPCriptomoedas = QLabel()
         self.HMI.Movie_AlterarOPCriptomoedas = QMovie("./images/GIF_Registro.gif")
-        self.HMI.Movie_AlterarOPCriptomoedas.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20,self.HMI.frameGeometry().height()*7/10*.95-60, Qt.KeepAspectRatio))
+        self.HMI.Movie_AlterarOPCriptomoedas.setScaledSize(QSize().scaled(int(self.HMI.frameGeometry().width()*12/20),int(self.HMI.frameGeometry().height()*7/10*.95-60), Qt.KeepAspectRatio))
         self.HMI.Gif_AlterarOPCriptomoedas.setMovie(self.HMI.Movie_AlterarOPCriptomoedas)
         self.HMI.Movie_AlterarOPCriptomoedas.start()
 
