@@ -219,4 +219,3 @@ Crashes:
 DEFECT 2 - GetAllTickers 
    HTTP Error 403: Forbidden
 DEFECT 3 - WebDriver.__init__() got an unexpected keyword argument 'chrome_options'
-DEFECT 4 - When sending a verification email, when creating a new account: QObject::startTimer: Timers cannot be started from another thread
