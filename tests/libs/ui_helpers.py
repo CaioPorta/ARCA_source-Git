@@ -86,26 +86,39 @@ def go_Mercado_page(window):
 
 def go_Trades_page(window):
     """
-    Navigate to the Trades page of the application.
+    Navigate to the Trades page (EdicaoNegociacoes, PageID '10') from the MinhaCarteira page (PageID '1').
+
+    Pre-requisite: be on the MinhaCarteira page, where the 'Negociações' button lives.
     """
-    window = go_home(window)
-    pass # TODO
+    window = go_Negociacoes_page(window)
     return window
 
 def go_Trades_Bolsa_page(window):
     """
-    Navigate to the Trades Bolsa page of the application.
+    Navigate to the EdicaoNegociacoesBolsa page (Trades -> Bolsa, PageID '18') from the MinhaCarteira page.
+
+    Pre-requisite: be on the MinhaCarteira page. Navigates through the Trades page, then clicks the
+    'Bolsa' button there.
     """
     window = go_Trades_page(window)
-    pass # TODO
+    assert getattr(window, 'Button_TradesBolsa', None) is not None, \
+        "'Bolsa' button not found; expected to be on the Trades page."
+    _show_click(window.Button_TradesBolsa)
+    window.Button_TradesBolsa.pressed.emit()
     return window
 
 def go_Trades_Criptomoedas_page(window):
     """
-    Navigate to the Trades Criptomoedas page of the application.
+    Navigate to the EdicaoNegociacoesCripto page (Trades -> Criptomoedas, PageID '19') from the MinhaCarteira page.
+
+    Pre-requisite: be on the MinhaCarteira page. Navigates through the Trades page, then clicks the
+    'Criptomoedas' button there.
     """
     window = go_Trades_page(window)
-    pass # TODO
+    assert getattr(window, 'Button_TradesCriptomoedas', None) is not None, \
+        "'Criptomoedas' button not found; expected to be on the Trades page."
+    _show_click(window.Button_TradesCriptomoedas)
+    window.Button_TradesCriptomoedas.pressed.emit()
     return window
 
 def go_Tributacao_page(window):

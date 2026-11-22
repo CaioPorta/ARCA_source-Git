@@ -230,3 +230,71 @@ def test_explore_parent_minha_carteira(window, qtbot, for_visual_check, assure_a
     # Non-regression check: always keep 1 window opened
     amount_of_windows = ui._count_main_windows()
     assert amount_of_windows == 1, f"Expected 1 window opened, but got {amount_of_windows}."
+
+def test_trades_bolsa(window, qtbot, for_visual_check, assure_account_exists, login):
+    """
+    Test that the Trades -> Bolsa page is correctly loaded.
+    """
+    ui.visual_sleep(for_visual_check)
+    # <Action> Check preconditions <Action>
+    # <Result> App is on "MinhaCarteira" page <Result>
+    expected_page = 'MinhaCarteira'
+    observed_page = PAGE_BY_ID[window.PageID].name
+    assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
+    logger.info(f"[OK] App started on {observed_page} page.")
+
+    # <Action> Click "Bolsa" button (via the Trades page) <Action>
+    # <Result> "EdicaoNegociacoesBolsa" page shows up <Result>
+    ui.go_Trades_Bolsa_page(window)
+    expected_page = 'EdicaoNegociacoesBolsa'
+    observed_page = PAGE_BY_ID[window.PageID].name
+    logger.info(f"[OK] Navigated to {expected_page}.")
+    ui.visual_sleep(for_visual_check)
+    assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
+
+    # <Action> Click "Return" button <Action>
+    # <Result> "EdicaoNegociacoes" (Trades) page shows up <Result>
+    ui.go_previous_page(window, qtbot)
+    expected_page = 'EdicaoNegociacoes'
+    observed_page = PAGE_BY_ID[window.PageID].name
+    logger.info(f"[OK] Navigated to {expected_page}.")
+    ui.visual_sleep(for_visual_check)
+    assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
+
+    # Non-regression check: always keep 1 window opened
+    amount_of_windows = ui._count_main_windows()
+    assert amount_of_windows == 1, f"Expected 1 window opened, but got {amount_of_windows}."
+
+def test_trades_criptomoedas(window, qtbot, for_visual_check, assure_account_exists, login):
+    """
+    Test that the Trades -> Criptomoedas page is correctly loaded.
+    """
+    ui.visual_sleep(for_visual_check)
+    # <Action> Check preconditions <Action>
+    # <Result> App is on "MinhaCarteira" page <Result>
+    expected_page = 'MinhaCarteira'
+    observed_page = PAGE_BY_ID[window.PageID].name
+    assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
+    logger.info(f"[OK] App started on {observed_page} page.")
+
+    # <Action> Click "Criptomoedas" button (via the Trades page) <Action>
+    # <Result> "EdicaoNegociacoesCripto" page shows up <Result>
+    ui.go_Trades_Criptomoedas_page(window)
+    expected_page = 'EdicaoNegociacoesCripto'
+    observed_page = PAGE_BY_ID[window.PageID].name
+    logger.info(f"[OK] Navigated to {expected_page}.")
+    ui.visual_sleep(for_visual_check)
+    assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
+
+    # <Action> Click "Return" button <Action>
+    # <Result> "EdicaoNegociacoes" (Trades) page shows up <Result>
+    ui.go_previous_page(window, qtbot)
+    expected_page = 'EdicaoNegociacoes'
+    observed_page = PAGE_BY_ID[window.PageID].name
+    logger.info(f"[OK] Navigated to {expected_page}.")
+    ui.visual_sleep(for_visual_check)
+    assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
+
+    # Non-regression check: always keep 1 window opened
+    amount_of_windows = ui._count_main_windows()
+    assert amount_of_windows == 1, f"Expected 1 window opened, but got {amount_of_windows}."
