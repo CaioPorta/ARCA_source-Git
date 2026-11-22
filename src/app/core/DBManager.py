@@ -251,7 +251,7 @@ class DBManager(object):
             self.conn.close()
 
             currdir = os.getcwd() # Bug Fix
-            if self.UserPath is not None and self.User is not None and not self.UserPath.replace("/","\\") == currdir:
+            if self.UserPath is not None and self.User is not None and not self.UserPath.replace("/","\\") == currdir and exists(currdir+"\\"+self.User+".db"):
                 # Verificar se tem uma "self.User"+.db na currdir
                 os.remove(currdir+"\\"+self.User+".db")
 

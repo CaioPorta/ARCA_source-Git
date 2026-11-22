@@ -469,9 +469,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_AddAtivo.setToolTip("Adicionar ativo")
         self.HMI.Button_AddAtivo.setStyleSheet("QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}")
 
-        try: self.HMI.ComboBox_Ativos.deleteLater()
-        except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))        
+        if getattr(self.HMI, 'ComboBox_Ativos', None) is not None: self.HMI.ComboBox_Ativos.deleteLater()
         self.HMI.ComboBox_Ativos = QComboBox()
         self.HMI.ComboBox_Ativos.setEnabled(True)
         self.HMI.ComboBox_Ativos.setFont(self.HMI.font16)
