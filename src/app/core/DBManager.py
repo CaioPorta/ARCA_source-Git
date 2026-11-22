@@ -161,7 +161,8 @@ class DBManager(object):
                     Exists = True
                 else:
                     Exists = "Arquivo não encontrado"
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally:conn.close()
         return Exists
 
@@ -171,6 +172,7 @@ class DBManager(object):
             currdir = os.getcwd() # Get current directory
             conn = sqlite3.connect(currdir+'\\Users.db')
             retorno = list(conn.execute("SELECT Usuário FROM Usuários WHERE Usuário = (?)",[(UserToCheck)]))
+            print(f"retorno {retorno}")
             for row in retorno:
                 retorno = list(conn.execute("SELECT Path FROM Usuários WHERE Usuário = (?)",[(UserToCheck)]))
                 UserPath = retorno[0][0]
@@ -180,7 +182,8 @@ class DBManager(object):
                 else:
                     # print("usuário ta na user.db mas nao tem o arquivo.db")
                     Exists = "Arquivo não encontrado"
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally:conn.close()
         return Exists
 
@@ -252,7 +255,8 @@ class DBManager(object):
                 # Verificar se tem uma "self.User"+.db na currdir
                 os.remove(currdir+"\\"+self.User+".db")
 
-        except: pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally: return False  # Set self.LoggedIn as False
         
     # def PersistenceDB(self): #ideia abandonada
@@ -304,7 +308,8 @@ class DBManager(object):
                 MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso',"Identificamos uma nova moeda na base de dados.\nA operação seguinte pode levar alguns minutos,\npois irá buscar online a cotação atual dessa moeda.\nNÃO FECHE O PROGRAMA DURANTE O PROCESSO SEGUINTE!")
                 Cotacao, CotacaoDolar = self.HMI.YahooFinance.GetCotacaoCripto(MoedaCorrente, self.GetUserCoinCurrency())
                 if Cotacao > 0: Modo = "Auto"
-            except:pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             finally:
                 self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
                                                     ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
@@ -382,7 +387,8 @@ class DBManager(object):
                 # Cotacao = 0.
                 # try:
                 #     if not ModoManualAtivo: Cotacao = self.HMI.YahooFinance.GetCotacao(ativo, self.GetUserCoinCurrency())
-                # except:pass
+                # except Exception as e:
+                    # print(e, traceback.format_exception(None, e, e.__traceback__))
                 Cotacao = self.HMI.Cache_Cotacao
                 self.AddRowInCurrentDB('Cotações', [('Modo', "Manual" if ModoManualAtivo else "Auto"),
                                                     ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
@@ -434,7 +440,8 @@ class DBManager(object):
                                                         ('CustoTotal', 'REAL'),
                                                         ('CustoMédio', 'REAL'),
                                                         ('Resultado', 'REAL')])
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.AtualizarCotacoes()
 
     def AddOperacao(self):
@@ -617,7 +624,8 @@ class DBManager(object):
                         JaFezOPopUp = True
                         Cotacao, CotacaoDolar = self.HMI.YahooFinance.GetCotacaoCripto(ativo, self.GetUserCoinCurrency())
                         if Cotacao > 0: Modo = "Auto"
-                    except:pass
+                    except Exception as e:
+                        print(e, traceback.format_exception(None, e, e.__traceback__))
                     finally:
                         self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
                                                             ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
@@ -631,7 +639,8 @@ class DBManager(object):
                         if not JaFezOPopUp: MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso',"Identificamos uma nova moeda na base de dados("+ativo+").\nA operação seguinte pode levar alguns minutos,\npois irá buscar online a cotação atual dessa moeda.\nNÃO FECHE O PROGRAMA DURANTE O PROCESSO SEGUINTE!")
                         Cotacao, CotacaoDolar = self.HMI.YahooFinance.GetCotacaoCripto(ativo, self.GetUserCoinCurrency())
                         if Cotacao > 0: Modo = "Auto"
-                    except:pass
+                    except Exception as e:
+                        print(e, traceback.format_exception(None, e, e.__traceback__))
                     finally:
                         self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
                                                             ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
@@ -788,7 +797,8 @@ class DBManager(object):
             for ativo in AtivosDaTabelaCotacoes:
                 if ativo not in AtivosSendoUtilizados and not ativo == "USD" and not ativo == self.GetUserCoinCurrency():
                     self.ModifyDB("DELETE FROM Cotações WHERE Ativo = (?)", [(ativo)])
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally:
             self.ModifyDB("VACUUM")
 
@@ -822,7 +832,8 @@ class DBManager(object):
             Cotacao = 0.
             if Modo == "Auto":
                 try: Cotacao = self.HMI.YahooFinance.GetCotacao(NomeNovo, self.GetUserCoinCurrency())
-                except:pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
             self.ModifyDB("UPDATE Cotações SET Modo = (?) Where rowid = "+IDc, [(Modo)])
             self.ModifyDB("UPDATE Cotações SET DataDeAtualização = (?) Where rowid = "+IDc, [(DataDeAtualizacao)])
             if not NomeAntigo == NomeNovo:
@@ -862,7 +873,9 @@ class DBManager(object):
             if not NomeAntigo == NomeNovo: self.ModifyDB("ALTER TABLE "+TableNameAntiga+" RENAME TO "+TableNameNova)
 
             return True
-        except: return False
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
+            return False
 
     def RenameCorretora(self):
         self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
@@ -1022,7 +1035,9 @@ class DBManager(object):
             Banco = self.HMI.ComboBox_Bancos.currentText().replace(" ","_")
             self.ModifyDB("DELETE FROM Bancos WHERE Banco = (?)",[("¨"+Banco+"¨")])
             self.ModifyDB("VACUUM")
-        except:print('erro deletando banco')
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
+            print('erro deletando banco')
         finally: self.UpdatePatrimonioRendimento()
 
     def DeleteCorretora(self):
@@ -1062,7 +1077,8 @@ class DBManager(object):
                     self.ModifyDB("VACUUM")
                     self.ModifyDB("DELETE FROM Cotações WHERE Ativo = (?)",[(ativo)])
                     self.ModifyDB("VACUUM")
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.UpdatePatrimonioRendimento()
 
     def DeleteOperacao(self, Items):
@@ -1402,7 +1418,8 @@ class DBManager(object):
                 estoque += retorno[-1][column]
                 column = headers.index("StakeDe¨"+ativo)
                 estoque += retorno[-1][column]
-            except:pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         return estoque
 
     def GetEstoqueAtivo(self, ativo='', BolsaOuCripto=''):
@@ -1757,7 +1774,8 @@ class DBManager(object):
             ativo = ativo.replace(" ","_")
             retorno, cursor = self.GetDataDB("SELECT Modo FROM Cotações WHERE Ativo = (?)",[(ativo)])
             Modo = retorno[0][0]
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally: return Modo
 
     def GetUserCoinCurrency(self):
@@ -1981,7 +1999,8 @@ class DBManager(object):
             retorno = list(conn.execute("SELECT * FROM Usuários WHERE Usuário = (?)",[(User)]))
             for row in retorno:
                 Email = row[1]
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally:
             conn.close()
             return Email
@@ -1994,7 +2013,8 @@ class DBManager(object):
             retorno = list(conn.execute("SELECT * FROM Usuários WHERE Email = (?)",[(Email.lower())]))
             for row in retorno:
                 User = row[0]
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally:
             conn.close()
             return User
@@ -2006,7 +2026,8 @@ class DBManager(object):
             retorno = list(conn.execute("SELECT * FROM Perfil WHERE Usuário = (?)", [(User)]))
             for row in retorno:
                 Passwd = row[1]
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally:
             conn.close()
             return Passwd
@@ -3018,7 +3039,8 @@ class DBManager(object):
             ListOfTuples = [(ticker,) for ticker in AllTickers]
             cursor = self.conn.cursor()
             cursor.executemany('INSERT INTO Tickers VALUES(?);', ListOfTuples)
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.ThreadLock.release()
         # print(self.GetAllTickers()) # Debug
 
@@ -3033,7 +3055,8 @@ class DBManager(object):
                 os.popen('attrib +h '+os.path.split(DB)[1]) # Torna o arquivo oculto na pasta do APP
             else:
                 os.popen('attrib +h '+DB) # Torna o arquivo oculto na pasta do APP
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
 
     def CreateTableInCurrentDB(self, TableName, ContentType):
         Header = ''
@@ -3654,7 +3677,8 @@ class DBManager(object):
             for row in content:
                 # print(row) # Debug
                 self.AddRowInCurrentDB(TableName, row)
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally:
             self.ModifyDB("DROP TABLE "+TableName+"¨NA") # Deleta a tabela antiga
 
@@ -3721,9 +3745,11 @@ class DBManager(object):
         ListaDeMoedas.extend(ListaComParesDaDireita)
         ListaDeMoedas = list(dict.fromkeys(ListaDeMoedas))
         try:ListaDeMoedas.remove('')
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         try:ListaDeMoedas.remove(None)
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         # print("Moedas encontradas: ", ListaDeMoedas) # Debug
         # 3)
         for coin in ListaDeMoedas:
@@ -4130,7 +4156,8 @@ class DBManager(object):
                     if "EstoqueDe¨" in head:
                         retorno = list(filter(lambda x: x[idx+13]<0 or +x[idx+14]<0 or x[idx+15]<0, Tabela))
                         if len(retorno) > 0: Status = True
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally: return Status
 
     def VerificarSeTemCustoNegativo(self, ativo='', corretora='', BolsaOuCripto=''):
@@ -4155,7 +4182,8 @@ class DBManager(object):
                     if "EstoqueDe¨" in head:
                         retorno = list(filter(lambda x: x[idx+16]<0, Tabela))
                         if len(retorno) > 0: Status = True
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
         finally: return Status
 
     #%% Interface DB
