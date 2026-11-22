@@ -3349,6 +3349,8 @@ class HMI_ARCA(object):
             SetTableWidth_11_2(SizeCol0, SizeCol1)
 
         def evt_finished_progress_11_2():
+            if self.HMI.PageID != PAGE_BY_NAME['ARCA'].page_id:
+                return
             self.Table_ContasCorrente.setVisible(True)
             self.HMI.unsetCursor()
 
@@ -3356,7 +3358,7 @@ class HMI_ARCA(object):
             coin = self.HMI.DBManager.GetUserCoinCurrency()
             HHeader = ['Corretora',
                        'Conta-corrente ('+coin+')']
-            SizeCol0,SizeCol1 = self.HMI.GetSizeOfTableColumns(data, HHeader) # DEFECT 6
+            SizeCol0,SizeCol1 = self.HMI.GetSizeOfTableColumns(data, HHeader)
 
             self.Table_ContasCorrenteHeader.adjustSize()
             self.Table_ContasCorrenteHeader.setColumnWidth(0, SizeCol0)
