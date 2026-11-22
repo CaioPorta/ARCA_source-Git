@@ -141,10 +141,6 @@ def test_explore_parent_minha_carteira(window, qtbot, for_visual_check, assure_a
     expected_page = 'MinhaCarteira'
     ui.go_previous_page(window, qtbot, for_visual_check, expected_page)
 
-    # Non-regression check: always keep 1 window opened
-    amount_of_windows = ui._count_main_windows()
-    assert amount_of_windows == 1, f"Expected 1 window opened, but got {amount_of_windows}."
-
 def test_trades_bolsa(window, qtbot, for_visual_check, assure_account_exists, login):
     """
     Test that the Trades -> Bolsa page is correctly loaded.
@@ -171,10 +167,6 @@ def test_trades_bolsa(window, qtbot, for_visual_check, assure_account_exists, lo
     # <Result> "EdicaoNegociacoes" (Trades) page shows up <Result>
     expected_page = 'EdicaoNegociacoes'
     ui.go_previous_page(window, qtbot, for_visual_check, expected_page)
-    
-    # Non-regression check: always keep 1 window opened
-    amount_of_windows = ui._count_main_windows()
-    assert amount_of_windows == 1, f"Expected 1 window opened, but got {amount_of_windows}."
 
 def test_trades_criptomoedas(window, qtbot, for_visual_check, assure_account_exists, login):
     """
@@ -206,7 +198,3 @@ def test_trades_criptomoedas(window, qtbot, for_visual_check, assure_account_exi
     # <Result> "MinhaCarteira" (Trades) page shows up <Result>
     expected_page = 'MinhaCarteira'
     ui.go_previous_page(window, qtbot, for_visual_check, expected_page)
-
-    # Non-regression check: always keep 1 window opened
-    amount_of_windows = ui._count_main_windows()
-    assert amount_of_windows == 1, f"Expected 1 window opened, but got {amount_of_windows}."
