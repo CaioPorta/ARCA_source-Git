@@ -489,9 +489,9 @@ class HMI_Events:
                         conn.close()
 
                         # Verificar se usuário já existe
-                        self.DBManager.CriarDB('Users.db') # Create Usuários.db IF NOT EXISTS
+                        self.DBManager.CriarDB('Users.db') # Create Usuários.db IF DOES NOT EXIST
                         self.DBManager.ConnectToDB('Users.db') # Connect to Users.db
-                        self.DBManager.CreateTableInCurrentDB('Usuários', [('Usuário', 'TEXT'), ('Email', 'TEXT'), ('Path', 'TEXT')]) # Create Table Usuários IF NOT EXISTS
+                        self.DBManager.CreateTableInCurrentDB('Usuários', [('Usuário', 'TEXT'), ('Email', 'TEXT'), ('Path', 'TEXT')]) # Create Table Usuários IF DOES NOT EXIST
 
                         retorno, cursor = self.DBManager.GetDataDB("SELECT * FROM Usuários")
                         retorno = list(filter(lambda x: x[0]==UserName or x[1]==UserEmail, retorno))
@@ -634,11 +634,11 @@ class HMI_Events:
                         try:
                             self.DBManager.User = UserName; self.DBManager.Senha = UserPswd; self.DBManager.Email = UserEmail; self.DBManager.UserPath = UserPath
 
-                            # Create Usuários.db IF NOT EXISTS
+                            # Create Usuários.db IF DOES NOT EXIST
                             self.DBManager.CriarDB(currdir+'\\Users.db')
                             # Connect to Users.db
                             self.DBManager.ConnectToDB(currdir+'\\Users.db')
-                            # Create Table Usuários IF NOT EXISTS
+                            # Create Table Usuários IF DOES NOT EXIST
                             self.DBManager.CreateTableInCurrentDB('Usuários', [('Usuário', 'TEXT'), ('Email', 'TEXT'), ('Path', 'TEXT')])
                             # Adicionar Usuário e Email
                             self.DBManager.AddRowInCurrentDB('Usuários', [('Usuário',UserName), ('Email',UserEmail), ('Path', UserPath)])

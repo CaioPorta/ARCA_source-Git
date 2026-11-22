@@ -1,10 +1,9 @@
-import pytestqt
+from os.path import exists
 from tests.libs.logger_setup import logger
 import os
 import sys
 import pytest
 import toml
-import sqlite3
 from PyQt5.QtCore import QEventLoop, QTimer, Qt, qInstallMessageHandler
 from PyQt5.QtWidgets import QApplication
 
@@ -122,7 +121,7 @@ def delete_account(window) -> None:
     assert not window.DBManager.DeleteUserDB()
 
 @pytest.fixture(scope="function", autouse=False)
-def assure_account_exists(window, user_info) -> None:
+def assure_account_exists(window, user_info, request: pytest.FixtureRequest) -> None:
     """
     Helper function to assure that the tester account exists in the database.
     Shall be called when argument "--assure-account-exists" is passed to pytest.
@@ -134,14 +133,21 @@ def assure_account_exists(window, user_info) -> None:
     Disconnect() from deleting the account (it only removes the db when Path differs from cwd).
     """
     user, password, email, moedacorrente, userpath = user_info
+
+    if request.config.getoption("--use-official-db", default=False):
+        # if file at userpath exists, continue
+        if email is not None and userpath is not None and exists(userpath+"\\"+user+".db"):
+            logger.info(f"Using user {user}")
+            return
+        raise ValueError(f"User {user} not found")
     
     logger.info(f"currdir: {userpath}")
     test_result = window.DBManager.CriarNovoPerfil(user, password, email, moedacorrente, userpath)
     assert test_result == True, f"Expected True, but got {test_result}"
-    yield
+    return
 
 @pytest.fixture(scope="function", autouse=False)
-def user_info(request: pytest.FixtureRequest) -> tuple[str, str, str, str]:
+def user_info(window, request: pytest.FixtureRequest) -> tuple[str, str, str, str]:
     """
     A fixture to get from tests/login_tester.toml or from tests/login_official.toml the user, password and email.
     Depends on --use-official-db.
@@ -153,9 +159,9 @@ def user_info(request: pytest.FixtureRequest) -> tuple[str, str, str, str]:
             login_data = toml.load(f)
         NomeDeUsuario = login_data["USER"]
         Senha = login_data["PASSWORD"]
-        Email = login_data["EMAIL"]
+        Email = window.DBManager.GetEmailByUser(NomeDeUsuario)
         Currency = None
-        userpath = None
+        userpath = window.DBManager.GetUserPathByUserName(NomeDeUsuario)
     else:
         # Load tester user info from tests/login_tester.toml.
         login_file = os.path.join(os.path.dirname(__file__), "login_tester.toml")
