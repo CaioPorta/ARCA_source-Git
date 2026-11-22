@@ -216,21 +216,7 @@ F: Tributação
 16 - Rename MinhaCarteira is Home
 
 Crashes:
-DEFECT 1 - self.HMI.Movie_AlterarOPBolsa.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20/2,self.HMI.frameGeometry().height()*7/10*.95-30, Qt.KeepAspectRatio))
 DEFECT 2 - GetAllTickers 
    HTTP Error 403: Forbidden
 DEFECT 3 - WebDriver.__init__() got an unexpected keyword argument 'chrome_options'
 DEFECT 4 - When sending a verification email, when creating a new account: QObject::startTimer: Timers cannot be started from another thread
-DEFECT 5 - When trying to go to page Desempenho:
-   Traceback (most recent call last):
-   File "f:\Projetos_pessoais_offline\ARCA_source-Git\src\app\ui\home_and_parameters\HMI_PageBuilders.py", line 257, in <lambda>
-      self.Button_DesempenhoInvisivel.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Desempenho'].page_id))
-                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   File "f:\Projetos_pessoais_offline\ARCA_source-Git\src\app\ui\home_and_parameters\HMI_PageNavigation.py", line 631, in CreatePage
-      self.HMI_Desempenho.CreatePage12()
-   File "f:\Projetos_pessoais_offline\ARCA_source-Git\src\app\ui\desempenho\HMI_Desempenho_page.py", line 71, in CreatePage12
-      self.HMI.Movie_Grafico1.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width(),self.HMI.frameGeometry().height()/5*.95, Qt.KeepAspectRatio))
-                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   TypeError: arguments did not match any overloaded call:
-   scaled(self, s: QSize, mode: Qt.AspectRatioMode): argument 1 has unexpected type 'int'
-   scaled(self, w: int, h: int, mode: Qt.AspectRatioMode): argument 2 has unexpected type 'float'
