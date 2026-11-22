@@ -3062,7 +3062,7 @@ class DBManager(object):
         Header = ''
         for item in ContentType: Header += str(item[0])+' '+str(item[1])+","
         Header = Header[:-1]
-        self.ModifyDB("CREATE TABLE IF DOES NOT EXIST "+TableName+" ("+Header+")")
+        self.ModifyDB("CREATE TABLE IF NOT EXISTS "+TableName+" ("+Header+")")
         return True
 
     def AddRowInCurrentDB(self, TableName, Content):
