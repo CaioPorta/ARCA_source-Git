@@ -11,8 +11,13 @@ from datetime import datetime, timedelta
 from PyQt5.QtGui import QBrush, QColor, QCursor, QIcon, QMovie
 from PyQt5.QtWidgets import (QAbstractScrollArea, QComboBox, QHBoxLayout, QLabel,
                              QLineEdit, QMessageBox, QPushButton, QTableWidget, QTableWidgetItem)
-from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtCore import QObject, pyqtSignal, QSize, Qt
 from ui.pages import PAGE_BY_NAME
+
+
+class _EmailSendWorker(QObject):
+    started = pyqtSignal()
+    finished = pyqtSignal()
 
 
 class HMI_PageBuilders:
@@ -654,15 +659,17 @@ class HMI_PageBuilders:
         self.TextBox_NomeDeUsuario.setFocus()
 
     def CreatePage6(self, Email, NomeDeUsuario):
+        worker = _EmailSendWorker()
         def Thread(threadname, parametros):
-            self.setCursor(Qt.CursorShape.WaitCursor)
             Email, NomeDeUsuario = parametros
+            worker.started.emit()
             # Geração do código de confirmação
             self.CodigoDeConfirmacaoGerado = str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
             self.EnviarEmailDeConfirmacao(Email, NomeDeUsuario, self.CodigoDeConfirmacaoGerado)
-            self.unsetCursor()
-            self.TextBox_CodigoDeConfirmacao.setFocus()
+            worker.finished.emit()
         _thread.start_new_thread(Thread, ('NiceThread',(Email, NomeDeUsuario)))
+        worker.started.connect(lambda: self.setCursor(Qt.CursorShape.WaitCursor))
+        worker.finished.connect(self.unsetCursor)
 
         self.Background_1 = QLabel()
         Background_1 = 'rgb(0, 0, 0)'
@@ -761,15 +768,17 @@ class HMI_PageBuilders:
         NomeDeUsuario = self.TextBox_NomeDeUsuario.text()
 
         # Envio de email com o código
+        worker = _EmailSendWorker()
         def Thread(threadname, parametros):
-            self.setCursor(Qt.CursorShape.WaitCursor)
             Email, NomeDeUsuario = parametros
+            worker.started.emit()
             # Geração do código de confirmação
             self.CodigoDeConfirmacaoGerado = str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
             self.EnviarEmailDeConfirmacao(Email, NomeDeUsuario, self.CodigoDeConfirmacaoGerado)
-            self.unsetCursor()
-            self.TextBox_CodigoDeConfirmacao.setFocus()
+            worker.finished.emit()
         _thread.start_new_thread(Thread, ('NiceThread',(Email, NomeDeUsuario)))
+        worker.started.connect(lambda: self.setCursor(Qt.CursorShape.WaitCursor))
+        worker.finished.connect(self.unsetCursor)
 
         self.Background_1 = QLabel()
         Background_1 = 'rgb(0, 0, 0)'
@@ -826,15 +835,17 @@ class HMI_PageBuilders:
         NomeDeUsuario = self.TextBox_NomeDeUsuario.text()
 
         # Envio de email com o código
+        worker = _EmailSendWorker()
         def Thread(threadname, parametros):
-            self.setCursor(Qt.CursorShape.WaitCursor)
             Email, NomeDeUsuario = parametros
+            worker.started.emit()
             # Geração do código de confirmação
             self.CodigoDeConfirmacaoGerado = str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
             self.EnviarEmailDeConfirmacao(Email, NomeDeUsuario, self.CodigoDeConfirmacaoGerado)
-            self.unsetCursor()
-            self.TextBox_CodigoDeConfirmacao.setFocus()
+            worker.finished.emit()
         _thread.start_new_thread(Thread, ('NiceThread',(Email, NomeDeUsuario)))
+        worker.started.connect(lambda: self.setCursor(Qt.CursorShape.WaitCursor))
+        worker.finished.connect(self.unsetCursor)
 
         self.Background_1 = QLabel()
         Background_1 = 'rgb(0, 0, 0)'
@@ -1159,15 +1170,17 @@ class HMI_PageBuilders:
         Email = self.TextBox_Email.text().lower()
         NomeDeUsuario = self.DBManager.User
         # Envio de email com o código
+        worker = _EmailSendWorker()
         def Thread(threadname, parametros):
-            self.setCursor(Qt.CursorShape.WaitCursor)
             Email, NomeDeUsuario = parametros
+            worker.started.emit()
             # Geração do código de confirmação
             self.CodigoDeConfirmacaoGerado = str(random.randint(0, 9)) + str(random.randint(0, 9)) + str(random.randint(0, 9)) + str(random.randint(0, 9)) + str(random.randint(0, 9)) + str(random.randint(0, 9))
             self.EnviarEmailDeConfirmacao(Email, NomeDeUsuario, self.CodigoDeConfirmacaoGerado)
-            self.unsetCursor()
-            self.TextBox_CodigoDeConfirmacao.setFocus()
+            worker.finished.emit()
         _thread.start_new_thread(Thread, ('NiceThread', (Email, NomeDeUsuario)))
+        worker.started.connect(lambda: self.setCursor(Qt.CursorShape.WaitCursor))
+        worker.finished.connect(self.unsetCursor)
 
         self.Background_1 = QLabel()
         Background_1 = 'rgb(0, 0, 0)'
@@ -1224,15 +1237,17 @@ class HMI_PageBuilders:
         NomeDeUsuario = self.User
 
         # Envio de email com o código
+        worker = _EmailSendWorker()
         def Thread(threadname, parametros):
-            self.setCursor(Qt.CursorShape.WaitCursor)
             Email, NomeDeUsuario = parametros
+            worker.started.emit()
             # Geração do código de confirmação
             self.CodigoDeConfirmacaoGerado = str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
             self.EnviarEmailDeConfirmacao(Email, NomeDeUsuario, self.CodigoDeConfirmacaoGerado)
-            self.unsetCursor()
-            self.TextBox_CodigoDeConfirmacao.setFocus()
+            worker.finished.emit()
         _thread.start_new_thread(Thread, ('NiceThread',(Email, NomeDeUsuario)))
+        worker.started.connect(lambda: self.setCursor(Qt.CursorShape.WaitCursor))
+        worker.finished.connect(self.unsetCursor)
 
         self.Background_1 = QLabel()
         Background_1 = 'rgb(0, 0, 0)'
