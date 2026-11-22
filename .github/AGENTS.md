@@ -7,3 +7,7 @@
 Evitar de fazer assert na tests\libs\ui_helpers.py
 
 Evitar de usar PAGE_BY_NAME nos tests. Usar apenas no helper, se realmente necessario.
+
+Commentar a acao e resultado esperado antes das principais acoes de teste.
+
+Manter o mesmo padrao entre os diferentes testes.
