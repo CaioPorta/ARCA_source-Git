@@ -157,6 +157,11 @@ def test_trades_bolsa(window, qtbot, for_visual_check, assure_account_exists, lo
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
     logger.info(f"[OK] App started on {observed_page} page.")
 
+    # <Action> Click "Negociações" button (via the Trades page) <Action>
+    # <Result> "EdicaoNegociacoes" page shows up <Result>
+    expected_page = 'EdicaoNegociacoes'
+    ui.go_Trades_page(window, qtbot, for_visual_check)
+
     # <Action> Click "Bolsa" button (via the Trades page) <Action>
     # <Result> "EdicaoNegociacoesBolsa" page shows up <Result>
     expected_page = 'EdicaoNegociacoesBolsa'
@@ -166,6 +171,7 @@ def test_trades_bolsa(window, qtbot, for_visual_check, assure_account_exists, lo
     # <Result> "EdicaoNegociacoes" (Trades) page shows up <Result>
     expected_page = 'EdicaoNegociacoes'
     ui.go_previous_page(window, qtbot, for_visual_check, expected_page)
+    
     # Non-regression check: always keep 1 window opened
     amount_of_windows = ui._count_main_windows()
     assert amount_of_windows == 1, f"Expected 1 window opened, but got {amount_of_windows}."

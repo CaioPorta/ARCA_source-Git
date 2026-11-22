@@ -142,18 +142,29 @@ def go_MercadoDup_page(window, qtbot, for_visual_check, expected_page='AnaliseMe
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
     logger.info(f"[OK] Navigated to {expected_page}.")
 
-def go_Trades_Bolsa_page(window, qtbot, for_visual_check, expected_page = 'EdicaoNegociacoesBolsa'):
+def go_Trades_page(window, qtbot, for_visual_check, expected_page = 'EdicaoNegociacoes'):
     """
-    Navigate to the EdicaoNegociacoesBolsa page (Trades -> Bolsa, PageID '18') from the MinhaCarteira page.
-
-    Pre-requisite: be on the MinhaCarteira page. Navigates through the Trades page, then clicks the
-    'Bolsa' button there.
+    Navigate to the EdicaoNegociacoes page (Trades) from the MinhaCarteira page.
     """
     observed_page = PAGE_BY_ID[window.PageID].name
     assert observed_page != expected_page, f"Expected {expected_page} page, but got {observed_page} page."
 
-    assert observed_page == 'EdicaoNegociacoes', f"Expected to be at 'EdicaoNegociacoes' page before moving to 'EdicaoNegociacoesBolsa', but got {observed_page} page."
-    logger.info(f"[OK] App started on {observed_page} page.")
+    assert getattr(window, 'Button_Negociações', None) is not None, \
+        "'Trades' button not found; expected to be on the MinhaCarteira page."
+    _show_click(window.Button_Negociações)
+    window.Button_Negociações.pressed.emit()
+    
+    observed_page = PAGE_BY_ID[window.PageID].name
+    visual_sleep(for_visual_check)
+    assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
+    logger.info(f"[OK] Navigated to {expected_page}.")
+
+def go_Trades_Bolsa_page(window, qtbot, for_visual_check, expected_page = 'EdicaoNegociacoesBolsa'):
+    """
+    Navigate to the EdicaoNegociacoesBolsa page (Trades -> Bolsa) from the EdicaoNegociacoes page.
+    """
+    observed_page = PAGE_BY_ID[window.PageID].name
+    assert observed_page != expected_page, f"Expected {expected_page} page, but got {observed_page} page."
 
     assert getattr(window, 'Button_TradesBolsa', None) is not None, \
         "'Bolsa' button not found; expected to be on the Trades page."
@@ -167,21 +178,15 @@ def go_Trades_Bolsa_page(window, qtbot, for_visual_check, expected_page = 'Edica
 
 def go_Trades_Criptomoedas_page(window, qtbot, for_visual_check, expected_page):
     """
-    Navigate to the EdicaoNegociacoesCripto page (Trades -> Criptomoedas, PageID '19') from the MinhaCarteira page.
-
-    Pre-requisite: be on the MinhaCarteira page. Navigates through the Trades page, then clicks the
-    'Criptomoedas' button there.
+    Navigate to the EdicaoNegociacoesCripto page (Trades -> Criptomoedas) from the MinhaCarteira page.
     """
     observed_page = PAGE_BY_ID[window.PageID].name
     assert observed_page != expected_page, f"Expected {expected_page} page, but got {observed_page} page."
-
-    assert observed_page == 'EdicaoNegociacoes', f"Expected to be at 'EdicaoNegociacoes' page before moving to 'EdicaoNegociacoesBolsa', but got {observed_page} page."
-    logger.info(f"[OK] App started on {observed_page} page.")
-
+    
     assert getattr(window, 'Button_TradesCriptomoedas', None) is not None, \
-        "'Bolsa' button not found; expected to be on the Trades page."
-    _show_click(window.Button_TradesBolsa)
-    window.Button_TradesBolsa.pressed.emit()
+        "'Criptomoedas' button not found; expected to be on the Trades page."
+    _show_click(window.Button_TradesCriptomoedas)
+    window.Button_TradesCriptomoedas.pressed.emit()
     
     observed_page = PAGE_BY_ID[window.PageID].name
     visual_sleep(for_visual_check)
