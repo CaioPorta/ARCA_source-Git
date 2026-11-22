@@ -5,6 +5,7 @@ Created on Sat Sep 18 22:54:52 2021
 @author: Caio Moreira Porta
 """
 from datetime import datetime
+import traceback
 
 from PyQt5.QtGui import (
     QFont, QCursor,
@@ -79,7 +80,8 @@ class HMI_Trades_Bolsa(object):
             self.HMI.ComboBox_Corretoras.addItem(corretora)
             try:
                 if corretora == self.HMI.TextBox_NovaCorretora.text(): self.HMI.idxCorretora = idx
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxCorretora < len(corretoras):
             self.HMI.ComboBox_Corretoras.setCurrentIndex(self.HMI.idxCorretora)
 
@@ -468,7 +470,8 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_AddAtivo.setStyleSheet("QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}")
 
         try: self.HMI.ComboBox_Ativos.deleteLater()
-        except: pass        
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))        
         self.HMI.ComboBox_Ativos = QComboBox()
         self.HMI.ComboBox_Ativos.setEnabled(True)
         self.HMI.ComboBox_Ativos.setFont(self.HMI.font16)
@@ -989,7 +992,8 @@ class HMI_Trades_Bolsa(object):
             self.HMI.ComboBox_TipoDeAtivo.addItem(Tipo)
             try:
                 if Tipo == tipodeativo: self.HMI.idxTipoDeAtivo = idx
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxTipoDeAtivo < len(self.HMI.DBManager.GetTiposDeAtivo()):
             self.HMI.ComboBox_TipoDeAtivo.setCurrentIndex(self.HMI.idxTipoDeAtivo)
         line_edit = self.HMI.ComboBox_TipoDeAtivo.lineEdit()
@@ -1011,7 +1015,8 @@ class HMI_Trades_Bolsa(object):
             self.HMI.ComboBox_SubtipoDeAtivo.addItem(SubTipo)
             try:
                 if SubTipo == subtipodeativo: self.HMI.idxSubtipoDeAtivo = idx
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxSubtipoDeAtivo < len(self.HMI.DBManager.GetSubtiposDeAtivo()):
             self.HMI.ComboBox_SubtipoDeAtivo.setCurrentIndex(self.HMI.idxSubtipoDeAtivo)
         line_edit = self.HMI.ComboBox_SubtipoDeAtivo.lineEdit()
@@ -1033,7 +1038,8 @@ class HMI_Trades_Bolsa(object):
             self.HMI.ComboBox_SetorAtivo.addItem(Setor)
             try:
                 if Setor == setorativo: self.HMI.idxSetorAtivo = idx
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxSetorAtivo < len(self.HMI.DBManager.GetSetoresDeAtivo()):
             self.HMI.ComboBox_SetorAtivo.setCurrentIndex(self.HMI.idxSetorAtivo)
         line_edit = self.HMI.ComboBox_SetorAtivo.lineEdit()
@@ -2312,7 +2318,8 @@ class HMI_Trades_Bolsa(object):
             self.HMI.ComboBox_TipoDeAtivo.addItem(Tipo)
             try:
                 if Tipo == self.HMI.TextBox_TipoAtivo.text(): self.HMI.idxTipoDeAtivo = idx
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxTipoDeAtivo < len(self.HMI.DBManager.GetTiposDeAtivo()):
             self.HMI.ComboBox_TipoDeAtivo.setCurrentIndex(self.HMI.idxTipoDeAtivo)
 
@@ -3143,7 +3150,8 @@ class HMI_Trades_Bolsa(object):
                             self.HMI.CreatePage(PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id) # Ir pra próxima alteração
                     else:
                         try: self.HMI.Label_Erro1.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.HMI.Label_Erro1 = QLabel()
                         self.HMI.Label_Erro1.setStyleSheet('color: red')
                         self.HMI.Label_Erro1.setFont(self.HMI.font12)
@@ -3154,7 +3162,8 @@ class HMI_Trades_Bolsa(object):
                     MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
             except:
                 try: self.HMI.Label_Erro1.deleteLater()
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
                 self.HMI.Label_Erro1 = QLabel()
                 self.HMI.Label_Erro1.setStyleSheet('color: red')
                 self.HMI.Label_Erro1.setFont(self.HMI.font12)

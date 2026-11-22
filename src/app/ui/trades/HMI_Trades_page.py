@@ -4,6 +4,8 @@ Created on Sat Sep 18 22:54:52 2021
 
 @author: Caio Moreira Porta
 """
+import traceback
+
 from PyQt5.QtGui import (
     QFont, QCursor,
     QIcon, QMovie,
@@ -177,7 +179,8 @@ class HMI_Trades(object):
             self.HMI.ComboBox_Bancos.addItem(banco)
             try:
                 if banco == self.HMI.TextBox_NovoBanco.text(): self.HMI.idxBanco = idx
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxBanco < len(self.HMI.DBManager.GetBancos()):
             self.HMI.ComboBox_Bancos.setCurrentIndex(self.HMI.idxBanco)
 

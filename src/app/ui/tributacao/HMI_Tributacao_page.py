@@ -4,6 +4,7 @@ Created on Fri Oct 15 23:05:53 2021
 
 @author: Caio Moreira Porta
 """
+import traceback
 import time
 from datetime import datetime
 import dateutil
@@ -800,9 +801,11 @@ class HMI_Tributacao(object):
                     except Exception as e:
                         print(e)
                         try: workbook.close()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         try: wb.Close(True)
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                     finally:
                         self.HMI.unsetCursor()
 

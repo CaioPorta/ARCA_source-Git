@@ -5,6 +5,7 @@ Created on Sat Sep 18 22:54:52 2021
 @author: Caio Moreira Porta
 """
 from datetime import datetime
+import traceback
 
 from PyQt5.QtGui import (
     QFont, QCursor,
@@ -76,7 +77,8 @@ class HMI_Trades_Criptomoedas(object):
             self.HMI.ComboBox_Corretoras.addItem(corretora)
             try:
                 if corretora == self.HMI.TextBox_NovaCorretora.text(): self.HMI.idxCorretora = idx
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxCorretora < len(corretoras):
             self.HMI.ComboBox_Corretoras.setCurrentIndex(self.HMI.idxCorretora)
 
@@ -1953,7 +1955,8 @@ class HMI_Trades_Criptomoedas(object):
                 self.HMI.Button_Info15.deleteLater()
                 self.HMI.Label_Msg12.deleteLater()
                 self.HMI.TextBox_Par_Direita.deleteLater()
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             black = "rgb(0,0,0)"
             self.HMI.F_GLayout[0].removeItem(self.HMI.HBoxLayout_Par)
             self.HMI.HBoxLayout_Par = QHBoxLayout()
@@ -2061,7 +2064,8 @@ class HMI_Trades_Criptomoedas(object):
                 self.HMI.Button_Info15.deleteLater()
                 self.HMI.Label_Msg12.deleteLater()
                 self.HMI.TextBox_Par_Direita.deleteLater()
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             black = "rgb(0,0,0)"
             self.HMI.F_GLayout[0].removeItem(self.HMI.HBoxLayout_Par)
             self.HMI.HBoxLayout_Par = QHBoxLayout()
@@ -2170,7 +2174,8 @@ class HMI_Trades_Criptomoedas(object):
                 self.HMI.Button_Info15.deleteLater()
                 self.HMI.Label_Msg12.deleteLater()
                 self.HMI.TextBox_Par_Direita.deleteLater()
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             black = "rgb(0,0,0)"
             self.HMI.F_GLayout[0].removeItem(self.HMI.HBoxLayout_Par)
             self.HMI.HBoxLayout_Par = QHBoxLayout()
@@ -2271,7 +2276,8 @@ class HMI_Trades_Criptomoedas(object):
                 self.HMI.Button_Info15.deleteLater()
                 self.HMI.Label_Msg12.deleteLater()
                 self.HMI.TextBox_Par_Direita.deleteLater()
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             black = "rgb(0,0,0)"
             self.HMI.F_GLayout[0].removeItem(self.HMI.HBoxLayout_Par)
             self.HMI.HBoxLayout_Par = QHBoxLayout()
@@ -2370,7 +2376,8 @@ class HMI_Trades_Criptomoedas(object):
                 self.HMI.Button_Info15.deleteLater()
                 self.HMI.Label_Msg12.deleteLater()
                 self.HMI.TextBox_Par_Direita.deleteLater()
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             black = "rgb(0,0,0)"
             self.HMI.F_GLayout[0].removeItem(self.HMI.HBoxLayout_Par)
             self.HMI.HBoxLayout_Par = QHBoxLayout()
@@ -2469,7 +2476,8 @@ class HMI_Trades_Criptomoedas(object):
                 self.HMI.Button_Info15.deleteLater()
                 self.HMI.Label_Msg12.deleteLater()
                 self.HMI.TextBox_Par_Direita.deleteLater()
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             black = "rgb(0,0,0)"
             self.HMI.F_GLayout[0].removeItem(self.HMI.HBoxLayout_Par)
             self.HMI.HBoxLayout_Par = QHBoxLayout()
@@ -2568,7 +2576,8 @@ class HMI_Trades_Criptomoedas(object):
                 self.HMI.Button_Info15.deleteLater()
                 self.HMI.Label_Msg12.deleteLater()
                 self.HMI.TextBox_Par_Direita.deleteLater()
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             black = "rgb(0,0,0)"
             self.HMI.F_GLayout[0].removeItem(self.HMI.HBoxLayout_Par)
             self.HMI.HBoxLayout_Par = QHBoxLayout()
@@ -2667,7 +2676,8 @@ class HMI_Trades_Criptomoedas(object):
                 self.HMI.Button_Info15.deleteLater()
                 self.HMI.Label_Msg12.deleteLater()
                 self.HMI.TextBox_Par_Direita.deleteLater()
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             black = "rgb(0,0,0)"
             self.HMI.F_GLayout[0].removeItem(self.HMI.HBoxLayout_Par)
             self.HMI.HBoxLayout_Par = QHBoxLayout()
@@ -2766,7 +2776,8 @@ class HMI_Trades_Criptomoedas(object):
                 self.HMI.Button_Info15.deleteLater()
                 self.HMI.Label_Msg12.deleteLater()
                 self.HMI.TextBox_Par_Direita.deleteLater()
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             black = "rgb(0,0,0)"
             self.HMI.F_GLayout[0].removeItem(self.HMI.HBoxLayout_Par)
             self.HMI.HBoxLayout_Par = QHBoxLayout()
@@ -2863,7 +2874,8 @@ class HMI_Trades_Criptomoedas(object):
                 self.HMI.Button_Info15.deleteLater()
                 self.HMI.Label_Msg12.deleteLater()
                 self.HMI.TextBox_Par_Direita.deleteLater()
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             black = "rgb(0,0,0)"
             self.HMI.F_GLayout[0].removeItem(self.HMI.HBoxLayout_Par)
             self.HMI.HBoxLayout_Par = QHBoxLayout()
@@ -2949,7 +2961,8 @@ class HMI_Trades_Criptomoedas(object):
                         else: self.HMI.CreatePage(PAGE_BY_NAME['AlterarOperacaoCripto'].page_id) # Ir pra próxima alteração
                     else:
                         try: self.HMI.Label_Erro1.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.HMI.Label_Erro1 = QLabel()
                         self.HMI.Label_Erro1.setStyleSheet('color: red')
                         self.HMI.Label_Erro1.setFont(self.HMI.font12)
@@ -2960,7 +2973,8 @@ class HMI_Trades_Criptomoedas(object):
                     MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
             except:
                 try: self.HMI.Label_Erro1.deleteLater()
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
                 self.HMI.Label_Erro1 = QLabel()
                 self.HMI.Label_Erro1.setStyleSheet('color: red')
                 self.HMI.Label_Erro1.setFont(self.HMI.font12)

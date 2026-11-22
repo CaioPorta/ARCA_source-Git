@@ -4,6 +4,7 @@ Created on Sun Sep  5 01:44:04 2021
 @author: Caio Moreira Porta
 """
 import os
+import traceback
 import sqlite3
 import tkinter
 from tkinter import filedialog
@@ -50,7 +51,8 @@ class HMI_Events:
                         self.TextBox_GastoMensal.setEnabled(False)
                         self.TextBox_MontanteAplicado.setEchoMode(QLineEdit.Password)
                         self.TextBox_MontanteEmAplicacao.setEchoMode(QLineEdit.Password)
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
                 try:
                     self.GraphWidget_Carteira.deleteLater()
                     if self.HMI_ARCA.CarteiraGraph_id == 'pie': self.GraphWidget_Carteira = self.HMI_ARCA.CreateGraph_Page11_Carteira_pie()
@@ -67,7 +69,8 @@ class HMI_Events:
                     self.Button_CarteiraInvisivel.setFixedSize(int(self.frameGeometry().height()*proporcao),int(self.frameGeometry().height()*proporcao))
                     self.Button_CarteiraInvisivel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
                     self.F_GLayout[self.GCount-1].addWidget(self.Button_CarteiraInvisivel, 2, 2, 2, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
                 try:
                     self.HMI_ARCA.Table_ContasCorrente.deleteLater()
                     self.HMI_ARCA.Table_ContasCorrente = QTableWidget()
@@ -84,7 +87,8 @@ class HMI_Events:
                     self.HMI_ARCA.Table_ContasCorrente.horizontalHeader().hide()
                     self.F_GLayout[self.GCount-1].addWidget(self.HMI_ARCA.Table_ContasCorrente, 3, 4, 2, 2, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
                     self.HMI_ARCA.CreateTable_11_2() # Table_ContasCorrente (Criada com uma thread)
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
 
             elif self.PageID== PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id: # BolsaPage
                 if self.ShowValues:
@@ -371,7 +375,8 @@ class HMI_Events:
                                  (img_height - crop_height) // 2,
                                  (img_width + crop_width) // 2,
                                  (img_height + crop_height) // 2)).save(".\\images\\ProfilePhoto_"+self.User+'.jpg', quality=95)
-                    except: pass
+                    except Exception as e:
+                        print(e, traceback.format_exception(None, e, e.__traceback__))
                 self.unsetCursor()
                 self.CreatePage(PAGE_BY_NAME['Perfil'].page_id)
 
@@ -1000,7 +1005,8 @@ class HMI_Events:
                                         Cotacao = [item[3] for item in Cotacoes if item[2] == ativo][0]
                                         if Cotacao>0: return True
                                         else: return False
-                                    except: pass
+                                    except Exception as e:
+                                        print(e, traceback.format_exception(None, e, e.__traceback__))
 
                                 TableBruto, cursor = self.DBManager.GetDataDB("SELECT * FROM "+TableNameBruto)
                                 ListaComParesDaEsquerda = [row[3] for row in TableBruto]

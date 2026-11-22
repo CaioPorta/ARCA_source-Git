@@ -4,6 +4,7 @@ Created on Sun Sep  5 01:44:04 2021
 @author: Caio Moreira Porta
 """
 import os
+import traceback
 import sys
 import time
 from calendar import monthrange
@@ -65,7 +66,8 @@ class HMI_Presentation:
                 self.ComboBox_SubtipoDeAtivo.addItem(Subtipo)
                 try:
                     if Subtipo == self.TextBox_SubtipoDeAtivo.text(): self.idxSubtipoDeAtivo = idx
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
             if self.idxSubtipoDeAtivo < len(self.DBManager.GetSubtiposDeAtivo()):
                 self.ComboBox_SubtipoDeAtivo.setCurrentIndex(self.idxSubtipoDeAtivo)
             self.ComboBox_SetorAtivo.clear()
@@ -73,7 +75,8 @@ class HMI_Presentation:
                 self.ComboBox_SetorAtivo.addItem(Setor)
                 try:
                     if Setor == self.TextBox_SetorAtivo.text(): self.idxSetorAtivo = idx
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
             if self.idxSetorAtivo < len(self.DBManager.GetSetoresDeAtivo()):
                 self.ComboBox_SetorAtivo.setCurrentIndex(self.idxSetorAtivo)
             if self.ComboBox_TipoDeAtivo.currentText() == "Real Estate":
@@ -84,7 +87,8 @@ class HMI_Presentation:
                 self.ComboBox_SubtipoDeAtivo.addItem(Subtipo)
                 try:
                     if Subtipo == self.TextBox_SubtipoDeAtivo.text(): self.idxSubtipoDeAtivo = idx
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
             if self.idxSubtipoDeAtivo < len(self.DBManager.GetSubtiposDeAtivo()):
                 self.ComboBox_SubtipoDeAtivo.setCurrentIndex(self.idxSubtipoDeAtivo)
             self.ComboBox_SetorAtivo.clear()
@@ -92,7 +96,8 @@ class HMI_Presentation:
                 self.ComboBox_SetorAtivo.addItem(Setor)
                 try:
                     if Setor == self.TextBox_SetorAtivo.text(): self.idxSetorAtivo = idx
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
             if self.idxSetorAtivo < len(self.DBManager.GetSetoresDeAtivo()):
                 self.ComboBox_SetorAtivo.setCurrentIndex(self.idxSetorAtivo)
             if self.ComboBox_TipoDeAtivo.currentText() == "Real Estate":
@@ -730,7 +735,8 @@ class HMI_Presentation:
                 self.TextBox_Obs.deleteLater()
                 self.Button_Info8.deleteLater()
                 self.F_GLayout[0].removeItem(self.HBoxLayout_Obs)
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id, PAGE_BY_NAME['AlterarNovaOperacaoManualBolsa'].page_id] and self.PageIDAux == '':
             try:
                 self.Button_Calendario.deleteLater()
@@ -755,7 +761,8 @@ class HMI_Presentation:
                 self.TextBox_Obs.deleteLater()
                 self.Button_Info8.deleteLater()
                 self.F_GLayout[0].removeItem(self.HBoxLayout_Obs)
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id, PAGE_BY_NAME['AlterarOperacaoCripto'].page_id] and self.PageIDAux == '':
             try:
                 self.Button_Calendario.deleteLater()
@@ -798,7 +805,8 @@ class HMI_Presentation:
                 self.TextBox_Obs.deleteLater()
                 self.Button_Info8.deleteLater()
                 self.F_GLayout[0].removeItem(self.HBoxLayout_Obs)
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
 
         for i in range(self.GCount):
             while self.F_GLayout[i].count(): # Remove and close every widget from the sub Layout

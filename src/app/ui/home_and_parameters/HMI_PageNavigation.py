@@ -4,6 +4,7 @@ Created on Sun Sep  5 01:44:04 2021
 @author: Caio Moreira Porta
 """
 import os
+import traceback
 import sys
 import sqlite3
 from datetime import datetime
@@ -52,7 +53,8 @@ class HMI_PageNavigation:
                         else: self.CreatePage(PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id)
             else:
                 try: self.Label_Erro1.deleteLater()
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
                 self.Label_Erro1 = QLabel()
                 self.Label_Erro1.setStyleSheet('color: red')
                 self.Label_Erro1.setFont(self.font12)
@@ -91,7 +93,8 @@ class HMI_PageNavigation:
                         else: self.CreatePage(PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id)
             else:
                 try: self.Label_Erro1.deleteLater()
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
                 self.Label_Erro1 = QLabel()
                 self.Label_Erro1.setStyleSheet('color: red')
                 self.Label_Erro1.setFont(self.font12)
@@ -124,7 +127,8 @@ class HMI_PageNavigation:
                             MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                     else:
                         try: self.Label_Erro1.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
@@ -167,7 +171,8 @@ class HMI_PageNavigation:
                     else:
                         if not self.TextBox_NovaSenha1.text() == self.TextBox_NovaSenha2.text():
                             try: self.Label_Erro1.deleteLater()
-                            except: pass
+                            except Exception as e:
+                                print(e, traceback.format_exception(None, e, e.__traceback__))
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
@@ -177,7 +182,8 @@ class HMI_PageNavigation:
                             self.TextBox_NovaSenha1.setFocus()
                         elif not len(self.TextBox_NovaSenha1.text())>3:
                             try: self.Label_Erro1.deleteLater()
-                            except: pass
+                            except Exception as e:
+                                print(e, traceback.format_exception(None, e, e.__traceback__))
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
@@ -213,7 +219,8 @@ class HMI_PageNavigation:
                             # self.DBManager.AtualizarCotacoes()
                         else:
                             try: self.Label_Erro1.deleteLater()
-                            except: pass
+                            except Exception as e:
+                                print(e, traceback.format_exception(None, e, e.__traceback__))
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
@@ -224,7 +231,8 @@ class HMI_PageNavigation:
                             self.TextBox_CodigoDeConfirmacao.setFocus()
                     else:
                         try: self.Label_Erro1.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
@@ -237,7 +245,8 @@ class HMI_PageNavigation:
                     if Resposta == "Arquivo não existe":
                         self.LoggedIn = False
                         try: self.Label_Erro1.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
@@ -261,7 +270,8 @@ class HMI_PageNavigation:
                     else:
                         self.LoggedIn = False
                         try: self.Label_Erro1.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
@@ -327,7 +337,8 @@ class HMI_PageNavigation:
                         self.PutHeader()
                     else:
                         try: self.Label_Erro1.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
@@ -348,7 +359,8 @@ class HMI_PageNavigation:
                         self.PutHeader()
                     else:
                         try: self.Label_Erro1.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
@@ -366,7 +378,8 @@ class HMI_PageNavigation:
                     self.PutHeader()
                 else:
                     try: self.Label_Erro1.deleteLater()
-                    except: pass
+                    except Exception as e:
+                        print(e, traceback.format_exception(None, e, e.__traceback__))
                     self.Label_Erro1 = QLabel()
                     self.Label_Erro1.setStyleSheet('color: red')
                     self.Label_Erro1.setFont(self.font12)
@@ -397,7 +410,8 @@ class HMI_PageNavigation:
                         self.PutHeader()
                 else:
                         try: self.Label_Erro1.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
@@ -418,7 +432,8 @@ class HMI_PageNavigation:
                             self.TextBox_NomeDeUsuario.setFocus()
 
                         try: self.Label_Erro2.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro2 = QLabel()
                         self.Label_Erro2.setStyleSheet('color: red')
                         self.Label_Erro2.setFont(self.font12)
@@ -434,7 +449,8 @@ class HMI_PageNavigation:
                             self.TextBox_Email.setFocus()
 
                         try: self.Label_Erro3.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro3 = QLabel()
                         self.Label_Erro3.setStyleSheet('color: red')
                         self.Label_Erro3.setFont(self.font12)
@@ -473,7 +489,8 @@ class HMI_PageNavigation:
                         self.PutHeader()
                 else:
                         try: self.Label_Erro1.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
@@ -494,7 +511,8 @@ class HMI_PageNavigation:
                             self.TextBox_NomeDeUsuario.setFocus()
 
                         try: self.Label_Erro2.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro2 = QLabel()
                         self.Label_Erro2.setStyleSheet('color: red')
                         self.Label_Erro2.setFont(self.font12)
@@ -510,7 +528,8 @@ class HMI_PageNavigation:
                             self.TextBox_Email.setFocus()
 
                         try: self.Label_Erro3.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro3 = QLabel()
                         self.Label_Erro3.setStyleSheet('color: red')
                         self.Label_Erro3.setFont(self.font12)
@@ -537,7 +556,8 @@ class HMI_PageNavigation:
                     self.OnButtonPressed('ImportFromExcel')
                 else:
                     try: self.Label_Erro1.deleteLater()
-                    except: pass
+                    except Exception as e:
+                        print(e, traceback.format_exception(None, e, e.__traceback__))
                     self.Label_Erro1 = QLabel()
                     self.Label_Erro1.setStyleSheet('color: red')
                     self.Label_Erro1.setFont(self.font12)
@@ -559,7 +579,8 @@ class HMI_PageNavigation:
                                     self.PutHeader()
                                 else:
                                     try: self.Label_Erro1.deleteLater()
-                                    except: pass
+                                    except Exception as e:
+                                        print(e, traceback.format_exception(None, e, e.__traceback__))
                                     self.Label_Erro1 = QLabel()
                                     self.Label_Erro1.setStyleSheet('color: red')
                                     self.Label_Erro1.setFont(self.font12)
@@ -569,7 +590,8 @@ class HMI_PageNavigation:
                                     self.TextBox_Senha2.setFocus()
                             else:
                                 try: self.Label_Erro1.deleteLater()
-                                except: pass
+                                except Exception as e:
+                                    print(e, traceback.format_exception(None, e, e.__traceback__))
                                 self.Label_Erro1 = QLabel()
                                 self.Label_Erro1.setStyleSheet('color: red')
                                 self.Label_Erro1.setFont(self.font12)
@@ -685,7 +707,8 @@ class HMI_PageNavigation:
                                     self.PutHeader()
                                 else:
                                     try: self.Label_Erro1.deleteLater()
-                                    except: pass
+                                    except Exception as e:
+                                        print(e, traceback.format_exception(None, e, e.__traceback__))
                                     self.Label_Erro1 = QLabel()
                                     self.Label_Erro1.setStyleSheet('color: red')
                                     self.Label_Erro1.setFont(self.font12)
@@ -696,7 +719,8 @@ class HMI_PageNavigation:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
                         else:
                             try: self.Label_Erro1.deleteLater()
-                            except: pass
+                            except Exception as e:
+                                print(e, traceback.format_exception(None, e, e.__traceback__))
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
@@ -716,7 +740,8 @@ class HMI_PageNavigation:
                                     self.PutHeader()
                                 else:
                                      try: self.Label_Erro1.deleteLater()
-                                     except: pass
+                                     except Exception as e:
+                                        print(e, traceback.format_exception(None, e, e.__traceback__))
                                      self.Label_Erro1 = QLabel()
                                      self.Label_Erro1.setStyleSheet('color: red')
                                      self.Label_Erro1.setFont(self.font12)
@@ -727,7 +752,8 @@ class HMI_PageNavigation:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                         else:
                             try: self.Label_Erro1.deleteLater()
-                            except: pass
+                            except Exception as e:
+                                print(e, traceback.format_exception(None, e, e.__traceback__))
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
@@ -748,7 +774,8 @@ class HMI_PageNavigation:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
                         except:
                             try: self.Label_Erro1.deleteLater()
-                            except: pass
+                            except Exception as e:
+                                print(e, traceback.format_exception(None, e, e.__traceback__))
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
@@ -776,7 +803,8 @@ class HMI_PageNavigation:
                                     self.PutHeader()
                                 else:
                                     try: self.Label_Erro1.deleteLater()
-                                    except: pass
+                                    except Exception as e:
+                                        print(e, traceback.format_exception(None, e, e.__traceback__))
                                     self.Label_Erro1 = QLabel()
                                     self.Label_Erro1.setStyleSheet('color: red')
                                     self.Label_Erro1.setFont(self.font12)
@@ -787,7 +815,8 @@ class HMI_PageNavigation:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
                         else:
                             try: self.Label_Erro1.deleteLater()
-                            except: pass
+                            except Exception as e:
+                                print(e, traceback.format_exception(None, e, e.__traceback__))
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
@@ -806,7 +835,8 @@ class HMI_PageNavigation:
                                     self.PutHeader()
                                 else:
                                      try: self.Label_Erro1.deleteLater()
-                                     except: pass
+                                     except Exception as e:
+                                        print(e, traceback.format_exception(None, e, e.__traceback__))
                                      self.Label_Erro1 = QLabel()
                                      self.Label_Erro1.setStyleSheet('color: red')
                                      self.Label_Erro1.setFont(self.font12)
@@ -817,7 +847,8 @@ class HMI_PageNavigation:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                         else:
                             try: self.Label_Erro1.deleteLater()
-                            except: pass
+                            except Exception as e:
+                                print(e, traceback.format_exception(None, e, e.__traceback__))
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
@@ -845,7 +876,8 @@ class HMI_PageNavigation:
                                     self.PutHeader()
                                 else:
                                     try: self.Label_Erro1.deleteLater()
-                                    except: pass
+                                    except Exception as e:
+                                        print(e, traceback.format_exception(None, e, e.__traceback__))
                                     self.Label_Erro1 = QLabel()
                                     self.Label_Erro1.setStyleSheet('color: red')
                                     self.Label_Erro1.setFont(self.font12)
@@ -856,7 +888,8 @@ class HMI_PageNavigation:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
                         else:
                             try: self.Label_Erro1.deleteLater()
-                            except: pass
+                            except Exception as e:
+                                print(e, traceback.format_exception(None, e, e.__traceback__))
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
@@ -876,7 +909,8 @@ class HMI_PageNavigation:
                                     self.PutHeader()
                                 else:
                                      try: self.Label_Erro1.deleteLater()
-                                     except: pass
+                                     except Exception as e:
+                                        print(e, traceback.format_exception(None, e, e.__traceback__))
                                      self.Label_Erro1 = QLabel()
                                      self.Label_Erro1.setStyleSheet('color: red')
                                      self.Label_Erro1.setFont(self.font12)
@@ -887,7 +921,8 @@ class HMI_PageNavigation:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
                         else:
                             try: self.Label_Erro1.deleteLater()
-                            except: pass
+                            except Exception as e:
+                                print(e, traceback.format_exception(None, e, e.__traceback__))
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
@@ -1015,7 +1050,8 @@ class HMI_PageNavigation:
                 self.PutHeader()
             elif PageID== PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id:
                 try: self.Label_Erro1.deleteLater()
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
                 if self.PageID== PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id:
                     # Registrar na DBManager a operação
                     try:
@@ -1042,7 +1078,8 @@ class HMI_PageNavigation:
                                         print(e)
                                 else:
                                     try: self.Label_Erro1.deleteLater()
-                                    except: pass
+                                    except Exception as e:
+                                        print(e, traceback.format_exception(None, e, e.__traceback__))
                                     self.Label_Erro1 = QLabel()
                                     self.Label_Erro1.setStyleSheet('color: red')
                                     self.Label_Erro1.setFont(self.font12)
@@ -1053,7 +1090,8 @@ class HMI_PageNavigation:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                         else:
                             try: self.Label_Erro1.deleteLater()
-                            except: pass
+                            except Exception as e:
+                                print(e, traceback.format_exception(None, e, e.__traceback__))
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
@@ -1062,7 +1100,8 @@ class HMI_PageNavigation:
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignmentFlag.AlignRight)
                     except:
                         try: self.Label_Erro1.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
@@ -1072,7 +1111,8 @@ class HMI_PageNavigation:
 
                 elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id,PAGE_BY_NAME['AlterarNovaOperacaoManualBolsa'].page_id]:
                     try: self.Label_Erro1.deleteLater()
-                    except: pass
+                    except Exception as e:
+                        print(e, traceback.format_exception(None, e, e.__traceback__))
                     # Registrar na DBManager o ativo TextBox_NomeNovoAtivo
                     try:
                         # Verificar se os dados inseridos são coerentes e só então registrar na DB
@@ -1115,7 +1155,8 @@ class HMI_PageNavigation:
                                 MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                         else:
                             try: self.Label_Erro1.deleteLater()
-                            except: pass
+                            except Exception as e:
+                                print(e, traceback.format_exception(None, e, e.__traceback__))
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
@@ -1124,7 +1165,8 @@ class HMI_PageNavigation:
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 5, 1, 1, Qt.AlignmentFlag.AlignCenter)
                     except:
                         try: self.Label_Erro1.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)
@@ -1246,7 +1288,8 @@ class HMI_PageNavigation:
                 elif self.DBManager.VerificarSeTemCustoNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','CUSTO NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
             elif PageID== PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id:
                 try: self.Label_Erro1.deleteLater()
-                except: pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
                 if self.PageID== PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id:
                     # Registrar na DBManager a operação
                     try:
@@ -1269,7 +1312,8 @@ class HMI_PageNavigation:
                                             print(e)
                                     else:
                                         try: self.Label_Erro1.deleteLater()
-                                        except: pass
+                                        except Exception as e:
+                                            print(e, traceback.format_exception(None, e, e.__traceback__))
                                         self.Label_Erro1 = QLabel()
                                         self.Label_Erro1.setStyleSheet('color: red')
                                         self.Label_Erro1.setFont(self.font12)
@@ -1280,7 +1324,8 @@ class HMI_PageNavigation:
                                     MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                             else:
                                 try: self.Label_Erro1.deleteLater()
-                                except: pass
+                                except Exception as e:
+                                    print(e, traceback.format_exception(None, e, e.__traceback__))
                                 self.Label_Erro1 = QLabel()
                                 self.Label_Erro1.setStyleSheet('color: red')
                                 self.Label_Erro1.setFont(self.font12)
@@ -1289,7 +1334,8 @@ class HMI_PageNavigation:
                                 self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignmentFlag.AlignCenter)
                         else:
                             try: self.Label_Erro1.deleteLater()
-                            except: pass
+                            except Exception as e:
+                                print(e, traceback.format_exception(None, e, e.__traceback__))
                             self.Label_Erro1 = QLabel()
                             self.Label_Erro1.setStyleSheet('color: red')
                             self.Label_Erro1.setFont(self.font12)
@@ -1298,7 +1344,8 @@ class HMI_PageNavigation:
                             self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 6, 4, 1, 3, Qt.AlignmentFlag.AlignCenter)
                     except:
                         try: self.Label_Erro1.deleteLater()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         self.Label_Erro1 = QLabel()
                         self.Label_Erro1.setStyleSheet('color: red')
                         self.Label_Erro1.setFont(self.font12)

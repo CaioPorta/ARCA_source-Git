@@ -13,6 +13,7 @@ import zipfile
 import shutil
 import winshell
 import win32com.client
+import traceback
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -31,7 +32,8 @@ class VersionChecker(object):
         try:
             self.Thread_CheckVersion = WorkerThread('Thread_CheckVersion', self.HMI)
             self.Thread_CheckVersion.start()
-        except: pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
 
     def CheckVersion(self): # Thread_CheckVersion
         try:
@@ -39,7 +41,8 @@ class VersionChecker(object):
             OnlineVersion = self.GetOnlineVersion()
             if self.HigherVersion(CurrentVersion, OnlineVersion):
                 self.HMI.VersionUpdate = True
-        except: pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
 
     def GetOnlineVersion(self):
         Version = ""
@@ -81,7 +84,8 @@ class VersionChecker(object):
             self.InProgress = True
             self.Thread_UpdateVersion = WorkerThread('Thread_UpdateVersion', self.HMI)
             self.Thread_UpdateVersion.start()
-        except: pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
 
     def UpdateVersion(self):
         try:

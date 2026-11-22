@@ -4,6 +4,7 @@ Created on Sun Sep  5 01:44:04 2021
 @author: Caio Moreira Porta
 """
 import os
+import traceback
 import _thread
 import random
 from datetime import datetime, timedelta
@@ -25,7 +26,8 @@ class HMI_PageBuilders:
             self.TextBox_Obs.setText('')
             self.TextBox_Qqt.setFocus()
             try: self.Label_Erro1.deleteLater()
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         elif self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id]:
             self.TextBox_Par_Esquerda.setText('')
             self.TextBox_Par_Direita.setText('')
@@ -38,7 +40,8 @@ class HMI_PageBuilders:
             self.TextBox_Obs.setText('')
             self.TextBox_Par_Esquerda.setFocus()
             try: self.Label_Erro1.deleteLater()
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
 
     def CreatePage0(self):
         black = 'rgb(0, 0, 0)'
