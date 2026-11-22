@@ -76,7 +76,7 @@ class HMI_Trades_Criptomoedas(object):
         for idx, corretora in enumerate(corretoras):
             self.HMI.ComboBox_Corretoras.addItem(corretora)
             try:
-                if corretora == self.HMI.TextBox_NovaCorretora.text(): self.HMI.idxCorretora = idx
+                if getattr(self.HMI, 'TextBox_NovaCorretora', None) is not None and corretora == self.HMI.TextBox_NovaCorretora.text(): self.HMI.idxCorretora = idx
             except Exception as e:
                 print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxCorretora < len(corretoras):
