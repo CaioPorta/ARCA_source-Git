@@ -159,7 +159,7 @@ def user_info(window, request: pytest.FixtureRequest) -> tuple[str, str, str, st
         NomeDeUsuario = login_data["USER"]
         Senha = login_data["PASSWORD"]
         Email = window.DBManager.GetEmailByUser(NomeDeUsuario)
-        Currency = window.DBManager.GetUserCoinCurrency(NomeDeUsuario)
+        Currency = window.DBManager.GetUserCoinCurrency()
         userpath = window.DBManager.GetUserPathByUserName(NomeDeUsuario)
     else:
         # Load tester user info from tests/login_tester.toml.
