@@ -45,12 +45,18 @@ def go_home(window, qtbot, for_visual_check, assure=False):
     """
     observed_page = PAGE_BY_ID[window.PageID].name
     if not assure: assert observed_page != 'Home', "You are already in Home page!"
-    logout = getattr(window, 'Button_Sair', None)
-    if logout is not None:
-        qtbot.mouseClick(window.Button_Return, Qt.LeftButton)
-    else:
-        # Press ESC until Home is the current page, timeout at 10 iterations
-        pass # TODO
+    for _ in range(5):
+        logout = getattr(window, 'Button_Sair', None)
+        if logout is not None:
+            qtbot.mouseClick(logout, Qt.LeftButton)
+            window.Button_Sair.pressed.emit()
+            logger.info("Pressed Button_Sair")
+        else:
+            qtbot.keyClick(window, Qt.Key_Escape)
+            observed_page = PAGE_BY_ID[window.PageID].name
+            visual_sleep(for_visual_check)
+            if observed_page == 'MinhaCarteira' or observed_page == 'Home':
+                break
     observed_page = PAGE_BY_ID[window.PageID].name
     visual_sleep(for_visual_check)
     assert observed_page == 'Home', f"Expected Home page, but got {observed_page} page."

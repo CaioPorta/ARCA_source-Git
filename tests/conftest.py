@@ -78,7 +78,6 @@ def teardown(window, qtbot, request) -> None:
         _wait_until_window_closed(window)
         return
     yield
-    ui.go_home(window, qtbot, for_visual_check, assure=True)
 
 @pytest.fixture(scope="session", autouse=True)
 def for_visual_check(request: pytest.FixtureRequest) -> bool:
