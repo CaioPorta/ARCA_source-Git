@@ -86,11 +86,11 @@ class DBManager(object):
             currdir = os.getcwd() # Get current directory
             if self.UserPath == '': self.UserPath = currdir
 
-            # Create Usuários.db IF NOT EXISTS
+            # Create Usuários.db IF DOES NOT EXIST
             self.CriarDB(currdir+'\\Users.db')
             # Connect to Users.db
             self.ConnectToDB(currdir+'\\Users.db')
-            # Create Table Usuários IF NOT EXISTS
+            # Create Table Usuários IF DOES NOT EXIST
             self.CreateTableInCurrentDB('Usuários', [('Usuário', 'TEXT'), ('Email', 'TEXT'), ('Path', 'TEXT')])
             # Adicionar Usuário e Email
             self.AddRowInCurrentDB('Usuários', [('Usuário',self.User), ('Email',self.Email), ('Path', self.UserPath)])
@@ -144,6 +144,7 @@ class DBManager(object):
             return True
         except Exception as e:
             print(e, traceback.format_exception(None, e, e.__traceback__))
+            return e, traceback.format_exception(None, e, e.__traceback__)
 
     def CheckIfEmailExists(self, EmailToCheck):
         Exists = False
@@ -3038,7 +3039,7 @@ class DBManager(object):
         Header = ''
         for item in ContentType: Header += str(item[0])+' '+str(item[1])+","
         Header = Header[:-1]
-        self.ModifyDB("CREATE TABLE IF NOT EXISTS "+TableName+" ("+Header+")")
+        self.ModifyDB("CREATE TABLE IF DOES NOT EXIST "+TableName+" ("+Header+")")
         return True
 
     def AddRowInCurrentDB(self, TableName, Content):
