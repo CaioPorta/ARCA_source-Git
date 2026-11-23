@@ -1091,13 +1091,13 @@ class HMI_Events:
             elif self.PageIDAux in ['14', '15', '17a', '17b', 'ChooseCurrency']:
                 self.CreatePage(PAGE_BY_NAME['Perfil'].page_id)
             elif self.PageID in [PAGE_BY_NAME['AuxilioSenha'].page_id, PAGE_BY_NAME['ImportarUsuario'].page_id, PAGE_BY_NAME['CriarUsuario'].page_id, PAGE_BY_NAME['AnaliseMercado'].page_id, PAGE_BY_NAME['AlteracaoSenha'].page_id]:
-                self.CreatePage(PAGE_BY_NAME['Home'].page_id)
+                self.CreatePage(PAGE_BY_NAME['Login'].page_id)
             elif self.PageID in [PAGE_BY_NAME['RecuperacaoEmail'].page_id]:
                 self.CreatePage(PAGE_BY_NAME['AuxilioSenha'].page_id)
             elif self.PageID in [PAGE_BY_NAME['ConfirmacaoEmailCriar'].page_id]:
                 self.CreatePage(PAGE_BY_NAME['CriarUsuario'].page_id)
             elif self.PageID in [PAGE_BY_NAME['EdicaoNegociacoes'].page_id, PAGE_BY_NAME['ARCA'].page_id, PAGE_BY_NAME['AnaliseMercadoDup'].page_id, PAGE_BY_NAME['Desempenho'].page_id, PAGE_BY_NAME['Tributacao'].page_id]:
-                self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id)
+                self.CreatePage(PAGE_BY_NAME['Home'].page_id)
             elif self.PageID in [PAGE_BY_NAME['AcoesNegocios'].page_id, PAGE_BY_NAME['RealEstate'].page_id, PAGE_BY_NAME['Caixa'].page_id, PAGE_BY_NAME['AtivosInternacionais'].page_id, PAGE_BY_NAME['CriptoARCA'].page_id]:
                 self.CreatePage(PAGE_BY_NAME['ARCA'].page_id)
             elif self.PageID in [PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id, PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id, PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id]:
@@ -1131,7 +1131,7 @@ class HMI_Events:
         elif key == Qt.Key_H: self.OnButtonPressed('ShowHideValues')
         elif key == Qt.Key_P: self.CreatePage(PAGE_BY_NAME['Perfil'].page_id)
         elif key == Qt.Key_C: self.CreatePage(PAGE_BY_NAME['InsercaoCotacoesManuais'].page_id)
-        elif key == Qt.Key_M: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id)
+        elif key == Qt.Key_M: self.CreatePage(PAGE_BY_NAME['Home'].page_id)
         elif key == Qt.Key_N: self.CreatePage(PAGE_BY_NAME['EdicaoNegociacoes'].page_id)
         elif key == Qt.Key_T: self.CreatePage(PAGE_BY_NAME['Tributacao'].page_id)
         elif key == Qt.Key_A: self.CreatePage(PAGE_BY_NAME['ARCA'].page_id)
@@ -1158,7 +1158,7 @@ class HMI_Events:
                     self.SetTableWidth_45_1(SizeCol0, SizeCol1, SizeCol2)
                     self.Table_CotaçõesManuais.setFixedHeight(int(self.frameGeometry().height()*6/10))
 
-                elif self.PageID== PAGE_BY_NAME['Home'].page_id: # Home Page Not Logged In
+                elif self.PageID== PAGE_BY_NAME['Login'].page_id: # Login Page Not Logged In
                     self.Button_Mercado.setFixedSize(int(self.frameGeometry().width()*3/4*.9),int(self.frameGeometry().height()/4*.95))
                     self.Movie_Mercado.setScaledSize(QSize().scaled(int(self.frameGeometry().width()*3/4*.90),int(self.frameGeometry().height()*3/4*.95), Qt.KeepAspectRatio))
                     self.TextBox_NomeDeUsuario.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -1167,7 +1167,7 @@ class HMI_Events:
                     self.Button_LogIn.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
                     self.Button_MercadoInvisivel.setFixedSize(int(self.frameGeometry().width()*3/4*.90),int(self.frameGeometry().height()*3/4*.95))
 
-                elif self.PageID== PAGE_BY_NAME['MinhaCarteira'].page_id:
+                elif self.PageID== PAGE_BY_NAME['Home'].page_id:
                     self.Movie_Negociações.setScaledSize(QSize().scaled(int(self.frameGeometry().width()/3*.80),int(self.frameGeometry().height()/5*.95-20), Qt.KeepAspectRatio))
                     self.Button_Negociações.setFixedSize(int(self.frameGeometry().width()/3*.96),int(self.frameGeometry().height()/5))
                     self.Button_NegociaçõesInvisivel.setFixedSize(int(self.frameGeometry().width()/3*.98),int(self.frameGeometry().height()*4/5-160))

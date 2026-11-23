@@ -102,62 +102,61 @@ ARCA_source-Git/
 ├── requirements.txt        # Python dependencies
 ├── src/
 │   ├── app/
-│   │   ├── core/                         # backend business logic (package)
-│   │   │   ├── DBManager.py              # SQLite data-access layer
-│   │   │   ├── YahooFinance.py           # market-data fetching
-│   │   │   ├── Calcular.py               # financial math
-│   │   │   ├── BackgroundProcesses.py    # threading model (Thread / QThread pool)
-│   │   │   └── VersionChecker.py         # online version check
-│   │   ├── ui/               # PyQt5 front-end (package)
-│   │   │   ├── HMI.py                    # entry point + composed IHMmain window (see "IHMmain composition")
-│   │   │   ├── pages.py                  # PAGE_BY_NAME / PAGE_BY_ID registry
-│   │   │   ├── graphical_thread.py       # QApplication lifecycle / main-window runner
-│   │   │   ├── home_and_parameters/      # IHMmain mixin modules (one file per concern)
-│   │   │   │   ├── HMI_PageNavigation.py # CreatePage dispatcher + navigation decisions
-│   │   │   │   ├── HMI_Presentation.py   # page rendering, layout, header, quote tables
-│   │   │   │   ├── HMI_PageBuilders.py   # per-page widget builders (CreatePage0..17)
-│   │   │   │   └── HMI_Events.py         # button/key/event handlers
-│   │   │   ├── arca/                     # core portfolio pages by asset class
-│   │   │   │   ├── HMI_PageBuilders.py   # per-page widget builders (CreatePage*)
-│   │   │   │   ├── HMI_Presentation.py   # graph/table rendering (CreateGraph*, CreateTable*)
-│   │   │   │   ├── HMI_Events.py         # page/page-builder event handlers (OnButtonPressed, CallCreatePage)
-│   │   │   │   └── HMI_ARCA_page.py      # composition root for the HMI_ARCA helper
-│   │   │   ├── desempenho/               # performance/returns views
-│   │   │   │   ├── HMI_PageBuilders.py   # per-page widget builders (CreatePage*)
-│   │   │   │   └── HMI_Desempenho_page.py  # composition root for the HMI_Desempenho helper
-│   │   │   ├── mercado/                  # market analysis views
-│   │   │   │   ├── HMI_PageBuilders.py   # per-page widget builders (CreatePage*)
-│   │   │   │   └── HMI_Mercado_page.py   # composition root for the HMI_Mercado helper
-│   │   │   ├── tributacao/               # tax calculation UI (Day Trade / Swing Trade)
-│   │   │   │   ├── HMI_PageBuilders.py   # per-page widget builders (CreatePage*)
-│   │   │   │   ├── HMI_Presentation.py   # table rendering / presentation helpers (CreateTable*)
-│   │   │   │   ├── HMI_Events.py         # tax calculation handlers (CalcularTributacao, OnButtonPressed)
-│   │   │   │   └── HMI_Tributacao_page.py  # composition root for the HMI_Tributacao helper
-│   │   │   ├── trades/                   # trade registration
-│   │   │   │   ├── HMI_PageBuilders.py   # per-page widget builders (CreatePage*)
-│   │   │   │   ├── HMI_Events.py         # button/event handlers (OnButtonPressed)
-│   │   │   │   └── HMI_Trades_page.py    # composition root for the HMI_Trades helper
-│   │   │   │   ├── trades_bolsa/               # stocks (Bolsa) trades (one file per concern)
-│   │   │   │   │   ├── HMI_PageNavigation.py   # page navigation / transitions
-│   │   │   │   │   ├── HMI_Presentation.py   # table rendering / presentation helpers (CreateTable*)
-│   │   │   │   │   ├── HMI_PageBuilders.py   # per-page widget builders (CreatePage*)
-│   │   │   │   │   ├── HMI_Events.py   # button/event handlers (OnButtonPressed)
-│   │   │   │   │   └── HMI_Trades_Bolsa_page.py  # composition root for the HMI_Trades_Bolsa helper
-│   │   │   │   ├── trades_criptomoedas/  # crypto trades (one file per concern)
-│   │   │   │   │   ├── HMI_PageBuilders.py   # per-page widget builders (CreatePage*)
-│   │   │   │   │   ├── HMI_Presentation.py   # table rendering / presentation helpers (CreateTable*)
-│   │   │   │   │   ├── HMI_Events.py         # button/event handlers (OnButtonPressed)
+│   │   ├── core/                                        # backend business logic (package)
+│   │   │   ├── DBManager.py                             # SQLite data-access layer
+│   │   │   ├── YahooFinance.py                          # market-data fetching
+│   │   │   ├── Calcular.py                              # financial math
+│   │   │   ├── BackgroundProcesses.py                   # threading model (Thread / QThread pool)
+│   │   │   └── VersionChecker.py                        # online version check
+│   │   ├── ui/                                          # PyQt5 front-end (package)
+│   │   │   ├── HMI.py                                   # entry point + composed IHMmain window (see "IHMmain composition")
+│   │   │   ├── pages.py                                 # PAGE_BY_NAME / PAGE_BY_ID registry
+│   │   │   ├── graphical_thread.py                      # QApplication lifecycle / main-window runner
+│   │   │   ├── home_and_parameters/                     # IHMmain mixin modules (one file per concern)
+│   │   │   │   ├── HMI_PageBuilders.py                  # per-page widget builders (CreatePage0..17)
+│   │   │   │   ├── HMI_Events.py                        # button/key/event handlers
+│   │   │   │   ├── HMI_Presentation.py                  # page rendering, layout, header, quote tables
+│   │   │   │   └── HMI_PageNavigation.py                # CreatePage dispatcher + navigation decisions
+│   │   │   ├── arca/                                    # core portfolio pages by asset class
+│   │   │   │   ├── HMI_PageBuilders.py                  # per-page widget builders (CreatePage*)
+│   │   │   │   ├── HMI_Events.py                        # page/page-builder event handlers (OnButtonPressed, CallCreatePage)
+│   │   │   │   ├── HMI_Presentation.py                  # graph/table rendering (CreateGraph*, CreateTable*)
+│   │   │   │   └── HMI_ARCA_page.py                     # composition root for the HMI_ARCA helper
+│   │   │   ├── desempenho/                              # performance/returns views
+│   │   │   │   ├── HMI_PageBuilders.py                  # per-page widget builders (CreatePage*)
+│   │   │   │   └── HMI_Desempenho_page.py               # composition root for the HMI_Desempenho helper
+│   │   │   ├── mercado/                                 # market analysis views
+│   │   │   │   ├── HMI_PageBuilders.py                  # per-page widget builders (CreatePage*)
+│   │   │   │   └── HMI_Mercado_page.py                  # composition root for the HMI_Mercado helper
+│   │   │   ├── tributacao/                              # tax calculation UI (Day Trade / Swing Trade)
+│   │   │   │   ├── HMI_PageBuilders.py                  # per-page widget builders (CreatePage*)
+│   │   │   │   ├── HMI_Events.py                        # tax calculation handlers (CalcularTributacao, OnButtonPressed)
+│   │   │   │   ├── HMI_Presentation.py                  # table rendering / presentation helpers (CreateTable*)
+│   │   │   │   └── HMI_Tributacao_page.py               # composition root for the HMI_Tributacao helper
+│   │   │   ├── trades/                                  # trade registration
+│   │   │   │   ├── HMI_PageBuilders.py                  # per-page widget builders (CreatePage*)
+│   │   │   │   ├── HMI_Events.py                        # button/event handlers (OnButtonPressed)
+│   │   │   │   └── HMI_Trades_page.py                   # composition root for the HMI_Trades helper
+│   │   │   │   ├── trades_bolsa/                        # stocks (Bolsa) trades (one file per concern)
+│   │   │   │   │   ├── HMI_PageBuilders.py              # per-page widget builders (CreatePage*)
+│   │   │   │   │   ├── HMI_Events.py                    # button/event handlers (OnButtonPressed)
+│   │   │   │   │   ├── HMI_Presentation.py              # table rendering / presentation helpers (CreateTable*)
+│   │   │   │   │   └── HMI_Trades_Bolsa_page.py         # composition root for the HMI_Trades_Bolsa helper
+│   │   │   │   ├── trades_criptomoedas/                 # crypto trades (one file per concern)
+│   │   │   │   │   ├── HMI_PageBuilders.py              # per-page widget builders (CreatePage*)
+│   │   │   │   │   ├── HMI_Events.py                    # button/event handlers (OnButtonPressed)
+│   │   │   │   │   ├── HMI_Presentation.py              # table rendering / presentation helpers (CreateTable*)
 │   │   │   │   │   └── HMI_Trades_Criptomoedas_page.py  # composition root for the HMI_Trades_Criptomoedas helper
-│   │   │   └── popup/                    # modal popups (loading, calendar, clock, success)
+│   │   │   └── popup/                                   # modal popups (loading, calendar, clock, success)
 │   │   │       ├── __init__.py
 │   │   │       ├── CalendarWindow.py
 │   │   │       ├── LoadingWindow.py
 │   │   │       ├── RelogioWindow.py
 │   │   │       └── OperacaoRegistradaComSucesso.py
-│   │   └── assets/                       # images, sounds, chromedriver.exe
+│   │   └── assets/                                      # images, sounds, chromedriver.exe
 └── docs/
-    ├─── Bonus                            # Legacy: How I used to do before this app
-    └─── Guia de Desenvolvimento          # The project HMI arquichecture, some instructions about compiling
+    ├─── Bonus                                           # Legacy: How I used to do before this app
+    └─── Guia de Desenvolvimento                         # The project HMI arquichecture, some instructions about compiling
 ```
 
 ### Key modules
@@ -168,27 +167,12 @@ All modules below live in `src/app/core/` (backend) or `src/app/ui/` (frontend).
 |------|----------------|
 | `ARCA.py` | Backend - Launcher: adds `src/app` to `sys.path`, chdir into assets, spawns the GUI thread |
 | `ui/HMI.py` | Frontend - Entry point (`graphical_thread`) and composed main window (`IHMmain`). Holds only lifecycle/state; see "IHMmain composition" for the four mixins it inherits from |
-| `ui/home_and_parameters/HMI_PageNavigation.py` | Frontend - mixin: `CreatePage` dispatcher + navigation decisions |
-| `ui/home_and_parameters/HMI_Presentation.py` | Frontend - mixin: page rendering, layout helpers, header, quote tables |
-| `ui/home_and_parameters/HMI_PageBuilders.py` | Frontend - mixin: per-page widget builders (`CreatePage0` … `CreatePage17`) |
-| `ui/home_and_parameters/HMI_Events.py` | Frontend - mixin: button/key/event handlers (input validation, file import/export) |
+| `ui/*/HMI_PageNavigation.py` | Frontend - mixin: `CreatePage` dispatcher + navigation decisions |
+| `ui/*/HMI_Presentation.py` | Frontend - mixin: page rendering, layout helpers, header, quote tables |
+| `ui/*/HMI_PageBuilders.py` | Frontend - mixin: per-page widget builders (`CreatePageX`) |
+| `ui/*/HMI_Events.py` | Frontend - mixin: button/key/event handlers (input validation, file import/export) |
 | `ui/trades/HMI_Trades_page.py` / `ui/trades/trades_bolsa/HMI_Trades_Bolsa_page.py` / `ui/trades/trades_criptomoedas/HMI_Trades_Criptomoedas_page.py` | Frontend - Trade registration, broker management, operations (buy/sell), deposits/withdrawals for stocks and crypto |
-| `ui/trades/trades_bolsa/HMI_PageNavigation.py` | Frontend - mixin: page navigation / transitions for HMI_Trades_Bolsa |
-| `ui/trades/trades_bolsa/HMI_Presentation.py` | Frontend - mixin: table rendering / presentation helpers (CreateTable*) for HMI_Trades_Bolsa |
-| `ui/trades/trades_bolsa/HMI_PageBuilders.py` | Frontend - mixin: per-page widget builders (CreatePage*) for HMI_Trades_Bolsa |
-| `ui/trades/trades_bolsa/HMI_Events.py` | Frontend - mixin: button/event handlers (OnButtonPressed) for HMI_Trades_Bolsa |
 | `ui/trades/HMI_PageBuilders.py` / `ui/trades/HMI_Events.py` | Frontend - mixins: per-page widget builders (CreatePage*) and button/event handlers (OnButtonPressed) for HMI_Trades |
-| `ui/trades/trades_criptomoedas/HMI_PageBuilders.py` | Frontend - mixin: per-page widget builders (CreatePage*) for HMI_Trades_Criptomoedas |
-| `ui/trades/trades_criptomoedas/HMI_Presentation.py` | Frontend - mixin: table rendering / presentation helpers (CreateTable*) for HMI_Trades_Criptomoedas |
-| `ui/trades/trades_criptomoedas/HMI_Events.py` | Frontend - mixin: button/event handlers (OnButtonPressed) for HMI_Trades_Criptomoedas |
-| `ui/tributacao/HMI_PageBuilders.py` | Frontend - mixin: per-page widget builder (CreatePage51) for HMI_Tributacao |
-| `ui/tributacao/HMI_Presentation.py` | Frontend - mixin: table rendering / presentation helpers (CreateTable*) for HMI_Tributacao |
-| `ui/tributacao/HMI_Events.py` | Frontend - mixin: tax calculation handlers (CalcularTributacao, OnButtonPressed) for HMI_Tributacao |
-| `ui/arca/HMI_PageBuilders.py` | Frontend - mixin: per-page widget builders (CreatePage*) for HMI_ARCA |
-| `ui/arca/HMI_Presentation.py` | Frontend - mixin: graph/table rendering (CreateGraph*, CreateTable*) for HMI_ARCA |
-| `ui/arca/HMI_Events.py` | Frontend - mixin: page/page-builder event handlers (OnButtonPressed, CallCreatePage) for HMI_ARCA |
-| `ui.desempenho/HMI_PageBuilders.py` | Frontend - mixin: per-page widget builder (CreatePage*) for HMI_Desempenho |
-| `ui/mercado/HMI_PageBuilders.py` | Frontend - mixin: per-page widget builders (CreatePage*) for HMI_Mercado |
 | `ui/tributacao/HMI_Tributacao_page.py` | Frontend - Tax calculation UI (Day Trade / Swing Trade) |
 | `ui/arca/HMI_ARCA_page.py` | Frontend - Core portfolio pages by asset class (Ações, Real Estate, Caixa, Ativos Internacionais, Criptomoedas) |
 | `ui.desempenho/HMI_Desempenho_page.py` | Frontend - Performance/returns views |
@@ -230,23 +214,10 @@ E: ARCA
 F: Tributação
 
 ## TODOs
-(Architecture is the most important thing to modify today, so to be easier to give maintenance to the project)
-01 - Create Functional Tests for the UI
-02 - Create Functional Tests for the APP
-03 - Create Unit Tests
-04 - Make DBManager to be independent from HMI thread
-05 - Modularize HMI.py -> DONE: `IHMmain` behaviour is now split in `src\app\ui\home_and_parameters` across `HMI_PageNavigation`, `HMI_Presentation`, `HMI_PageBuilders`, `HMI_Events`
-06 - Modularize HMI_ARCA_page.py -> DONE: `HMI_ARCA` behaviour is now split in `src\app\ui\arca` across `HMI_PageBuilders`, `HMI_Presentation`, `HMI_Events`
-07 - Modularize HMI_Desempenho_page.py -> DONE: `HMI_Desempenho` behaviour is now split in `src\app\ui\desempenho` across `HMI_PageBuilders`
-08 - Modularize HMI_Mercado_page.py -> DONE: `HMI_Mercado` behaviour is now split in `src\app\ui\mercado` across `HMI_PageBuilders`
-09 - Modularize HMI_Tributacao_page.py -> DONE: `HMI_Tributacao` behaviour is now split in `src\app\ui\tributacao` across `HMI_PageBuilders`, `HMI_Presentation`, `HMI_Events`
-10 - Modularize HMI_Trades_page.py -> DONE: `HMI_Trades` behaviour is now split in `src\app\ui\trades` across `HMI_PageBuilders`, `HMI_Events`
-11 - Modularize HMI_Trades_Bolsa_page.py -> DONE: `HMI_Trades_Bolsa` behaviour is now split in `src\app\ui\trades_bolsa` across `HMI_PageNavigation`, `HMI_Presentation`, `HMI_PageBuilders`, `HMI_Events`
-12 - Modularize HMI_Trades_Criptomoedas_page.py -> DONE: `HMI_Trades_Criptomoedas` behaviour is now split in `src\app\ui\trades_criptomoedas` across `HMI_PageBuilders`, `HMI_Presentation`, `HMI_Events`
-13 - Make DBManager.ThreadLock to be private only
-14 - Cybersecurity, even if the app will run offline
-15 - Rename Home page is login_page
-16 - Rename MinhaCarteira is Home
+01 - Make DBManager to be independent from HMI thread. DBManager shouldn't access HMI, it should only accept or refuse the request. If it needs info from HMI, we should know in advance and the HMI thread should forward the info by itself. The goal is that the tests can create a DBManager instance and ask for requests without creating an HMI instance mandatory. Also to be able to dev unit tests. Which lead us to topic 02.
+02 - Make DBManager.ThreadLock to be private only
+03 - Cybersecurity: search for DBManager weaknesses, even if the app will run offline.
+04 - Add the EnviarEmailDeConfirmacao email info in a toml, not public in git.
 
 Crashes:
 DEFECT 2 - GetAllTickers 

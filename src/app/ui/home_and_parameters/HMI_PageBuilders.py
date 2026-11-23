@@ -68,7 +68,7 @@ class HMI_PageBuilders:
         self.Label_NomeDeUsuario.setFont(self.font16)
 
         self.TextBox_NomeDeUsuario = QLineEdit()
-        self.TextBox_NomeDeUsuario.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
+        self.TextBox_NomeDeUsuario.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
         self.TextBox_NomeDeUsuario.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Label_Senha = QLabel()
@@ -78,11 +78,11 @@ class HMI_PageBuilders:
 
         self.TextBox_Senha = QLineEdit()
         self.TextBox_Senha.setEchoMode(QLineEdit.Password)
-        self.TextBox_Senha.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
+        self.TextBox_Senha.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
         self.TextBox_Senha.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Button_LogIn = QPushButton()
-        self.Button_LogIn.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
+        self.Button_LogIn.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
         self.Button_LogIn.setFont(self.font16)
         self.Button_LogIn.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_LogIn.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -731,7 +731,7 @@ class HMI_PageBuilders:
         self.Label_Msg1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_NovaSenha1 = QLineEdit()
-        self.TextBox_NovaSenha1.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
+        self.TextBox_NovaSenha1.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
         self.TextBox_NovaSenha1.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.TextBox_NovaSenha1.setEchoMode(QLineEdit.Password)
 
@@ -741,12 +741,12 @@ class HMI_PageBuilders:
         self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_NovaSenha2 = QLineEdit()
-        self.TextBox_NovaSenha2.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
+        self.TextBox_NovaSenha2.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
         self.TextBox_NovaSenha2.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
         self.TextBox_NovaSenha2.setEchoMode(QLineEdit.Password)
 
         self.Button_ConfirmacaoDeEmail = QPushButton('Recuperar')
-        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
+        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
         self.Button_ConfirmacaoDeEmail.setFont(self.font16)
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
@@ -800,7 +800,7 @@ class HMI_PageBuilders:
         self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_CodigoDeConfirmacao = QLineEdit()
-        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
+        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
         self.TextBox_CodigoDeConfirmacao.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Button_ResendEmail = QPushButton("Reenviar email")
@@ -813,7 +813,7 @@ class HMI_PageBuilders:
         self.Button_ResendEmail.setStyleSheet('QToolTip {background-color: black; color: white;border: black solid 1px}')
 
         self.Button_ConfirmacaoDeEmail = QPushButton('Confirmar')
-        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
+        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
         self.Button_ConfirmacaoDeEmail.setFont(self.font16)
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))
@@ -1269,7 +1269,7 @@ class HMI_PageBuilders:
         self.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TextBox_CodigoDeConfirmacao = QLineEdit()
-        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
+        self.TextBox_CodigoDeConfirmacao.returnPressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Login'].page_id))
         self.TextBox_CodigoDeConfirmacao.setFixedWidth(int(self.frameGeometry().width()/3*0.9))
 
         self.Button_ResendEmail = QPushButton("Reenviar email")
@@ -1282,7 +1282,7 @@ class HMI_PageBuilders:
         self.Button_ResendEmail.setStyleSheet('QToolTip {background-color: black; color: white;border: black solid 1px}')
 
         self.Button_ConfirmacaoDeEmail = QPushButton('Encerrar conta')
-        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
+        self.Button_ConfirmacaoDeEmail.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Login'].page_id))
         self.Button_ConfirmacaoDeEmail.setFont(self.font16)
         self.Button_ConfirmacaoDeEmail.setIconSize(QSize(int(self.frameGeometry().height()/10*0.9),int(self.frameGeometry().height()/10*0.9)))
         self.Button_ConfirmacaoDeEmail.setFixedWidth(int(self.frameGeometry().width()/3*0.9*2/3))

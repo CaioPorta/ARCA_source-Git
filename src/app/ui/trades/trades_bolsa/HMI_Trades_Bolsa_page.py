@@ -12,7 +12,6 @@ that are re-composed here so the public surface stays
  `from ui.trades.HMI_Trades_page import HMI_Trades` /
  `trades.trades_bolsa.HMI_Trades_Bolsa_page.HMI_Trades_Bolsa`:
 
-    HMI_PageNavigation   - page navigation / transitions
     HMI_Presentation     - table rendering / presentation helpers (CreateTable*)
     HMI_PageBuilders     - per-page widget builders (CreatePage*)
     HMI_Events           - button/event handlers (OnButtonPressed)
@@ -24,13 +23,12 @@ defined in the mixins and inherited automatically.
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QToolTip
 
-from ui.trades.trades_bolsa.HMI_PageNavigation import HMI_PageNavigation
 from ui.trades.trades_bolsa.HMI_Presentation import HMI_Presentation
 from ui.trades.trades_bolsa.HMI_PageBuilders import HMI_PageBuilders
 from ui.trades.trades_bolsa.HMI_Events import HMI_Events
 
 
-class HMI_Trades_Bolsa(HMI_PageNavigation, HMI_Presentation, HMI_PageBuilders, HMI_Events):
+class HMI_Trades_Bolsa(HMI_Presentation, HMI_PageBuilders, HMI_Events):
     """Trades -> Bolsa helper. Behaviour is composed from the mixins above; only
     lifecycle/state lives here on purpose (see module docstring)."""
 

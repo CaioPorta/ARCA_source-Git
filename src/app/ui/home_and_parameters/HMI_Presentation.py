@@ -7,12 +7,13 @@ import os
 import traceback
 import sys
 import time
+import smtplib, ssl
 from calendar import monthrange
 from PyQt5.QtGui import QCursor, QIcon, QMovie
 from PyQt5.QtWidgets import (QGridLayout, QHBoxLayout, QLabel, QLineEdit,
                              QMessageBox, QPushButton)
 from PyQt5.QtCore import QCoreApplication, QSize, Qt
-import ui.popup.LoadingWindow as LoadingWindow
+from ui.popup.LoadingWindow import LoadingWindow
 from ui.pages import PAGE_BY_NAME
 
 
@@ -553,8 +554,6 @@ class HMI_Presentation:
             self.Table_CotaçõesManuaisHeader.setVisible(True)
 
     def EnviarEmailDeConfirmacao(self,Email,NomeDeUsuario,CodigoDeConfirmacaoGerado):
-        import smtplib, ssl
-
         smtp_server = "smtp.gmail.com"
         port = 587  # For starttls
 
@@ -850,7 +849,7 @@ class HMI_Presentation:
         self.Button_Return.setToolTip(r"Voltar")
 
         self.Button_Home = QPushButton()
-        self.Button_Home.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
+        self.Button_Home.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
         self.Button_Home.setFixedSize(40,40)
         self.Button_Home.setIconSize(QSize(35, 35))
         self.Button_Home.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -905,7 +904,7 @@ class HMI_Presentation:
 
         self.Button_Sair = QPushButton()
         self.Button_Sair.setToolTip(r"Sair")
-        self.Button_Sair.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
+        self.Button_Sair.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Login'].page_id))
         self.Button_Sair.setFixedSize(40,40)
         self.Button_Sair.setIconSize(QSize(35, 35))
         self.Button_Sair.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -958,7 +957,7 @@ class HMI_Presentation:
 
         self.HBoxLayout_Header = QHBoxLayout()
 
-        if self.PageID== PAGE_BY_NAME['Home'].page_id: pass # Essa não tem cabeçalho
+        if self.PageID== PAGE_BY_NAME['Login'].page_id: pass # Essa não tem cabeçalho
 
         elif self.PageIDAux== PAGE_BY_NAME['Perfil'].page_id:
             if self.PageID in [PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id, PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id, PAGE_BY_NAME['CotacaoEncontradaBolsa'].page_id, PAGE_BY_NAME['CotacaoEncontradaManualBolsa'].page_id, PAGE_BY_NAME['CotacaoNaoEncontradaBolsa'].page_id, PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id, PAGE_BY_NAME['InformarNovaOperacaoManualBolsa'].page_id, PAGE_BY_NAME['AlterarNovaOperacaoManualBolsa'].page_id]: self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id))
@@ -1014,7 +1013,7 @@ class HMI_Presentation:
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID== PAGE_BY_NAME['AuxilioSenha'].page_id or self.PageID== PAGE_BY_NAME['ImportarUsuario'].page_id or self.PageID== PAGE_BY_NAME['CriarUsuario'].page_id or self.PageID== PAGE_BY_NAME['AlteracaoSenha'].page_id:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Login'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -1028,7 +1027,7 @@ class HMI_Presentation:
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
         elif self.PageID== PAGE_BY_NAME['AnaliseMercado'].page_id:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Login'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -1048,7 +1047,7 @@ class HMI_Presentation:
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20, Qt.AlignmentFlag.AlignLeft)
 
-        elif self.PageID== PAGE_BY_NAME['MinhaCarteira'].page_id:
+        elif self.PageID== PAGE_BY_NAME['Home'].page_id:
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_AttCotacoes, Qt.AlignmentFlag.AlignLeft)
@@ -1062,7 +1061,7 @@ class HMI_Presentation:
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in [PAGE_BY_NAME['ARCA'].page_id, PAGE_BY_NAME['Desempenho'].page_id]:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)
@@ -1254,7 +1253,7 @@ class HMI_Presentation:
             self.GLayout.addLayout(self.HBoxLayout_Header, 0, 0, 1, 20)
 
         elif self.PageID in [PAGE_BY_NAME['EdicaoNegociacoes'].page_id, PAGE_BY_NAME['AnaliseMercadoDup'].page_id, PAGE_BY_NAME['Tributacao'].page_id]:
-            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['MinhaCarteira'].page_id))
+            self.Button_Return.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['Home'].page_id))
             self.GLayout.addWidget(self.Background_Header, 0, 0, 1, 20)
 
             self.HBoxLayout_Header.addWidget(self.Button_Return, Qt.AlignmentFlag.AlignLeft)

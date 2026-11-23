@@ -98,7 +98,6 @@ def test_smoke(qtbot):
     qtbot.waitExposed(w)
 
 # TODOs
-window, qtbot, for_visual_check to be autouse, always yield to tests.
-
-- quando uma conta tester for criada, yield, no final delete. -> DONE: `assure_account_exists` now registers a finalizer that deletes the account it created at teardown (pre-existing accounts are left untouched).
-- quando uma sessao for iniciada, se nao for pra usar --use-official-db, entao a User.db deve ser deletada antes de comecar os testes. as tester.db tambem. 
+01 - Create Functional Tests for the UI
+02 - Create Functional Tests for the APP
+03 - Create Unit Tests

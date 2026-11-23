@@ -109,7 +109,7 @@ def login(user_info, window, qtbot, for_visual_check) -> tuple[str, str]:
     """
     NomeDeUsuario, Senha, _, _, _ = user_info
     
-    expected_page = 'Home'
+    expected_page = 'Login'
     observed_page = PAGE_BY_ID[window.PageID].name
     assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
     logger.info(f"[OK] App started on {observed_page} page.")

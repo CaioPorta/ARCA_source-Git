@@ -38,13 +38,13 @@ def visual_sleep(for_visual_check=True, seconds=TIME_TO_VISUAL_CHECK):
 
 def go_home(window, qtbot, for_visual_check, assure=False):
     """
-    Ensure the window is on the not-logged-in Home page.
+    Ensure the window is on the not-logged-in Login page.
 
     Called during teardown so each test starts from a known state. If the
     window ended up logged in somewhere else, log out to reach the home page.
     """
     observed_page = PAGE_BY_ID[window.PageID].name
-    if not assure: assert observed_page != 'Home', "You are already in Home page!"
+    if not assure: assert observed_page != 'Login', "You are already in Login page!"
     for _ in range(5):
         logout = getattr(window, 'Button_Sair', None)
         if logout is not None:
@@ -55,25 +55,25 @@ def go_home(window, qtbot, for_visual_check, assure=False):
             qtbot.keyClick(window, Qt.Key_Escape)
             observed_page = PAGE_BY_ID[window.PageID].name
             visual_sleep(for_visual_check)
-            if observed_page == 'MinhaCarteira' or observed_page == 'Home':
+            if observed_page == 'Home' or observed_page == 'Login':
                 break
     observed_page = PAGE_BY_ID[window.PageID].name
     visual_sleep(for_visual_check)
-    assert observed_page == 'Home', f"Expected Home page, but got {observed_page} page."
-    logger.info("[OK] Navigated to Home.")
+    assert observed_page == 'Login', f"Expected Login page, but got {observed_page} page."
+    logger.info("[OK] Navigated to Login.")
 
 def go_ARCA_page(window, qtbot, for_visual_check, expected_page='ARCA'):
     """
-    Navigate to the ARCA page from the MinhaCarteira page (PageID '1').
+    Navigate to the ARCA page from the Home page (PageID '1').
 
-    Pre-requisite: be on the MinhaCarteira page, where the 'ARCA' button lives.
+    Pre-requisite: be on the Home page, where the 'ARCA' button lives.
     """
     observed_page = PAGE_BY_ID[window.PageID].name
     visual_sleep(for_visual_check)
     assert observed_page != expected_page, f"Expected {expected_page} page, but got {observed_page} page."
 
     assert getattr(window, 'Button_ARCA', None) is not None, \
-        "'ARCA' button not found; expected to be on the MinhaCarteira page."
+        "'ARCA' button not found; expected to be on the Home page."
     _show_click(window.Button_ARCA)
     window.Button_ARCA.pressed.emit()
     
@@ -84,16 +84,16 @@ def go_ARCA_page(window, qtbot, for_visual_check, expected_page='ARCA'):
 
 def go_Desempenho_page(window, qtbot, for_visual_check, expected_page='Desempenho'):
     """
-    Navigate to the Desempenho page from the MinhaCarteira page (PageID '1').
+    Navigate to the Desempenho page from the Home page (PageID '1').
 
-    Pre-requisite: be on the MinhaCarteira page, where the 'Desempenho' button lives.
+    Pre-requisite: be on the Home page, where the 'Desempenho' button lives.
     """
     observed_page = PAGE_BY_ID[window.PageID].name
     visual_sleep(for_visual_check)
     assert observed_page != expected_page, f"Expected {expected_page} page, but got {observed_page} page."
     
     assert getattr(window, 'Button_Desempenho', None) is not None, \
-        "'Desempenho' button not found; expected to be on the MinhaCarteira page."
+        "'Desempenho' button not found; expected to be on the Home page."
     _show_click(window.Button_Desempenho)
     window.Button_Desempenho.pressed.emit()
     
@@ -104,16 +104,16 @@ def go_Desempenho_page(window, qtbot, for_visual_check, expected_page='Desempenh
 
 def go_Mercado_page(window, qtbot, for_visual_check, expected_page='AnaliseMercado'):
     """
-    Navigate to the Análise do Mercado page from the MinhaCarteira page (PageID '1').
+    Navigate to the Análise do Mercado page from the Home page (PageID '1').
 
-    Pre-requisite: be on the MinhaCarteira page, where the 'Análise do Mercado' button lives.
+    Pre-requisite: be on the Home page, where the 'Análise do Mercado' button lives.
     """
     observed_page = PAGE_BY_ID[window.PageID].name
     visual_sleep(for_visual_check)
     assert observed_page != expected_page, f"Expected {expected_page} page, but got {observed_page} page."
     
     assert getattr(window, 'Button_Mercado', None) is not None, \
-        "'Análise do Mercado' button not found; expected to be on the MinhaCarteira page."
+        "'Análise do Mercado' button not found; expected to be on the Home page."
     _show_click(window.Button_Mercado)
     window.Button_Mercado.pressed.emit()
     
@@ -124,16 +124,16 @@ def go_Mercado_page(window, qtbot, for_visual_check, expected_page='AnaliseMerca
 
 def go_MercadoDup_page(window, qtbot, for_visual_check, expected_page='AnaliseMercadoDup'):
     """
-    Navigate to the Análise do Mercado page from the MinhaCarteira page (PageID '1').
+    Navigate to the Análise do Mercado page from the Home page (PageID '1').
 
-    Pre-requisite: be on the MinhaCarteira page, where the 'Análise do Mercado' button lives.
+    Pre-requisite: be on the Home page, where the 'Análise do Mercado' button lives.
     """
     observed_page = PAGE_BY_ID[window.PageID].name
     visual_sleep(for_visual_check)
     assert observed_page != expected_page, f"Expected {expected_page} page, but got {observed_page} page."
     
     assert getattr(window, 'Button_Mercado', None) is not None, \
-        "'Análise do Mercado' button not found; expected to be on the MinhaCarteira page."
+        "'Análise do Mercado' button not found; expected to be on the Home page."
     _show_click(window.Button_Mercado)
     window.Button_Mercado.pressed.emit()
     
@@ -144,13 +144,13 @@ def go_MercadoDup_page(window, qtbot, for_visual_check, expected_page='AnaliseMe
 
 def go_Trades_page(window, qtbot, for_visual_check, expected_page = 'EdicaoNegociacoes'):
     """
-    Navigate to the EdicaoNegociacoes page (Trades) from the MinhaCarteira page.
+    Navigate to the EdicaoNegociacoes page (Trades) from the Home page.
     """
     observed_page = PAGE_BY_ID[window.PageID].name
     assert observed_page != expected_page, f"Expected {expected_page} page, but got {observed_page} page."
 
     assert getattr(window, 'Button_Negociações', None) is not None, \
-        "'Trades' button not found; expected to be on the MinhaCarteira page."
+        "'Trades' button not found; expected to be on the Home page."
     _show_click(window.Button_Negociações)
     window.Button_Negociações.pressed.emit()
     
@@ -178,7 +178,7 @@ def go_Trades_Bolsa_page(window, qtbot, for_visual_check, expected_page = 'Edica
 
 def go_Trades_Criptomoedas_page(window, qtbot, for_visual_check, expected_page='EdicaoNegociacoesCripto'):
     """
-    Navigate to the EdicaoNegociacoesCripto page (Trades -> Criptomoedas) from the MinhaCarteira page.
+    Navigate to the EdicaoNegociacoesCripto page (Trades -> Criptomoedas) from the Home page.
     """
     observed_page = PAGE_BY_ID[window.PageID].name
     assert observed_page != expected_page, f"Expected {expected_page} page, but got {observed_page} page."
@@ -195,15 +195,15 @@ def go_Trades_Criptomoedas_page(window, qtbot, for_visual_check, expected_page='
 
 def go_Tributacao_page(window, qtbot, for_visual_check, expected_page='Tributacao'):
     """
-    Navigate to the Tributacao page from the MinhaCarteira page (PageID '1').
+    Navigate to the Tributacao page from the Home page (PageID '1').
 
-    Pre-requisite: be on the MinhaCarteira page, where the 'Tributacao' button lives.
+    Pre-requisite: be on the Home page, where the 'Tributacao' button lives.
     """
     observed_page = PAGE_BY_ID[window.PageID].name
     assert observed_page != expected_page, f"Expected {expected_page} page, but got {observed_page} page."
 
     assert getattr(window, 'Button_Tributacao', None) is not None, \
-        "'Tributacao' button not found; expected to be on the MinhaCarteira page."
+        "'Tributacao' button not found; expected to be on the Home page."
     _show_click(window.Button_Tributacao)
     window.Button_Tributacao.pressed.emit()
     
@@ -214,15 +214,15 @@ def go_Tributacao_page(window, qtbot, for_visual_check, expected_page='Tributaca
 
 def go_Negociacoes_page(window, qtbot, for_visual_check, expected_page='EdicaoNegociacoes'):
     """
-    Navigate to the EdicaoNegociacoes page from the MinhaCarteira page (PageID '1').
+    Navigate to the EdicaoNegociacoes page from the Home page (PageID '1').
 
-    Pre-requisite: be on the MinhaCarteira page, where the 'Negociações' button lives.
+    Pre-requisite: be on the Home page, where the 'Negociações' button lives.
     """
     observed_page = PAGE_BY_ID[window.PageID].name
     assert observed_page != expected_page, f"Expected {expected_page} page, but got {observed_page} page."
 
     assert getattr(window, 'Button_Negociações', None) is not None, \
-        "'Negociações' button not found; expected to be on the MinhaCarteira page."
+        "'Negociações' button not found; expected to be on the Home page."
     _show_click(window.Button_Negociações)
     window.Button_Negociações.pressed.emit()
     

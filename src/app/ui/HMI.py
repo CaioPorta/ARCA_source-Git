@@ -103,7 +103,7 @@ class IHMmain(HMI_PageNavigation, HMI_Presentation, HMI_PageBuilders, HMI_Events
         self.GCount = 0 # Contador de GridLayouts que tem no GLayout
         self.HBoxCount = 0 # Contador de HBoxLayouts que tem no GLayout
         self.VBoxCount = 0 # Contador de VBoxLayouts que tem no GLayout
-        self.PageID= PAGE_BY_NAME['Home'].page_id
+        self.PageID= PAGE_BY_NAME['Login'].page_id
         self.PageIDAux = ''
         self.OutraJanelaAberta = False
         self.ClockWindowOpen = False
@@ -111,7 +111,7 @@ class IHMmain(HMI_PageNavigation, HMI_Presentation, HMI_PageBuilders, HMI_Events
         self.VersionUpdate = False
 
     def initialize(self, check_version=True):
-        self.CreatePage(PAGE_BY_NAME['Home'].page_id) # Página inicial do programa
+        self.CreatePage(PAGE_BY_NAME['Login'].page_id) # Página inicial do programa
         if check_version:
             self.VersionChecker = VersionChecker.VersionChecker(self)
 

@@ -112,7 +112,7 @@ class HMI_PageNavigation:
                 self.Window_Relogio.close()
                 self.Window_Relogio.show()
         else:
-            if PageID== PAGE_BY_NAME['Home'].page_id:
+            if PageID== PAGE_BY_NAME['Login'].page_id:
                 if self.PageIDAux== PAGE_BY_NAME['ConfirmacaoLogout'].page_id:
                     if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado:
                         if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
@@ -139,7 +139,7 @@ class HMI_PageNavigation:
                 elif self.PageID == "1":
                     self.DBManager.Disconnect()
                     self.ClearPage()
-                    self.PageID= PAGE_BY_NAME['Home'].page_id
+                    self.PageID= PAGE_BY_NAME['Login'].page_id
                     self.PageIDAux = ''
                     self.InsertGridLayout(0, 0, 1, 20)
                     self.InicializacaoUsuario()
@@ -148,19 +148,19 @@ class HMI_PageNavigation:
                 else:
                     self.InicializacaoUsuario()
                     self.ClearPage()
-                    self.PageID= PAGE_BY_NAME['Home'].page_id
+                    self.PageID= PAGE_BY_NAME['Login'].page_id
                     self.PageIDAux = ''
                     self.InsertGridLayout(0, 0, 1, 20)
                     self.CreatePage0()
                     self.PutHeader()
-            elif PageID== PAGE_BY_NAME['MinhaCarteira'].page_id:
+            elif PageID== PAGE_BY_NAME['Home'].page_id:
                 if self.PageID== PAGE_BY_NAME['AlteracaoSenha'].page_id:
                     if (self.TextBox_NovaSenha1.text() == self.TextBox_NovaSenha2.text() and
                         len(self.TextBox_NovaSenha1.text())>3): # Condições para passar pra página 1
                             self.LoggedIn = self.DBManager.ConnectTo(self.User, self.DBManager.GetPasswdByUser(self.User))
                             self.DBManager.ChangePassword(self.TextBox_NovaSenha1.text())
                             self.ClearPage()
-                            self.PageID= PAGE_BY_NAME['MinhaCarteira'].page_id
+                            self.PageID= PAGE_BY_NAME['Home'].page_id
                             self.PageIDAux = ''
                             self.InsertGridLayout(1, 0, 1, 20)
                             self.CreatePage1()
@@ -209,7 +209,7 @@ class HMI_PageNavigation:
                                 UpdateUserPath(self.User, self.TextBox_Path.text())
                                 self.DBManager.ThreadLock.release()
                             self.ClearPage()
-                            self.PageID= PAGE_BY_NAME['MinhaCarteira'].page_id
+                            self.PageID= PAGE_BY_NAME['Home'].page_id
                             self.PageIDAux = ''
                             self.InsertGridLayout(1, 0, 1, 20)
                             self.CreatePage1()
@@ -240,7 +240,7 @@ class HMI_PageNavigation:
                         self.Label_Erro1.setText('O código não confere.')
                         self.F_GLayout[self.GCount-1].addWidget(self.Label_Erro1, 12, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
                         self.TextBox_NomeDeUsuario.setFocus()
-                elif self.PageID== PAGE_BY_NAME['Home'].page_id:
+                elif self.PageID== PAGE_BY_NAME['Login'].page_id:
                     Resposta = self.DBManager.ConnectTo(self.TextBox_NomeDeUsuario.text(), self.TextBox_Senha.text())
                     if Resposta == "Arquivo não existe":
                         self.LoggedIn = False
@@ -259,7 +259,7 @@ class HMI_PageNavigation:
                         self.User = self.DBManager.User
                         self.Email = self.DBManager.Email
                         self.ClearPage()
-                        self.PageID= PAGE_BY_NAME['MinhaCarteira'].page_id
+                        self.PageID= PAGE_BY_NAME['Home'].page_id
                         self.PageIDAux = ''
                         self.InsertGridLayout(1, 0, 1, 20)
                         self.CreatePage1()
@@ -281,7 +281,7 @@ class HMI_PageNavigation:
                         self.TextBox_NomeDeUsuario.setFocus()
                 else:
                     self.ClearPage()
-                    self.PageID= PAGE_BY_NAME['MinhaCarteira'].page_id
+                    self.PageID= PAGE_BY_NAME['Home'].page_id
                     self.PageIDAux = ''
                     self.InsertGridLayout(1, 0, 1, 20)
                     self.CreatePage1()
