@@ -83,6 +83,23 @@ def teardown(window, qtbot, request) -> None:
 def for_visual_check(request: pytest.FixtureRequest) -> bool:
     return request.config.getoption("--visual-check", default=False)
 
+
+class _UIHarness:
+    """Bundle of test-time dependencies exposed by the single `harness` fixture."""
+
+    def __init__(self, window, qtbot, for_visual_check):
+        self.window = window
+        self.qtbot = qtbot
+        self.for_visual_check = for_visual_check
+
+@pytest.fixture(scope="function")
+def harness(window, qtbot, for_visual_check) -> _UIHarness:
+    """Single fixture exposing the app window, pytest-qt qtbot helper and visual-check flag.
+
+    Tests declare only this fixture and access its members (harness.window, harness.qtbot,
+    harness.for_visual_check). window/for_visual_check remain autouse so their setup still runs."""
+    yield _UIHarness(window=window, qtbot=qtbot, for_visual_check=for_visual_check)
+
 @pytest.fixture(scope="function", autouse=False)
 def login(user_info, window, qtbot, for_visual_check) -> tuple[str, str]:
     """
