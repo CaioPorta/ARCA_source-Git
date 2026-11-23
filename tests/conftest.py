@@ -156,19 +156,20 @@ def assure_account_exists(window, user_info, request: pytest.FixtureRequest) -> 
         # if file at userpath exists, continue
         if email is not None and userpath is not None and exists(userpath+"\\"+user+".db"):
             logger.info(f"Using user {user}")
-            return
-        raise ValueError(f"User {user} not found")
-
-    account_db_path = os.path.join(userpath, f"{user}.db")
-    if not exists(account_db_path):
-        logger.info(f"currdir: {userpath}")
-        test_result = window.DBManager.CriarNovoPerfil(user, password, email, moedacorrente, userpath)
-        assert test_result == True, f"Expected True, but got {test_result}"
-        # The account was created for this test; remove it once the test finishes.
-        request.addfinalizer(lambda: delete_account(window))
+            yield
+        else:
+            raise ValueError(f"User {user} not found")
     else:
-        logger.info(f"User {user} already exists; leaving it in place.")
-    yield
+        account_db_path = os.path.join(userpath, f"{user}.db")
+        if not exists(account_db_path):
+            logger.info(f"currdir: {userpath}")
+            test_result = window.DBManager.CriarNovoPerfil(user, password, email, moedacorrente, userpath)
+            assert test_result == True, f"Expected True, but got {test_result}"
+            # The account was created for this test; remove it once the test finishes.
+            request.addfinalizer(lambda: delete_account(window))
+        else:
+            logger.info(f"User {user} already exists; leaving it in place.")
+        yield
 
 @pytest.fixture(scope="function", autouse=False)
 def user_info(window, request: pytest.FixtureRequest) -> tuple[str, str, str, str]:
