@@ -217,7 +217,7 @@ F: Tributação
 01 - Make DBManager to be independent from HMI thread. DBManager shouldn't access HMI, it should only accept or refuse the request. If it needs info from HMI, we should know in advance and the HMI thread should forward the info by itself. The goal is that the tests can create a DBManager instance and ask for requests without creating an HMI instance mandatory. Also to be able to dev unit tests. Which lead us to topic 02.
 02 - Make DBManager.ThreadLock to be private only
 03 - Cybersecurity: search for DBManager weaknesses, even if the app will run offline.
-04 - Add the EnviarEmailDeConfirmacao email info in a toml, not public in git.
+04 - Cybersecurity: Add the EnviarEmailDeConfirmacao email info in a toml, not public in git.
 
 Crashes:
 DEFECT 2 - GetAllTickers 
