@@ -241,7 +241,7 @@ F: Tributação
 08 - Modularize HMI_Mercado_page.py -> DONE: `HMI_Mercado` behaviour is now split in `src\app\ui\mercado` across `HMI_PageBuilders`
 09 - Modularize HMI_Tributacao_page.py -> DONE: `HMI_Tributacao` behaviour is now split in `src\app\ui\tributacao` across `HMI_PageBuilders`, `HMI_Presentation`, `HMI_Events`
 10 - Modularize HMI_Trades_page.py -> DONE: `HMI_Trades` behaviour is now split in `src\app\ui\trades` across `HMI_PageBuilders`, `HMI_Events`
-11 - Modularize HMI_Trades_Bolsa_page.py -> `HMI_Trades_Bolsa` behaviour is now split in `src\app\ui\trades_bolsa` across `HMI_PageNavigation`, `HMI_Presentation`, `HMI_PageBuilders`, `HMI_Events`
+11 - Modularize HMI_Trades_Bolsa_page.py -> DONE: `HMI_Trades_Bolsa` behaviour is now split in `src\app\ui\trades_bolsa` across `HMI_PageNavigation`, `HMI_Presentation`, `HMI_PageBuilders`, `HMI_Events`
 12 - Modularize HMI_Trades_Criptomoedas_page.py -> DONE: `HMI_Trades_Criptomoedas` behaviour is now split in `src\app\ui\trades_criptomoedas` across `HMI_PageBuilders`, `HMI_Presentation`, `HMI_Events`
 13 - Make DBManager.ThreadLock to be private only
 14 - Cybersecurity, even if the app will run offline
