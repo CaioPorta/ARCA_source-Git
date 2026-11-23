@@ -124,12 +124,14 @@ def assure_account_exists(window, user_info, request: pytest.FixtureRequest) -> 
     """
     Helper function to assure that the tester account exists in the database.
     Shall be called when argument "--assure-account-exists" is passed to pytest.
-    """
-    """
+
     Create a minimal tester account (Users.db + per-user db) when it does not already exist, so the
     app can authenticate during tests. Uses os.getcwd() -- redirected to tests/test_output by the
     session fixture -- as both the Users.db location and the user's Path, which keeps logout's
     Disconnect() from deleting the account (it only removes the db when Path differs from cwd).
+
+    When this fixture creates the account it registers a finalizer that deletes it at teardown, so no
+    leftover test account is left behind. Accounts that already existed before the test are kept.
     """
     user, password, email, moedacorrente, userpath = user_info
 
@@ -139,11 +141,17 @@ def assure_account_exists(window, user_info, request: pytest.FixtureRequest) -> 
             logger.info(f"Using user {user}")
             return
         raise ValueError(f"User {user} not found")
-    
-    logger.info(f"currdir: {userpath}")
-    test_result = window.DBManager.CriarNovoPerfil(user, password, email, moedacorrente, userpath)
-    assert test_result == True, f"Expected True, but got {test_result}"
-    return
+
+    account_db_path = os.path.join(userpath, f"{user}.db")
+    if not exists(account_db_path):
+        logger.info(f"currdir: {userpath}")
+        test_result = window.DBManager.CriarNovoPerfil(user, password, email, moedacorrente, userpath)
+        assert test_result == True, f"Expected True, but got {test_result}"
+        # The account was created for this test; remove it once the test finishes.
+        request.addfinalizer(lambda: delete_account(window))
+    else:
+        logger.info(f"User {user} already exists; leaving it in place.")
+    yield
 
 @pytest.fixture(scope="function", autouse=False)
 def user_info(window, request: pytest.FixtureRequest) -> tuple[str, str, str, str]:
