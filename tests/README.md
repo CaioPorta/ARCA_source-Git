@@ -99,3 +99,5 @@ def test_smoke(qtbot):
 
 # TODOs
 window, qtbot, for_visual_check to be autouse, always yield to tests.
+
+- quando uma conta tester for criada, yield, no final delete. 
