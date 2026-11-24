@@ -4,12 +4,12 @@ import sys
 from datetime import datetime
 
 # Single shared logger instance for every test folder. Import it from any test:
-#     from app.core.logger_setup import logger
+#     from src.app.core.logger_setup import logger
 
 
 _libs_dir = os.path.dirname(os.path.abspath(__file__))
 _root = os.path.dirname(os.path.dirname(_libs_dir))
-_log_dir = os.path.join(_root, "app", "logs")
+_log_dir = os.path.join(_root, "src", "app", "logs")
 os.makedirs(_log_dir, exist_ok=True)
 _log_path = os.path.join(_log_dir, f"app_run_{datetime.now():%Y%m%d_%H%M%S}.log")
 

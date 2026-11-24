@@ -15,6 +15,7 @@ import ui.popup.LoadingWindow as LoadingWindow
 import ui.popup.OperacaoRegistradaComSucesso as OperacaoRegistradaComSucesso
 from core.BackgroundProcesses import WorkerThread
 from ui.pages import PAGE_BY_NAME
+from src.app.core.logger_setup import logger
 
 
 class HMI_PageNavigation:
