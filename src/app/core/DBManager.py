@@ -16,7 +16,7 @@ from threading import Lock
 from core.BackgroundProcesses import BackgroundProcess as BP
 from core.BackgroundProcesses import WorkerThread
 
-import ui.popup.LoadingWindow as LoadingWindow
+from ui.popup import LoadingWindow
 from ui.pages import PAGE_BY_NAME
 
 from PyQt5.QtGui import *

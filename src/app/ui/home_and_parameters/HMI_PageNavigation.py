@@ -6,13 +6,12 @@ Created on Sun Sep  5 01:44:04 2021
 import os
 import traceback
 import sys
-import sqlite3
 from datetime import datetime
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QLabel, QMessageBox
 from PyQt5.QtCore import Qt
-import ui.popup.LoadingWindow as LoadingWindow
-import ui.popup.OperacaoRegistradaComSucesso as OperacaoRegistradaComSucesso
+from ui.popup import LoadingWindow
+from ui.popup import OperacaoRegistradaComSucesso
 from core.BackgroundProcesses import WorkerThread
 from ui.pages import PAGE_BY_NAME
 from src.app.core.logger_setup import logger
