@@ -138,7 +138,9 @@ class IHMmain(HMI_PageNavigation, HMI_Presentation, HMI_PageBuilders, HMI_Events
         self.ParteImportacao = 1
 
         self.YahooFinance = YahooFinance.YahooFinance(self)
-        self.DBManager = DBManager.DBManager(self)
+        self.DBManager = DBManager.DBManager(self, 
+                                             SetoresBasicos = self.YahooFinance.GetSetoresBasicos()
+                                             )
         self.Calcular = Calcular.Calcular(self)
 
         self.DBManager.Disconnect()

@@ -24,8 +24,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 
-class DBManager(object):
-    def __init__(self, HMI):
+class DBManager:
+    def __init__(self, HMI, SetoresBasicos):
         self.HMI = HMI
         self.ThreadLock = Lock()
 
@@ -45,7 +45,7 @@ class DBManager(object):
                                                             ('Caixa','Fundos de Investimento: Renda Fixa'),
                                                             ('Ativos Internacionais','BDR'),
                                                             ('Ativos Internacionais','Fundos de Investimento: Ações Internacionais')])
-        self.series_BasicInfo_Setores = pd.Series(self.HMI.YahooFinance.GetSetoresBasicos())
+        self.series_BasicInfo_Setores = pd.Series(SetoresBasicos)
         self.series_BasicInfo_MoedasFiat = pd.Series(['CNY','USD','EUR','JPY','INR','RUB','GBP','CHF','KRW','MXN','CAD',
                                                       'BRL','AUD','SAR','HKD','TWD','TRY','SGD','SEK','ZAR','ILS'])
 
@@ -72,17 +72,14 @@ class DBManager(object):
 
     #%% Sobre o Usuário
 
-    def CriarNovoPerfil(self, user='', senha='', email='', moedacorrente='', userpath=''): # Cria e conecta
+    def CriarNovoPerfil(self, user, senha, email, moedacorrente, userpath=''): # Cria e conecta
         try:
-            if len(user)==0: self.User = self.HMI.TextBox_NomeDeUsuario.text()
-            else: self.User = user
-            if len(senha)==0: self.Senha = self.HMI.TextBox_Senha1.text()
-            else: self.Senha = senha
-            if len(email)==0: self.Email = self.HMI.TextBox_Email.text().lower()
-            else: self.Email = email.lower()
-            if len(moedacorrente)==0: moedacorrente = self.HMI.ComboBox_Currency.currentText()
-            if len(userpath)==0: self.UserPath = self.HMI.TextBox_Path.text()
-            else: self.UserPath = userpath
+            if len(user)==0 or len(senha)==0 or len(email)==0 or len(moedacorrente)==0: 
+                return False
+            self.User = user
+            self.Senha = senha
+            self.Email = email.lower()
+            self.UserPath = userpath
             currdir = os.getcwd() # Get current directory
             if self.UserPath == '': self.UserPath = currdir
 
@@ -283,38 +280,27 @@ class DBManager(object):
 
     #%% Adições
 
-    def AddBanco(self):
-        def BancoExists(Banco):
-            retorno, cursor = self.GetDataDB("SELECT * FROM Bancos")
-            retorno = list(filter(lambda x: str("¨"+Banco+"¨").lower() == str(x[0]).lower(), retorno))
-            if len(retorno)>0: return True
-            return False
-        Banco = self.HMI.TextBox_NovoBanco.text().replace(" ","_")
-        if BancoExists(Banco): return False
-        MoedaCorrente = self.HMI.ComboBox_Currency.currentText()
+    def AtivoExisteNaTabelaDeCotacoes(self, ativo):
+        Table, _ = self.GetDataDB("SELECT * FROM Cotações")
+        aux = list(filter(lambda x: x[2]==ativo, Table))
+        return len(aux) > 0
+    
+    def BancoExists(self, Banco):
+        retorno, _ = self.GetDataDB("SELECT * FROM Bancos")
+        retorno = list(filter(lambda x: str("¨"+Banco+"¨").lower() == str(x[0]).lower(), retorno))
+        return len(retorno) > 0
+
+    def AddBanco(self, Banco: str, MoedaCorrente:str, Modo:str | None, Cotacao: str | None):
+        
+        if self.BancoExists(Banco): return False
+        
         self.AddRowInCurrentDB('Bancos', [('Banco', "¨"+Banco+"¨"),('MoedaCorrente', MoedaCorrente),('ContaCorrente', 0)])
 
-        def AtivoExisteNaTabelaDeCotacoes(ativo):
-            Table, cursor = self.GetDataDB("SELECT * FROM Cotações")
-            aux = list(filter(lambda x: x[2]==ativo, Table))
-            if len(aux)>0:
-                return True
-            return False
-
-        if not MoedaCorrente == self.GetUserCoinCurrency() and not AtivoExisteNaTabelaDeCotacoes(MoedaCorrente):
-            Cotacao = 0.
-            Modo = "Manual"
-            try:
-                MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso',"Identificamos uma nova moeda na base de dados.\nA operação seguinte pode levar alguns minutos,\npois irá buscar online a cotação atual dessa moeda.\nNÃO FECHE O PROGRAMA DURANTE O PROCESSO SEGUINTE!")
-                Cotacao, CotacaoDolar = self.HMI.YahooFinance.GetCotacaoCripto(MoedaCorrente, self.GetUserCoinCurrency())
-                if Cotacao > 0: Modo = "Auto"
-            except Exception as e:
-                print(e, traceback.format_exception(None, e, e.__traceback__))
-            finally:
-                self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
-                                                    ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
-                                                    ('Ativo', MoedaCorrente),
-                                                    ('Cotação', Cotacao)])
+        if Modo is not None:
+            self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
+                                                ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
+                                                ('Ativo', MoedaCorrente),
+                                                ('Cotação', Cotacao)])
         return True
 
     def AddCorretora(self):

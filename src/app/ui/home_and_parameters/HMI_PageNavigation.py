@@ -193,21 +193,33 @@ class HMI_PageNavigation:
                             self.TextBox_NovaSenha1.setFocus()
                 elif self.PageID== PAGE_BY_NAME['ConfirmacaoEmailCriar'].page_id:
                     if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado: # Condições para passar pra página 1
-                        self.LoggedIn = self.DBManager.CriarNovoPerfil()
+                        user = self.TextBox_NomeDeUsuario.text()
+                        senha = self.TextBox_Senha1.text()
+                        email = self.TextBox_Email.text().lower()
+                        moedacorrente = self.ComboBox_Currency.currentText()
+                        userpath = self.TextBox_Path.text()
+                        self.LoggedIn = self.DBManager.CriarNovoPerfil(user = user,
+                                                                       senha = senha,
+                                                                       email = email.lower(),
+                                                                       moedacorrente = moedacorrente,
+                                                                       userpath = userpath,
+                                                                       )
                         if self.LoggedIn:
-                            self.User = self.TextBox_NomeDeUsuario.text()
-                            self.Email = self.TextBox_Email.text().lower()
+                            self.User = user
+                            self.Email = email
                             if self.DBManager.CheckIfUserExists(self.User) == "Arquivo não encontrado":
-                                def UpdateUserPath(UserName, PathNovo):
-                                    currdir = os.getcwd()
-                                    conn = sqlite3.connect(currdir+'\\Users.db')
-                                    cursor = conn.cursor()
-                                    cursor.execute("UPDATE Usuários SET Path = (?) Where Usuário = (?)", [(PathNovo), UserName])
-                                    conn.commit()
-                                    conn.close()
-                                self.DBManager.ThreadLock.acquire()
-                                UpdateUserPath(self.User, self.TextBox_Path.text())
-                                self.DBManager.ThreadLock.release()
+                                logger.error("""Arquivo não encontrado. Comentei esse trem aqui embaixo pq nao lembro porque ele existe. 
+                                             Se der ruim, descomentar e procurar um jeito mais elegante de fazer isso.""")
+                            #     def UpdateUserPath(UserName, PathNovo):
+                            #         currdir = os.getcwd()
+                            #         conn = sqlite3.connect(currdir+'\\Users.db')
+                            #         cursor = conn.cursor()
+                            #         cursor.execute("UPDATE Usuários SET Path = (?) Where Usuário = (?)", [(PathNovo), UserName])
+                            #         conn.commit()
+                            #         conn.close()
+                            #     self.DBManager.ThreadLock.acquire()
+                            #     UpdateUserPath(self.User, self.TextBox_Path.text())
+                            #     self.DBManager.ThreadLock.release()
                             self.ClearPage()
                             self.PageID= PAGE_BY_NAME['Home'].page_id
                             self.PageIDAux = ''
@@ -866,7 +878,21 @@ class HMI_PageNavigation:
                     if self.PageID== PAGE_BY_NAME['AdicionarNovoBanco'].page_id:
                         if len(self.TextBox_NovoBanco.text())>0 and len(self.TextBox_NovoBanco.text())<12:
                             if not self.DBManager.CalcularTributacao_is_running:
-                                Executado = self.DBManager.AddBanco()
+                                Banco = self.TextBox_NovoBanco.text().replace(" ","_")
+                                MoedaCorrente = self.ComboBox_Currency.currentText()
+                                UserMoedaCorrente = self.DBManager.GetUserCoinCurrency()
+                                Modo = None
+                                Cotacao = None
+                                if MoedaCorrente != UserMoedaCorrente and not self.DBManager.AtivoExisteNaTabelaDeCotacoes(MoedaCorrente):
+                                    Cotacao = 0.
+                                    Modo = "Manual"
+                                    try:
+                                        MessageBox_Msg1 = QMessageBox.about(self,'Aviso',"Identificamos uma nova moeda na base de dados.\nA operação seguinte pode levar alguns minutos,\npois irá buscar online a cotação atual dessa moeda.\nNÃO FECHE O PROGRAMA DURANTE O PROCESSO SEGUINTE!")
+                                        Cotacao, _ = self.YahooFinance.GetCotacaoCripto(MoedaCorrente, UserMoedaCorrente)
+                                        if Cotacao > 0: Modo = "Auto"
+                                    except Exception as e:
+                                        print(e, traceback.format_exception(None, e, e.__traceback__))
+                                Executado = self.DBManager.AddBanco(Banco, MoedaCorrente, Modo, Cotacao)
                                 if Executado:
                                     self.ClearPage()
                                     self.PageID= PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id
