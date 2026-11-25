@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ARCA behaviour split into a single concern.
 HMI_Presentation - presentation helpers (inherited by the composition root).
