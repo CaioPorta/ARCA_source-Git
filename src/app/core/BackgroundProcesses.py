@@ -82,9 +82,9 @@ class BackgroundProcess(Thread):
                 except Exception as e:
                     print(e, traceback.format_exception(None, e, e.__traceback__))
         except Exception as e:
-            self.HMI.ThreadLock.acquire()
+            # self.HMI.ThreadLock.acquire()
             print(e)
-            self.HMI.ThreadLock.release()
+            # self.HMI.ThreadLock.release()
         finally:
             try:
                 self.HMI.Movie_AttCotacoes.stop()

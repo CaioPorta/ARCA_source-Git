@@ -28,6 +28,8 @@ from PyQt5.QtCore import *
 class DBManager:
     def __init__(self, HMI, SetoresBasicos):
         self.HMI = HMI
+
+        # Create a ThreadLock to avoid multiple threads accessing DB at the same time, risking double writting or reading dynamic data. 
         self.ThreadLock = Lock()
 
         self.series_BasicInfo_TiposDeAtivos = pd.Series(['Ações e Negócios',
@@ -4175,7 +4177,7 @@ class DBManager:
 
     def GetDataDB(self, command, params=''):
         try:
-            self.HMI.ThreadLock.acquire()
+            self.ThreadLock.acquire()
             self.HMI.unsetCursor()
             cursor = self.conn.cursor()
             data = []
@@ -4186,12 +4188,12 @@ class DBManager:
             # if not "no such column: EstoqueDe" in str(e): # Awaited error, uncomment only for specific debug, otherwise trades_bolsa may crash
             #     logger.error("Erro GetDataDB: ",str(e),"\nO comando solicitado foi:\n",command,"\nparâmetros:",params)
             #     logger.error(e, traceback.format_exception(None, e, e.__traceback__))
-        finally: self.HMI.ThreadLock.release()
+        finally: self.ThreadLock.release()
         return data, cursor.description
 
     def ModifyDB(self, command, params=''):
         try:
-            self.HMI.ThreadLock.acquire()
+            self.ThreadLock.acquire()
             self.HMI.unsetCursor()
             cursor = self.conn.cursor()
             logger.debug(command, params)
@@ -4201,4 +4203,4 @@ class DBManager:
         except Exception as e:
             logger.error("Erro ModifyDB: ",str(e),"\nO comando solicitado foi:\n",command,"\nparâmetros:",params)
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
-        finally: self.HMI.ThreadLock.release()
+        finally: self.ThreadLock.release()

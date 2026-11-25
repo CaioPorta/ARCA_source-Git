@@ -130,7 +130,9 @@ class IHMmain(HMI_PageNavigation, HMI_Presentation, HMI_PageBuilders, HMI_Events
         self.SumContasCorrentes = 0.
         self.Cache_Cotacao = 0.
         self.AtualizarCotacoes_is_running = False
-        self.ThreadLock = Lock()
+
+        # Create a ThreadLock to avoid TODO
+        # self.ThreadLock = Lock()
 
         self.LoggedIn = False
         self.ShowValues = True
