@@ -660,7 +660,8 @@ class DBManager:
                 try:
                     if not JaFezOPopUp: MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso',"Identificamos uma nova moeda na base de dados("+ativo+").\nA operação seguinte pode levar alguns minutos,\npois irá buscar online a cotação atual dessa moeda.\nNÃO FECHE O PROGRAMA DURANTE O PROCESSO SEGUINTE!")
                     Cotacao, _ = self.HMI.YahooFinance.GetCotacaoCripto(ativo, self.GetUserCoinCurrency())
-                    if Cotacao > 0: Modo = "Auto"
+                    if Cotacao > 0:
+                        Modo = "Auto"
                 except Exception as e:
                     logger.error(e, traceback.format_exception(None, e, e.__traceback__))
                 finally:

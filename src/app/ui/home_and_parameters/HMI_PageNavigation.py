@@ -1122,7 +1122,7 @@ class HMI_PageNavigation:
                                 Corretagem_text = self.HMI.TextBox_Corretagem.text()
                                 Obs_text = self.HMI.TextBox_Obs.text()
 
-                                deubom = self.DBManager.AddOperacao_Bolsa(Corretora = Corretora,
+                                result = self.DBManager.AddOperacao_Bolsa(Corretora = Corretora,
                                                                           data = data,
                                                                           Preco_text = Preco_text,
                                                                           Qqt_text = Qqt_text,
@@ -1132,7 +1132,7 @@ class HMI_PageNavigation:
                                                                           Corretagem_text = Corretagem_text,
                                                                           Obs_text = Obs_text
                                                                           )
-                                if deubom:
+                                if result:
                                     self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     try:
                                         self.Msg = OperacaoRegistradaComSucesso.OperacaoRegistradaComSucesso(self, 4)
@@ -1427,7 +1427,7 @@ class HMI_PageNavigation:
                                     Par_Esquerda_text = self.TextBox_Par_Esquerda.text()
                                     Par_Direita_text = self.TextBox_Par_Direita.text()
 
-                                    deubom = self.DBManager.AddOperacao_Cripto(Corretora = Corretora,
+                                    result = self.DBManager.AddOperacao_Cripto(Corretora = Corretora,
                                                                                data = data,
                                                                                TaxaB3_text = TaxaB3_text,
                                                                                Qqt_text = Qqt_text,
@@ -1440,8 +1440,8 @@ class HMI_PageNavigation:
                                                                                Conversao_text = Conversao_text,
                                                                                Par_Esquerda_text = Par_Esquerda_text,
                                                                                Par_Direita_text = Par_Direita_text,
-)
-                                    if deubom:
+                                                                               )
+                                    if result:
                                         self.HMI_ARCA.Flag_RecalcularGraficos = True
                                         try:
                                             self.Msg = OperacaoRegistradaComSucesso.OperacaoRegistradaComSucesso(self, 5)
