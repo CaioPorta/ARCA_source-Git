@@ -69,7 +69,7 @@ def official_db(request):
     # to a dedicated DB directory instead, so Users.db never lands in src/assets by default.
     # --use-official-db points at the project root (like ARCA.py launched from the repo root).
     if request.config.getoption("--use-official-db", default=False):
-        db_dir = os.path.dirname(os.path.abspath(__file__))
+        db_dir = os.path.dirname(os.path.abspath(__file__))+"\\src\\assets"
     else:
         db_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tests", "test_output")
     os.makedirs(db_dir, exist_ok=True)

@@ -7,6 +7,7 @@ Created on Tue Dec  7 17:53:09 2021
 from threading import Thread
 import time
 from datetime import datetime
+import traceback
 
 from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
@@ -50,7 +51,8 @@ class BackgroundProcess(Thread):
                         Cotacao = [item[3] for item in Cotacoes if item[2] == ativo][0]
                         if Cotacao>0: return True
                         else: return False
-                    except: pass
+                    except Exception as e:
+                        print(e, traceback.format_exception(None, e, e.__traceback__))
 
                 if not self.ativo == self.currency and not AtivoExisteNaTabelaDeCotacoes(self.ativo):
                         Cotacao = 0.
@@ -58,7 +60,8 @@ class BackgroundProcess(Thread):
                         try:
                             Cotacao, CotacaoDolar = self.HMI.YahooFinance.GetCotacaoCripto(self.ativo, self.currency)
                             if Cotacao > 0: Modo = "Auto"
-                        except:pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         finally:
                             self.HMI.DBManager.AddRowInCurrentDB('Cotações', [('Modo', Modo),
                                                                               ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
@@ -72,24 +75,28 @@ class BackgroundProcess(Thread):
             try:
                 self.HMI.Movie_AttCotacoes.start()
                 self.HMI.Button_AttCotacoes.unsetCursor()
-            except:pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             finally:
                 try: self.HMI.DBManager.AtualizarCotacoes_run()
-                except:pass
+                except Exception as e:
+                    print(e, traceback.format_exception(None, e, e.__traceback__))
         except Exception as e:
-            self.HMI.ThreadLock.acquire()
+            # self.HMI.ThreadLock.acquire()
             print(e)
-            self.HMI.ThreadLock.release()
+            # self.HMI.ThreadLock.release()
         finally:
             try:
                 self.HMI.Movie_AttCotacoes.stop()
                 self.HMI.Movie_AttCotacoes.jumpToFrame(0)
-            except:pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             try:
                 playsound("./sounds/Coins Dropping.mp3")
                 self.HMI.AtualizarCotacoes_is_running = False
                 self.HMI.Button_AttCotacoes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-            except:pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
 
 class WorkerThread(QThread):
     update_table = pyqtSignal(int, int, str)
@@ -139,11 +146,13 @@ class WorkerThread(QThread):
             self.HMI.HMI_Tributacao.CalcularTributacao()
             self.HMI.DBManager.LW.close()
             self.HMI.DBManager.CalcularTributacao_is_running = False
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
 
     def Thread_EsmaecerMsgSucesso(self):
         try:self.HMI.Msg.Esmaecer()
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
 
     def Thread_BuscarSetoresExistentes(self):
         try:
@@ -152,9 +161,11 @@ class WorkerThread(QThread):
             if len(Setores) > 0:
                 Atualizou = self.HMI.DBManager.AlterSetores(Setores)
                 if Atualizou:
+                    self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
                     self.HMI.UpdatePage()
             self.HMI.unsetCursor()
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
 
     def Thread_LoadingARCApage(self):
         try:
@@ -171,7 +182,8 @@ class WorkerThread(QThread):
                 self.HMI.TextBox_MontanteEmAplicacao.setText(str('%.2f' % self.HMI.HMI_ARCA.MontanteEmAplicacao))
                 self.HMI.TextBox_MontanteEmAplicacao.setStyleSheet("background-color: black; color: green;")
 
-        except:pass
+        except Exception as e:
+            print(e, traceback.format_exception(None, e, e.__traceback__))
 
     def Thread_TextBox_Aplicar(self):
         while self.HMI.PageID == "11" and self.HMI.PageIDAux == '':

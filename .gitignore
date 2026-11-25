@@ -5,8 +5,9 @@
 __pycache__/
 *.pyc
 
-# Test results
+# Test
 *.html
+*.toml
 
 # Test logs
 tests/test_output/
@@ -25,3 +26,5 @@ webdriver.lock
 .copilot/
 .copilot-chat/
 .github/copilot-instructions/
+
+/src/app/logs/

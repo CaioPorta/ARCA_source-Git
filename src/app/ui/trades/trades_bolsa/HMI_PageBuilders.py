@@ -5,6 +5,7 @@ Created on Sat Sep 18 22:54:52 2021
 @author: Caio Moreira Porta
 """
 from datetime import datetime
+import traceback
 
 from PyQt5.QtGui import (
     QFont, QCursor,
@@ -25,11 +26,8 @@ from PyQt5.QtCore import (
 from ui.pages import PAGE_BY_NAME
 
 
-class HMI_Trades_Bolsa(object):
-    def __init__(self, HMI):
-        self.HMI = HMI
-        QToolTip.setFont(QFont('Arial', 12))
-
+class HMI_PageBuilders:
+    """Per-page widget builders (CreatePage*) for HMI_Trades_Bolsa."""
     def CreatePage18(self): # Edição das negociações na Bolsa
         self.HMI.BolsaOuCripto = "Bolsa" # Variável usada no DBManager
 
@@ -78,8 +76,9 @@ class HMI_Trades_Bolsa(object):
         for idx, corretora in enumerate(corretoras):
             self.HMI.ComboBox_Corretoras.addItem(corretora)
             try:
-                if corretora == self.HMI.TextBox_NovaCorretora.text(): self.HMI.idxCorretora = idx
-            except: pass
+                if getattr(self.HMI, 'TextBox_NovaCorretora', None) is not None and corretora == self.HMI.TextBox_NovaCorretora.text(): self.HMI.idxCorretora = idx
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxCorretora < len(corretoras):
             self.HMI.ComboBox_Corretoras.setCurrentIndex(self.HMI.idxCorretora)
 
@@ -198,7 +197,7 @@ class HMI_Trades_Bolsa(object):
 
         self.HMI.Gif_AlterarOPBolsa = QLabel()
         self.HMI.Movie_AlterarOPBolsa = QMovie("./images/GIF_Registro.gif")
-        self.HMI.Movie_AlterarOPBolsa.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20/2,self.HMI.frameGeometry().height()*7/10*.95-30, Qt.KeepAspectRatio))
+        self.HMI.Movie_AlterarOPBolsa.setScaledSize(QSize().scaled(int(self.HMI.frameGeometry().width()*12/20/2),int(self.HMI.frameGeometry().height()*7/10*.95-30), Qt.KeepAspectRatio))
         self.HMI.Gif_AlterarOPBolsa.setMovie(self.HMI.Movie_AlterarOPBolsa)
         self.HMI.Movie_AlterarOPBolsa.start()
 
@@ -224,7 +223,7 @@ class HMI_Trades_Bolsa(object):
 
         self.HMI.Gif_DepositosESaquesBolsa = QLabel()
         self.HMI.Movie_DepositosESaquesBolsa = QMovie("./images/GIF_Depósitos e Saques.gif")
-        self.HMI.Movie_DepositosESaquesBolsa.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20/2,self.HMI.frameGeometry().height()*3/10*.95-30, Qt.KeepAspectRatio))
+        self.HMI.Movie_DepositosESaquesBolsa.setScaledSize(QSize().scaled(int(self.HMI.frameGeometry().width()*12/20/2),int(self.HMI.frameGeometry().height()*3/10*.95-30), Qt.KeepAspectRatio))
         self.HMI.Gif_DepositosESaquesBolsa.setMovie(self.HMI.Movie_DepositosESaquesBolsa)
         self.HMI.Movie_DepositosESaquesBolsa.start()
 
@@ -245,7 +244,7 @@ class HMI_Trades_Bolsa(object):
 
         self.HMI.Gif_ContaCorrenteBolsa = QLabel()
         self.HMI.Movie_ContaCorrenteBolsa = QMovie("./images/GIF_Em conta-corrente.gif")
-        self.HMI.Movie_ContaCorrenteBolsa.setScaledSize(QSize().scaled(self.HMI.frameGeometry().width()*12/20/2,self.HMI.frameGeometry().height()*3/10*.95-30, Qt.KeepAspectRatio))
+        self.HMI.Movie_ContaCorrenteBolsa.setScaledSize(QSize().scaled(int(self.HMI.frameGeometry().width()*12/20/2),int(self.HMI.frameGeometry().height()*3/10*.95-30), Qt.KeepAspectRatio))
         self.HMI.Gif_ContaCorrenteBolsa.setMovie(self.HMI.Movie_ContaCorrenteBolsa)
         self.HMI.Movie_ContaCorrenteBolsa.start()
 
@@ -394,6 +393,7 @@ class HMI_Trades_Bolsa(object):
         returnValue = MessageBox_Msg1.exec()
         if returnValue == QMessageBox.Yes:
             self.HMI.DBManager.DeleteCorretora()
+            self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
             self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id)
 
     def CreatePage22(self): # Renomear corretora da bolsa
@@ -467,8 +467,7 @@ class HMI_Trades_Bolsa(object):
         self.HMI.Button_AddAtivo.setToolTip("Adicionar ativo")
         self.HMI.Button_AddAtivo.setStyleSheet("QPushButton{background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0)} QToolTip {background-color: black; color: white;border: black solid 1px}")
 
-        try: self.HMI.ComboBox_Ativos.deleteLater()
-        except: pass        
+        if getattr(self.HMI, 'ComboBox_Ativos', None) is not None: self.HMI.ComboBox_Ativos.deleteLater()
         self.HMI.ComboBox_Ativos = QComboBox()
         self.HMI.ComboBox_Ativos.setEnabled(True)
         self.HMI.ComboBox_Ativos.setFont(self.HMI.font16)
@@ -989,7 +988,8 @@ class HMI_Trades_Bolsa(object):
             self.HMI.ComboBox_TipoDeAtivo.addItem(Tipo)
             try:
                 if Tipo == tipodeativo: self.HMI.idxTipoDeAtivo = idx
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxTipoDeAtivo < len(self.HMI.DBManager.GetTiposDeAtivo()):
             self.HMI.ComboBox_TipoDeAtivo.setCurrentIndex(self.HMI.idxTipoDeAtivo)
         line_edit = self.HMI.ComboBox_TipoDeAtivo.lineEdit()
@@ -1011,7 +1011,8 @@ class HMI_Trades_Bolsa(object):
             self.HMI.ComboBox_SubtipoDeAtivo.addItem(SubTipo)
             try:
                 if SubTipo == subtipodeativo: self.HMI.idxSubtipoDeAtivo = idx
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxSubtipoDeAtivo < len(self.HMI.DBManager.GetSubtiposDeAtivo()):
             self.HMI.ComboBox_SubtipoDeAtivo.setCurrentIndex(self.HMI.idxSubtipoDeAtivo)
         line_edit = self.HMI.ComboBox_SubtipoDeAtivo.lineEdit()
@@ -1033,7 +1034,8 @@ class HMI_Trades_Bolsa(object):
             self.HMI.ComboBox_SetorAtivo.addItem(Setor)
             try:
                 if Setor == setorativo: self.HMI.idxSetorAtivo = idx
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxSetorAtivo < len(self.HMI.DBManager.GetSetoresDeAtivo()):
             self.HMI.ComboBox_SetorAtivo.setCurrentIndex(self.HMI.idxSetorAtivo)
         line_edit = self.HMI.ComboBox_SetorAtivo.lineEdit()
@@ -2312,7 +2314,8 @@ class HMI_Trades_Bolsa(object):
             self.HMI.ComboBox_TipoDeAtivo.addItem(Tipo)
             try:
                 if Tipo == self.HMI.TextBox_TipoAtivo.text(): self.HMI.idxTipoDeAtivo = idx
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxTipoDeAtivo < len(self.HMI.DBManager.GetTiposDeAtivo()):
             self.HMI.ComboBox_TipoDeAtivo.setCurrentIndex(self.HMI.idxTipoDeAtivo)
 
@@ -2478,693 +2481,3 @@ class HMI_Trades_Bolsa(object):
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_AtivarModoManual, 3, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_Info1, 4, 2, 1, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
 
-    def CreateTable_23_1(self):
-        HHeader = ['Data',
-                   'Tipo',
-                   'Qqt',
-                   'Preço',
-                   'Corretagem',
-                   'Taxa B3%',
-                   'Taxa B3',
-                   'Obs']
-        fakedata = [('','','','','','','','')]
-
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setRowCount(1)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnCount(len(HHeader))
-
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setShowGrid(False)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setFont(self.HMI.font16)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setStyleSheet('''QTableWidget {background-color: rgb(0, 0, 0);
-                                                                                           color: white;
-                                                                                           border: 1px solid rgba(0, 0, 0, 0);}
-                                                                             QTableView {border-top: 2px solid white;
-                                                                                         border-right: 2px dashed white;
-                                                                                         border-left: 2px dashed white;}''') # gridline-color: rgba(255, 255, 255, 0)
-
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.verticalHeader().hide()
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.horizontalHeader().hide()
-
-        for col in range(len(HHeader)):
-            celula = QTableWidgetItem(str(HHeader[col]))
-            celula.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
-            celula.setTextAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
-            self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setItem(0, col, celula)
-
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setFixedHeight(int(self.HMI.frameGeometry().height()*1/20))
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.resizeColumnsToContents()
-
-        SizeCol0,SizeCol1,SizeCol2,SizeCol3,SizeCol4,SizeCol5,SizeCol6,SizeCol7 = self.HMI.GetSizeOfTableColumns(fakedata, HHeader)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.adjustSize()
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(0, SizeCol0)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(1, SizeCol1)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(2, SizeCol2)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(3, SizeCol3)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(4, SizeCol4)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(5, SizeCol5)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(6, SizeCol6)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(7, SizeCol7)
-
-    def CreateTable_23_2(self):
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setFixedHeight(int(self.HMI.frameGeometry().height()*6/20*1.4))
-
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setShowGrid(False)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setFont(self.HMI.font14)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setStyleSheet('''QTableWidget {background-color: rgb(0, 0, 0);
-                                                                                  color: white;
-                                                                                  border: 1px solid rgba(0, 0, 0, 0);}
-                                                                    QTableView {border-bottom: 2px dashed white;
-                                                                                border-right: 1px solid white;
-                                                                                border-left: 1px solid white;}
-                                                                    QTableView::item {border-bottom: 1px dashed white;}''') # gridline-color: rgba(255, 255, 255, 0)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.verticalHeader().hide()
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.horizontalHeader().hide()
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setSelectionBehavior(QAbstractItemView.SelectRows)
-
-        HHeader = ['Data',
-                   'Tipo',
-                   'Qqt',
-                   'Preço',
-                   'Corretagem',
-                   'Taxa B3%',
-                   'Taxa B3',
-                   'Obs']
-        self.data_23_1 = self.HMI.DBManager.GetAllOperacoes(self.HMI.DTeST)
-        self.data_23_1 = self.data_23_1[::-1]
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setRowCount(len(self.data_23_1))
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnCount(len(HHeader))
-        for i, item in enumerate(self.data_23_1):
-            for j in range(len(item)):
-                if self.HMI.ShowValues:
-                    if isinstance(item[j], float):
-                        text = str('%.2f' % item[j])
-                    else:
-                        text = str(item[j])
-                else:
-                    if j in [2, 3, 4, 6]:
-                        text = '***'
-                    else: text = str(item[j])
-                it = self.HMI.Table_Operacoes_Realizadas_com_Ativo.item(i, j)
-                it = QTableWidgetItem(text)
-                it.setFlags(it.flags() & ~Qt.ItemIsEditable)
-                if not self.HMI.DTeST == "": it.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
-                it.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                if "VAZIO" in item: it.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
-                if text in ["Compra"]: it.setForeground(QBrush(QColor('green')))
-                elif text in ["Venda"]: it.setForeground(QBrush(QColor('red')))
-                if j == 7:
-                    it.setTextAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
-                self.HMI.Table_Operacoes_Realizadas_com_Ativo.setItem(i, j, it)
-
-        SizeCol0,SizeCol1,SizeCol2,SizeCol3,SizeCol4,SizeCol5,SizeCol6,SizeCol7 = self.HMI.GetSizeOfTableColumns(self.data_23_1, HHeader)
-
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.adjustSize()
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(0, SizeCol0)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(1, SizeCol1)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(2, SizeCol2)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(3, SizeCol3)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(4, SizeCol4)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(5, SizeCol5)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(6, SizeCol6)
-
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.adjustSize()
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(0, SizeCol0)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(1, SizeCol1)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(2, SizeCol2)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(3, SizeCol3)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(4, SizeCol4)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(5, SizeCol5)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(6, SizeCol6)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(7, SizeCol7)
-
-    def CreateTable_24_1(self):
-        HHeader = ['Data',
-                   'Movimentação']
-        fakedata = [('','')]
-
-        self.HMI.Table_DepositosESaques_Header.setRowCount(1)
-        self.HMI.Table_DepositosESaques_Header.setColumnCount(len(HHeader))
-
-        self.HMI.Table_DepositosESaques_Header.setShowGrid(False)
-        self.HMI.Table_DepositosESaques_Header.setFont(self.HMI.font16)
-        self.HMI.Table_DepositosESaques_Header.setStyleSheet('''QTableWidget {background-color: rgb(0, 0, 0);
-                                                                                           color: white;
-                                                                                           border: 1px solid rgba(0, 0, 0, 0);}
-                                                                             QTableView {border-top: 2px solid white;
-                                                                                         border-right: 2px dashed white;
-                                                                                         border-left: 2px dashed white;}''') # gridline-color: rgba(255, 255, 255, 0)
-
-        self.HMI.Table_DepositosESaques_Header.verticalHeader().hide()
-        self.HMI.Table_DepositosESaques_Header.horizontalHeader().hide()
-
-        for col in range(len(HHeader)):
-            celula = QTableWidgetItem(str(HHeader[col]))
-            celula.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
-            celula.setTextAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
-            self.HMI.Table_DepositosESaques_Header.setItem(0, col, celula)
-
-        self.HMI.Table_DepositosESaques_Header.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.HMI.Table_DepositosESaques_Header.setFixedHeight(int(self.HMI.frameGeometry().height()*1/20))
-        self.HMI.Table_DepositosESaques_Header.resizeColumnsToContents()
-
-        SizeCol0,SizeCol1 = self.HMI.GetSizeOfTableColumns(fakedata, HHeader)
-        self.HMI.Table_DepositosESaques_Header.adjustSize()
-        self.HMI.Table_DepositosESaques_Header.setColumnWidth(0, SizeCol0)
-        self.HMI.Table_DepositosESaques_Header.setColumnWidth(1, SizeCol1)
-
-    def CreateTable_24_2(self):
-        self.HMI.Table_DepositosESaques.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.HMI.Table_DepositosESaques.setFixedHeight(int(self.HMI.frameGeometry().height()*5/20*1.4))
-
-        self.HMI.Table_DepositosESaques.setShowGrid(False)
-        self.HMI.Table_DepositosESaques.setFont(self.HMI.font14)
-        self.HMI.Table_DepositosESaques.setStyleSheet('''QTableWidget {background-color: rgb(0, 0, 0);
-                                                                                  color: white;
-                                                                                  border: 1px solid rgba(0, 0, 0, 0);}
-                                                                    QTableView {border-bottom: 2px dashed white;
-                                                                                border-right: 1px solid white;
-                                                                                border-left: 1px solid white;}
-                                                                    QTableView::item {border-bottom: 1px dashed white;}''') # gridline-color: rgba(255, 255, 255, 0)
-        self.HMI.Table_DepositosESaques.verticalHeader().hide()
-        self.HMI.Table_DepositosESaques.horizontalHeader().hide()
-        self.HMI.Table_DepositosESaques.setSelectionBehavior(QAbstractItemView.SelectRows)
-
-        #Create Thread
-        HHeader = ['Data',
-                   'Movimentação']
-        self.data_24_1 = self.HMI.DBManager.GetDepositosESaques()
-        self.HMI.Table_DepositosESaques.setRowCount(len(self.data_24_1))
-        self.HMI.Table_DepositosESaques.setColumnCount(len(HHeader))
-        for i, item in enumerate(self.data_24_1):
-            for j in range(len(item)):
-                if j == 1:
-                    if self.HMI.ShowValues:
-                        text = str(abs(item[j]))
-                    else:
-                        if j in [1]:
-                            text = "***"
-                        else: text = str(item[j])
-                else:
-                    text = str(item[j])
-                it = self.HMI.Table_DepositosESaques.item(i, j)
-                it = QTableWidgetItem(text)
-                it.setFlags(it.flags() & ~Qt.ItemIsEditable)
-                it.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                if text in ["Compra"]: it.setForeground(QBrush(QColor('green')))
-                elif text in ["Venda"]: it.setForeground(QBrush(QColor('red')))
-                if item[1] < 0: it.setForeground(QBrush(QColor('orange')))
-                else: it.setForeground(QBrush(QColor(0, 255, 0)))
-                self.HMI.Table_DepositosESaques.setItem(i, j, it)
-
-        SizeCol0,SizeCol1 = self.HMI.GetSizeOfTableColumns(self.data_24_1, HHeader)
-
-        self.HMI.Table_DepositosESaques_Header.adjustSize()
-        self.HMI.Table_DepositosESaques_Header.setColumnWidth(0, SizeCol0)
-        self.HMI.Table_DepositosESaques_Header.setColumnWidth(1, SizeCol1)
-
-        self.HMI.Table_DepositosESaques.adjustSize()
-        self.HMI.Table_DepositosESaques.setColumnWidth(0, SizeCol0)
-        self.HMI.Table_DepositosESaques.setColumnWidth(1, SizeCol1)
-
-    def CreateTable_29_1(self):
-        HHeader = ['Data',
-                   'Tipo',
-                   'Qqt',
-                   'Preço',
-                   'Corretagem',
-                   'Taxa B3%',
-                   'Taxa B3',
-                   'Obs']
-        fakedata = [('','','','','','','','')]
-
-        self.HMI.Table_Operacoes_SelecionadasHeader.setRowCount(1)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnCount(len(HHeader))
-
-        self.HMI.Table_Operacoes_SelecionadasHeader.setShowGrid(False)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setFont(self.HMI.font16)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setStyleSheet('''QTableWidget {background-color: rgb(0, 0, 0);
-                                                                                           color: white;
-                                                                                           border: 1px solid rgba(0, 0, 0, 0);}
-                                                                             QTableView {border-top: 2px solid white;
-                                                                                         border-right: 2px dashed white;
-                                                                                         border-left: 2px dashed white;}''') # gridline-color: rgba(255, 255, 255, 0)
-
-        self.HMI.Table_Operacoes_SelecionadasHeader.verticalHeader().hide()
-        self.HMI.Table_Operacoes_SelecionadasHeader.horizontalHeader().hide()
-
-        for col in range(len(HHeader)):
-            celula = QTableWidgetItem(str(HHeader[col]))
-            celula.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
-            celula.setTextAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
-            self.HMI.Table_Operacoes_SelecionadasHeader.setItem(0, col, celula)
-
-        self.HMI.Table_Operacoes_SelecionadasHeader.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setFixedHeight(int(self.HMI.frameGeometry().height()*1/20))
-        self.HMI.Table_Operacoes_SelecionadasHeader.resizeColumnsToContents()
-
-        SizeCol0,SizeCol1,SizeCol2,SizeCol3,SizeCol4,SizeCol5,SizeCol6,SizeCol7 = self.HMI.GetSizeOfTableColumns(fakedata, HHeader)
-        self.HMI.Table_Operacoes_SelecionadasHeader.adjustSize()
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(0, SizeCol0)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(1, SizeCol1)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(2, SizeCol2)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(3, SizeCol3)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(4, SizeCol4)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(5, SizeCol5)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(6, SizeCol6)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(7, SizeCol7)
-
-    def CreateTable_29_2(self):
-        self.HMI.Table_Operacoes_Selecionadas.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.HMI.Table_Operacoes_Selecionadas.setFixedHeight(int(self.HMI.frameGeometry().height()*1/20))
-
-        self.HMI.Table_Operacoes_Selecionadas.setShowGrid(False)
-        self.HMI.Table_Operacoes_Selecionadas.setFont(self.HMI.font14)
-        self.HMI.Table_Operacoes_Selecionadas.setStyleSheet('''QTableWidget {background-color: rgb(0, 0, 0);
-                                                                                  color: white;
-                                                                                  border: 1px solid rgba(0, 0, 0, 0);}
-                                                                    QTableView {border-bottom: 2px dashed white;
-                                                                                border-right: 1px solid white;
-                                                                                border-left: 1px solid white;}
-                                                                    QTableView::item {border-bottom: 1px dashed white;}''') # gridline-color: rgba(255, 255, 255, 0)
-        self.HMI.Table_Operacoes_Selecionadas.verticalHeader().hide()
-        self.HMI.Table_Operacoes_Selecionadas.horizontalHeader().hide()
-        self.HMI.Table_Operacoes_Selecionadas.setSelectionBehavior(QAbstractItemView.SelectRows)
-
-        HHeader = ['Data',
-                   'Tipo',
-                   'Qqt',
-                   'Preço',
-                   'Corretagem',
-                   'Taxa B3%',
-                   'Taxa B3',
-                   'Obs']
-        self.HMI.Table_Operacoes_Selecionadas.setRowCount(1)
-        self.HMI.Table_Operacoes_Selecionadas.setColumnCount(len(HHeader))
-        for i, item in enumerate(self.data_23_1):
-            if i == self.Operacoes[self.item]:
-                for j in range(len(item)):
-                    if isinstance(item[j], float):
-                        text = str('%.2f' % item[j])
-                    else:
-                        text = str(item[j])
-                    it = self.HMI.Table_Operacoes_Selecionadas.item(0, j)
-                    it = QTableWidgetItem(text)
-                    it.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
-                    it.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                    if text in ["Compra"]: it.setForeground(QBrush(QColor('green')))
-                    elif text in ["Venda"]: it.setForeground(QBrush(QColor('red')))
-                    if j == 7:
-                        it.setTextAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
-                    self.HMI.Table_Operacoes_Selecionadas.setItem(0, j, it)
-
-        SizeCol0,SizeCol1,SizeCol2,SizeCol3,SizeCol4,SizeCol5,SizeCol6,SizeCol7 = self.HMI.GetSizeOfTableColumns(self.data_23_1, HHeader)
-
-        self.HMI.Table_Operacoes_SelecionadasHeader.adjustSize()
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(0, SizeCol0)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(1, SizeCol1)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(2, SizeCol2)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(3, SizeCol3)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(4, SizeCol4)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(5, SizeCol5)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(6, SizeCol6)
-        self.HMI.Table_Operacoes_SelecionadasHeader.setColumnWidth(7, SizeCol7)
-
-        self.HMI.Table_Operacoes_Selecionadas.adjustSize()
-        self.HMI.Table_Operacoes_Selecionadas.setColumnWidth(0, SizeCol0)
-        self.HMI.Table_Operacoes_Selecionadas.setColumnWidth(1, SizeCol1)
-        self.HMI.Table_Operacoes_Selecionadas.setColumnWidth(2, SizeCol2)
-        self.HMI.Table_Operacoes_Selecionadas.setColumnWidth(3, SizeCol3)
-        self.HMI.Table_Operacoes_Selecionadas.setColumnWidth(4, SizeCol4)
-        self.HMI.Table_Operacoes_Selecionadas.setColumnWidth(5, SizeCol5)
-        self.HMI.Table_Operacoes_Selecionadas.setColumnWidth(6, SizeCol6)
-        self.HMI.Table_Operacoes_Selecionadas.setColumnWidth(7, SizeCol7)
-
-    def CreateTable_30_1(self):
-        HHeader = ['Data',
-                   'Tipo',
-                   'Qqt',
-                   'Preço',
-                   'Corretagem',
-                   'Taxa B3%',
-                   'Taxa B3',
-                   'Obs']
-        fakedata = [('','','','','','','','')]
-
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setRowCount(1)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnCount(len(HHeader))
-
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setShowGrid(False)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setFont(self.HMI.font16)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setStyleSheet('''QTableWidget {background-color: rgb(0, 0, 0);
-                                                                                           color: white;
-                                                                                           border: 1px solid rgba(0, 0, 0, 0);}
-                                                                             QTableView {border-top: 2px solid white;
-                                                                                         border-right: 2px dashed white;
-                                                                                         border-left: 2px dashed white;}''') # gridline-color: rgba(255, 255, 255, 0)
-
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.verticalHeader().hide()
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.horizontalHeader().hide()
-
-        for col in range(len(HHeader)):
-            celula = QTableWidgetItem(str(HHeader[col]))
-            celula.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
-            celula.setTextAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
-            self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setItem(0, col, celula)
-
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setFixedHeight(int(self.HMI.frameGeometry().height()*1/20))
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.resizeColumnsToContents()
-
-        SizeCol0,SizeCol1,SizeCol2,SizeCol3,SizeCol4,SizeCol5,SizeCol6,SizeCol7 = self.HMI.GetSizeOfTableColumns(fakedata, HHeader)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.adjustSize()
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(0, SizeCol0)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(1, SizeCol1)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(2, SizeCol2)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(3, SizeCol3)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(4, SizeCol4)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(5, SizeCol5)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(6, SizeCol6)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(7, SizeCol7)
-
-    def CreateTable_30_2(self):
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setFixedHeight(int(self.HMI.frameGeometry().height()*6/20*1.4))
-
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setShowGrid(False)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setFont(self.HMI.font14)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setStyleSheet('''QTableWidget {background-color: rgb(0, 0, 0);
-                                                                                  color: white;
-                                                                                  border: 1px solid rgba(0, 0, 0, 0);}
-                                                                    QTableView {border-bottom: 2px dashed white;
-                                                                                border-right: 1px solid white;
-                                                                                border-left: 1px solid white;}
-                                                                    QTableView::item {border-bottom: 1px dashed white;}''') # gridline-color: rgba(255, 255, 255, 0)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.verticalHeader().hide()
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.horizontalHeader().hide()
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setSelectionBehavior(QAbstractItemView.SelectRows)
-
-        HHeader = ['Data',
-                   'Tipo',
-                   'Qqt',
-                   'Preço',
-                   'Corretagem',
-                   'Taxa B3%',
-                   'Taxa B3',
-                   'Obs']
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setRowCount(len(self.Operacoes))
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnCount(len(HHeader))
-        linha = -1
-        for i, item in enumerate(self.data_23_1):
-            if i in self.Operacoes:
-                linha += 1
-                for j in range(len(item)):
-                    if isinstance(item[j], float):
-                        text = str('%.2f' % item[j])
-                    else:
-                        text = str(item[j])
-                    it = self.HMI.Table_Operacoes_Realizadas_com_Ativo.item(linha, j)
-                    it = QTableWidgetItem(text)
-                    it.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
-                    it.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                    if text in ["Compra"]: it.setForeground(QBrush(QColor('green')))
-                    elif text in ["Venda"]: it.setForeground(QBrush(QColor('red')))
-                    if j == 7:
-                        it.setTextAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
-                    self.HMI.Table_Operacoes_Realizadas_com_Ativo.setItem(linha, j, it)
-
-        SizeCol0,SizeCol1,SizeCol2,SizeCol3,SizeCol4,SizeCol5,SizeCol6,SizeCol7 = self.HMI.GetSizeOfTableColumns(self.data_23_1, HHeader)
-
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.adjustSize()
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(0, SizeCol0)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(1, SizeCol1)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(2, SizeCol2)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(3, SizeCol3)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(4, SizeCol4)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(5, SizeCol5)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(6, SizeCol6)
-        self.HMI.Table_Operacoes_Realizadas_com_AtivoHeader.setColumnWidth(7, SizeCol7)
-
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.adjustSize()
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(0, SizeCol0)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(1, SizeCol1)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(2, SizeCol2)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(3, SizeCol3)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(4, SizeCol4)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(5, SizeCol5)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(6, SizeCol6)
-        self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnWidth(7, SizeCol7)
-
-    def OnButtonPressed(self, ButtonPressed):
-        if ButtonPressed == 'ChangeDTeST':
-            if self.HMI.DTeST == "": self.HMI.DTeST = "DTeST"
-            elif self.HMI.DTeST == "DTeST": self.HMI.DTeST = "ST"
-            elif self.HMI.DTeST == "ST": self.HMI.DTeST = "DT"
-            elif self.HMI.DTeST == "DT": self.HMI.DTeST = ""
-
-            if self.HMI.DTeST == "":
-                self.HMI.Button_DTeST.setIcon(QIcon("./images/Visualizar Trades Brutos.png"))
-                # Habilitar Botões de edição
-                self.HMI.Button_AlterarOperacao.setEnabled(True)
-                self.HMI.Button_DeletarOperacao.setEnabled(True)
-            elif self.HMI.DTeST == "DTeST":
-                self.HMI.Button_DTeST.setIcon(QIcon("./images/Visualizar Day Trades e Swing Trades.png"))
-                # Desabilitar Botões de edição
-                self.HMI.Button_AlterarOperacao.setEnabled(False)
-                self.HMI.Button_DeletarOperacao.setEnabled(False)
-            elif self.HMI.DTeST == "ST":
-                self.HMI.Button_DTeST.setIcon(QIcon("./images/Visualizar Apenas ST.png"))
-                # Desabilitar Botões de edição
-                self.HMI.Button_AlterarOperacao.setEnabled(False)
-                self.HMI.Button_DeletarOperacao.setEnabled(False)
-            elif self.HMI.DTeST == "DT":
-                self.HMI.Button_DTeST.setIcon(QIcon("./images/Visualizar Apenas DT.png"))
-                # Desabilitar Botões de edição
-                self.HMI.Button_AlterarOperacao.setEnabled(False)
-                self.HMI.Button_DeletarOperacao.setEnabled(False)
-
-            if self.HMI.PageID == PAGE_BY_NAME['RegistrosBolsa'].page_id:
-                self.HMI.Table_Operacoes_Realizadas_com_Ativo.deleteLater()
-                self.HMI.Table_Operacoes_Realizadas_com_Ativo = QTableWidget()
-                self.HMI.HMI_Trades.HMI_Trades_Bolsa.CreateTable_23_2()
-                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Operacoes_Realizadas_com_Ativo, 6, 0, 6, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-
-            if self.HMI.PageID == PAGE_BY_NAME['RegistrosCripto'].page_id:
-                self.HMI.Table_Operacoes_Realizadas.deleteLater()
-                self.HMI.Table_Operacoes_Realizadas = QTableWidget()
-                self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.CreateTable_40_2()
-                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Operacoes_Realizadas, 6, 0, 6, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-
-            elif self.HMI.PageID == PAGE_BY_NAME['Tributacao'].page_id:
-                if self.HMI.DTeST_51 == "DTeST": self.HMI.DTeST_51 = "ST"
-                elif self.HMI.DTeST_51 == "ST": self.HMI.DTeST_51 = "DT"
-                elif self.HMI.DTeST_51 == "DT": self.HMI.DTeST_51 = "DTeST"
-
-                if self.HMI.DTeST_51 == "DTeST":
-                    self.HMI.Button_DTeST.setIcon(QIcon("./images/Visualizar Day Trades e Swing Trades.png"))
-                elif self.HMI.DTeST_51 == "ST":
-                    self.HMI.Button_DTeST.setIcon(QIcon("./images/Visualizar Apenas ST.png"))
-                elif self.HMI.DTeST_51 == "DT":
-                    self.HMI.Button_DTeST.setIcon(QIcon("./images/Visualizar Apenas DT.png"))
-                self.HMI.Table_Tributacao_Header.deleteLater()
-                self.HMI.Table_Tributacao_Header = QTableWidget()
-                self.HMI.HMI_Tributacao.CreateTable_51_1()
-                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao_Header, 5, 0, 1, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
-                self.HMI.Table_Tributacao.deleteLater()
-                self.HMI.Table_Tributacao = QTableWidget()
-                self.HMI.HMI_Tributacao.CreateTable_51_2()
-                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao, 6, 0, 6, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-
-        elif ButtonPressed == 'Deposito':
-            self.HMI.Button_Deposito.setStyleSheet('background-color: black; color: green')
-            self.HMI.Button_Deposito.setText("DEPÓSITO")
-            self.HMI.Button_Deposito.setFont(self.HMI.font20)
-            self.HMI.Button_Saque.setStyleSheet('background-color: black; color: gray')
-            self.HMI.Button_Saque.setText("saque")
-            self.HMI.Button_Saque.setFont(self.HMI.font16)
-            self.HMI.Deposito = True
-            self.HMI.TextBox_Valor.setStyleSheet('color: green')
-            BackgroundLineEdit = "rgb(0,10,30)"
-            self.HMI.Button_Calendario.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: green")
-            self.HMI.Button_Relogio.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: green")
-            self.HMI.TextBox_Valor.setFocus()
-
-        elif ButtonPressed == 'Saque':
-            self.HMI.Button_Deposito.setStyleSheet('background-color: black; color: gray')
-            self.HMI.Button_Deposito.setText("depósito")
-            self.HMI.Button_Deposito.setFont(self.HMI.font16)
-            self.HMI.Button_Saque.setStyleSheet('background-color: black; color: orange')
-            self.HMI.Button_Saque.setText("SAQUE")
-            self.HMI.Button_Saque.setFont(self.HMI.font20)
-            self.HMI.Deposito = False
-            self.HMI.TextBox_Valor.setStyleSheet('color: orange')
-            BackgroundLineEdit = "rgb(0,10,30)"
-            self.HMI.Button_Calendario.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: orange")
-            self.HMI.Button_Relogio.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: orange")
-            self.HMI.TextBox_Valor.setFocus()
-
-        elif ButtonPressed == 'Delete Registro':
-            if not self.HMI.DBManager.CalcularTributacao_is_running:
-                TotalSelecao=[]
-                for idx in self.HMI.Table_DepositosESaques.selectedIndexes():
-                    TotalSelecao.append(idx.row())
-                TotalSelecao = list(dict.fromkeys(TotalSelecao))
-                MessageBox_Msg1 = QMessageBox()
-                MessageBox_Msg1.setWindowTitle("Deletar registros de movimentações")
-                MessageBox_Msg1.setText("Tem certeza que deseja deletar "+str(len(TotalSelecao))+" registros?\n\n")
-                MessageBox_Msg1.setIcon(QMessageBox.Warning)
-                MessageBox_Msg1.setStandardButtons(QMessageBox.Yes|QMessageBox.Cancel)
-                MessageBox_Msg1.setDefaultButton(QMessageBox.Cancel)
-                MessageBox_Msg1.setWindowIcon(QIcon(".\\images\\logoARCA.png"))
-
-                returnValue = MessageBox_Msg1.exec()
-                if returnValue == QMessageBox.Yes:
-                    self.HMI.DBManager.DeleteDepositoOuSaque(TotalSelecao)
-                    self.HMI.CreatePage(PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id)
-            else:
-                MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
-
-        elif ButtonPressed == 'Compra':
-            BackgroundLineEdit = "rgb(0,10,30)"
-            FontColorLineEdit = "green"
-            self.HMI.Button_Compra.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.Button_Compra.setText("COMPRA")
-            self.HMI.Button_Compra.setFont(self.HMI.font20)
-            self.HMI.Button_Venda.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.Button_Venda.setText("venda")
-            self.HMI.Button_Venda.setFont(self.HMI.font16)
-            self.HMI.Button_Desdobramento.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.Button_Grupamento.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.Button_Bonificacao.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TextBox_Modo.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.Button_Calendario.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.Button_Relogio.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TextBox_Qqt.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TextBox_Preco.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TextBox_Corretagem.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TextBox_TaxaB3.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TextBox_Obs.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TipoDeOperacao = "Compra"
-            if "Desdobramento;" in self.HMI.TextBox_Obs.text() or "Grupamento;" in self.HMI.TextBox_Obs.text():
-                self.HMI.TextBox_Corretagem.setText("0")
-                self.HMI.TextBox_TaxaB3.setText("0")
-            self.HMI.TextBox_Qqt.setFocus()
-
-        elif ButtonPressed == 'Venda':
-            BackgroundLineEdit = "rgb(30,5,10)"
-            FontColorLineEdit = "orange"
-            self.HMI.Button_Compra.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.Button_Compra.setText("compra")
-            self.HMI.Button_Compra.setFont(self.HMI.font16)
-            self.HMI.Button_Venda.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.Button_Venda.setText("VENDA")
-            self.HMI.Button_Venda.setFont(self.HMI.font20)
-            self.HMI.Button_Desdobramento.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.Button_Grupamento.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.Button_Bonificacao.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TextBox_Modo.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.Button_Calendario.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.Button_Relogio.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TextBox_Qqt.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TextBox_Preco.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TextBox_Corretagem.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TextBox_TaxaB3.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TextBox_Obs.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
-            self.HMI.TipoDeOperacao = "Venda"
-            if "Desdobramento;" in self.HMI.TextBox_Obs.text() or "Grupamento;" in self.HMI.TextBox_Obs.text():
-                self.HMI.TextBox_Qqt.setText(str(int(self.HMI.DBManager.GetEstoque(self.HMI.ComboBox_Ativos.currentText()))))
-                self.HMI.TextBox_Preco.setText(str(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText())))
-                self.HMI.TextBox_Corretagem.setText("0")
-                self.HMI.TextBox_TaxaB3.setText("0")
-            self.HMI.TextBox_Qqt.setFocus()
-
-        elif ButtonPressed == 'Desdobramento':
-            if not "Desdobramento;" in self.HMI.TextBox_Obs.text():
-                self.HMI.TextBox_Obs.setText("Desdobramento; "+self.HMI.TextBox_Obs.text().replace("Grupamento; ","").replace("Grupamento;","").replace("Bonificação; ","").replace("Bonificação;",""))
-                if self.HMI.TipoDeOperacao == "Venda":
-                    self.HMI.TextBox_Qqt.setText(str(int(self.HMI.DBManager.GetEstoque(self.HMI.ComboBox_Ativos.currentText()))))
-                    self.HMI.TextBox_Preco.setText(str(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText())))
-                    self.HMI.TextBox_Corretagem.setText("0")
-                    self.HMI.TextBox_TaxaB3.setText("0")
-                elif self.HMI.TipoDeOperacao == "Compra":
-                    self.HMI.TextBox_Corretagem.setText("0")
-                    self.HMI.TextBox_TaxaB3.setText("0")
-            else:
-                self.HMI.TextBox_Obs.setText(self.HMI.TextBox_Obs.text().replace("Desdobramento; ","").replace("Desdobramento;",""))
-
-        elif ButtonPressed == 'Grupamento':
-            if not "Grupamento;" in self.HMI.TextBox_Obs.text():
-                self.HMI.TextBox_Obs.setText("Grupamento; "+self.HMI.TextBox_Obs.text().replace("Desdobramento; ","").replace("Desdobramento;","").replace("Bonificação; ","").replace("Bonificação;",""))
-                if self.HMI.TipoDeOperacao == "Venda":
-                    self.HMI.TextBox_Qqt.setText(str(int(self.HMI.DBManager.GetEstoque(self.HMI.ComboBox_Ativos.currentText()))))
-                    self.HMI.TextBox_Preco.setText(str(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText())))
-                    self.HMI.TextBox_Corretagem.setText("0")
-                    self.HMI.TextBox_TaxaB3.setText("0")
-                elif self.HMI.TipoDeOperacao == "Compra":
-                    self.HMI.TextBox_Corretagem.setText("0")
-                    self.HMI.TextBox_TaxaB3.setText("0")
-            else:
-                self.HMI.TextBox_Obs.setText(self.HMI.TextBox_Obs.text().replace("Grupamento; ","").replace("Grupamento;",""))
-
-        elif ButtonPressed == 'Bonificação':
-            if not "Bonificação;" in self.HMI.TextBox_Obs.text():
-                if self.HMI.TipoDeOperacao == "Venda":
-                    self.HMI.TextBox_Obs.setText(self.HMI.TextBox_Obs.text().replace("Desdobramento; ","").replace("Desdobramento;","").replace("Grupamento; ","").replace("Grupamento;","").replace("Bonificação; ","").replace("Bonificação;",""))
-                elif self.HMI.TipoDeOperacao == "Compra":
-                    self.HMI.TextBox_Obs.setText("Bonificação; "+self.HMI.TextBox_Obs.text().replace("Desdobramento; ","").replace("Desdobramento;","").replace("Grupamento; ","").replace("Grupamento;",""))
-                    self.HMI.TextBox_Corretagem.setText("0")
-                    self.HMI.TextBox_TaxaB3.setText("0")
-            else:
-                self.HMI.TextBox_Obs.setText(self.HMI.TextBox_Obs.text().replace("Bonificação; ","").replace("Bonificação;",""))
-
-        elif ButtonPressed == "Page29_Next":
-            try:
-                if not self.HMI.DBManager.CalcularTributacao_is_running:
-                    Data = self.HMI.Selecao_Ano+'/'+self.HMI.Selecao_Mes+'/'+self.HMI.Selecao_Dia+" "+self.HMI.Selecao_Hora+":"+self.HMI.Selecao_Minuto+":"+self.HMI.Selecao_Segundo
-                    Tipo = self.HMI.TipoDeOperacao
-                    if "," in self.HMI.TextBox_Qqt.text() or "." in self.HMI.TextBox_Qqt.text():
-                        raise ValueError("Valor inválido!")
-                    Qqt = int(self.HMI.TextBox_Qqt.text())
-                    Preco = float(self.HMI.TextBox_Preco.text().replace(",","."))
-                    Corretagem = float(self.HMI.TextBox_Corretagem.text().replace(",","."))
-                    if "%" in self.HMI.TextBox_TaxaB3.text():
-                        TaxaB3Per = float(self.HMI.TextBox_TaxaB3.text().replace("%","").replace(",","."))
-                        TaxaB3 = round(TaxaB3Per/100*Qqt*Preco,2)
-                    else:
-                        TaxaB3 = float(self.HMI.TextBox_TaxaB3.text().replace(",","."))
-                        TaxaB3Per = round(TaxaB3/Qqt/Preco*100,2)
-                    Obs = self.HMI.TextBox_Obs.text().replace("ST; ","").replace("DT; ","")
-                    Item = len(self.HMI.HMI_Trades.HMI_Trades_Bolsa.data_23_1)-self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes[self.HMI.HMI_Trades.HMI_Trades_Bolsa.item]-1
-                    
-                    if self.HMI.DBManager.AlterOperacao(Item, Data, Tipo, Qqt, Preco, Corretagem, TaxaB3, TaxaB3Per, Obs):
-                        if self.HMI.HMI_Trades.HMI_Trades_Bolsa.item+1 >= len(self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes):
-                            self.HMI.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id) # Última alteração da lista
-                        else:
-                            self.HMI.CreatePage(PAGE_BY_NAME['AlterarOperacoesBolsa'].page_id) # Ir pra próxima alteração
-                    else:
-                        try: self.HMI.Label_Erro1.deleteLater()
-                        except: pass
-                        self.HMI.Label_Erro1 = QLabel()
-                        self.HMI.Label_Erro1.setStyleSheet('color: red')
-                        self.HMI.Label_Erro1.setFont(self.HMI.font12)
-                        self.HMI.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                        self.HMI.Label_Erro1.setText('Data inválida.\nTalvez já tenha uma operação nesse momento.') # Substitui a string do erro mais provável
-                        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Erro1, 6, 7, 1, 1, Qt.AlignmentFlag.AlignCenter)
-                else:
-                    MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')
-            except:
-                try: self.HMI.Label_Erro1.deleteLater()
-                except: pass
-                self.HMI.Label_Erro1 = QLabel()
-                self.HMI.Label_Erro1.setStyleSheet('color: red')
-                self.HMI.Label_Erro1.setFont(self.HMI.font12)
-                self.HMI.Label_Erro1.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                self.HMI.Label_Erro1.setText('Confira os valores inseridos.') # Substitui a string do erro mais provável
-                self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Erro1, 6, 7, 1, 1, Qt.AlignmentFlag.AlignCenter)
-
-        elif ButtonPressed == 'Deletar Ativos da Pagina 23':
-            if not self.HMI.DBManager.CalcularTributacao_is_running:
-                self.HMI.DBManager.DeleteOperacao(self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes)
-                self.HMI.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id)
-            else:
-                MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')

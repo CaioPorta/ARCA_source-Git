@@ -96,3 +96,8 @@ def test_smoke(qtbot):
     w.show()
     QTimer.singleShot(500, w.close)
     qtbot.waitExposed(w)
+
+# TODOs
+01 - Create Functional Tests for the UI
+02 - Create Functional Tests for the APP
+03 - Create Unit Tests

@@ -1,348 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Oct 15 23:05:53 2021
-
-@author: Caio Moreira Porta
+Tributacao behaviour split into a single concern.
+HMI_Events - events helpers (inherited by the composition root).
 """
+import traceback
 import time
-from datetime import datetime
+from datetime import (datetime)
 import dateutil
-
-from PyQt5.QtGui import (
-    QFont, QCursor,
-    QIcon, QColor,
-    QBrush
-)
-from PyQt5.QtWidgets import (
-    QLabel, QPushButton, QLineEdit,
-    QToolTip,
-    QTableWidget, QTableWidgetItem,
-    QAbstractScrollArea, QInputDialog
-)
-from PyQt5.QtCore import (
-    QSize, Qt
-)
-
-from ui.pages import PAGE_BY_NAME
-
+from PyQt5.QtGui import (QIcon)
+from PyQt5.QtWidgets import (QTableWidget, QInputDialog)
+from PyQt5.QtCore import (Qt)
+from ui.pages import (PAGE_BY_NAME)
 import tkinter
-from tkinter import filedialog
+from tkinter import (filedialog)
 import xlsxwriter
 import win32com.client as win32
 
 
-class HMI_Tributacao(object):
-    def __init__(self, HMI):
-        self.HMI = HMI
-        QToolTip.setFont(QFont('Arial', 12))
-
-    def CreatePage51(self):
-        black = 'rgb(0, 0, 0)'
-        Background_1 = QLabel()
-        Background_1.setStyleSheet("background-color: "+black)
-        Background_2 = QLabel()
-        Background_2.setStyleSheet("background-color: "+black)
-        Background_3 = QLabel()
-        Background_3.setStyleSheet("background-color: "+black)
-
-        self.HMI.Label_Titulo = QLabel('Tributação')
-        self.HMI.Label_Titulo.setStyleSheet('color: white')
-        self.HMI.Label_Titulo.setFont(self.HMI.font30)
-        self.HMI.Label_Titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.HMI.Label_Msg2 = QLabel('Resultado geral líquido:')
-        self.HMI.Label_Msg2.setStyleSheet('color: white')
-        self.HMI.Label_Msg2.setFont(self.HMI.font16)
-        self.HMI.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignRight)
-
-        self.HMI.TextBox_Msg2 = QLineEdit()
-        self.HMI.TextBox_Msg2.setText(str(self.HMI.DBManager.GetResultadoGeralLiquido()))
-        if self.HMI.ShowValues:
-            self.HMI.TextBox_Msg2.setEchoMode(QLineEdit.Normal)
-        else:
-            self.HMI.TextBox_Msg2.setEchoMode(QLineEdit.Password)
-        if float(self.HMI.TextBox_Msg2.text()) >= 0: self.HMI.TextBox_Msg2.setStyleSheet('QLineEdit {background-color: black; color: green;}')
-        else: self.HMI.TextBox_Msg2.setStyleSheet('QLineEdit {background-color: black; color: red;}')
-        self.HMI.TextBox_Msg2.setFont(self.HMI.font16)
-        self.HMI.TextBox_Msg2.setEnabled(False)
-        self.HMI.TextBox_Msg2.setAlignment(Qt.AlignmentFlag.AlignLeft)
-
-        self.HMI.Button_DTeST = QPushButton()
-        self.HMI.Button_DTeST.pressed.connect(lambda: self.OnButtonPressed('ChangeDTeST'))
-        self.HMI.Button_DTeST.setFixedSize(70*3+5,35*3+5)
-        self.HMI.Button_DTeST.setIconSize(QSize(70*3, 35*3))
-        self.HMI.Button_DTeST.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
-        self.HMI.Button_DTeST.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.HMI.Button_DTeST.setIcon(QIcon("./images/Visualizar Day Trades e Swing Trades.png"))
-        self.HMI.Button_DTeST.setToolTip("Alterar apresentação (DT e ST)")
-        self.HMI.DTeST_51 = "DTeST"
-
-        self.HMI.Button_CriptoeB3 = QPushButton()
-        self.HMI.Button_CriptoeB3.pressed.connect(lambda: self.OnButtonPressed('ChangeCriptoeB3'))
-        self.HMI.Button_CriptoeB3.setFixedSize(70*3+5,35*3+5)
-        self.HMI.Button_CriptoeB3.setIconSize(QSize(70*3, 35*3))
-        self.HMI.Button_CriptoeB3.setStyleSheet('QPushButton {background-color: rgba(0, 0, 0, 0); color: white; border: 1px solid rgba(0, 0, 0, 0); border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
-        self.HMI.Button_CriptoeB3.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.HMI.Button_CriptoeB3.setIcon(QIcon("./images/Visualizar cripto e B3.png"))
-        self.HMI.Button_CriptoeB3.setToolTip("Alterar apresentação (cripto e B3)")
-        self.HMI.CriptoeB3_51 = "CriptoeB3"
-
-        self.HMI.Label_Msg3 = QLabel('Resultado líquido (último mês):')
-        self.HMI.Label_Msg3.setStyleSheet('color: white')
-        self.HMI.Label_Msg3.setFont(self.HMI.font12)
-        self.HMI.Label_Msg3.setAlignment(Qt.AlignmentFlag.AlignRight)
-
-        self.HMI.TextBox_Msg3 = QLineEdit()
-        self.HMI.TextBox_Msg3.setText(str(self.HMI.DBManager.GetResultadoLiquidoUltimoMes()))
-        if self.HMI.ShowValues:
-            self.HMI.TextBox_Msg3.setEchoMode(QLineEdit.Normal)
-        else:
-            self.HMI.TextBox_Msg3.setEchoMode(QLineEdit.Password)
-        if float(self.HMI.TextBox_Msg3.text()) >= 0: self.HMI.TextBox_Msg3.setStyleSheet('QLineEdit {background-color: black; color: green;}')
-        else: self.HMI.TextBox_Msg3.setStyleSheet('QLineEdit {background-color: black; color: red;}')
-        self.HMI.TextBox_Msg3.setFont(self.HMI.font12)
-        self.HMI.TextBox_Msg3.setEnabled(False)
-        self.HMI.TextBox_Msg3.setAlignment(Qt.AlignmentFlag.AlignLeft)
-
-        self.HMI.Label_Msg4 = QLabel('Imposto de DT devido (último mês):')
-        self.HMI.Label_Msg4.setStyleSheet('color: white')
-        self.HMI.Label_Msg4.setFont(self.HMI.font12)
-        self.HMI.Label_Msg4.setAlignment(Qt.AlignmentFlag.AlignRight)
-
-        self.HMI.TextBox_Msg4 = QLineEdit()
-        self.HMI.TextBox_Msg4.setText(str(self.HMI.DBManager.GetImpostoDevidoDeDTUltimoMes()))
-        if self.HMI.ShowValues:
-            self.HMI.TextBox_Msg4.setEchoMode(QLineEdit.Normal)
-        else:
-            self.HMI.TextBox_Msg4.setEchoMode(QLineEdit.Password)
-        self.HMI.TextBox_Msg4.setStyleSheet('QLineEdit {background-color: black; color: green;}')
-        self.HMI.TextBox_Msg4.setFont(self.HMI.font12)
-        self.HMI.TextBox_Msg4.setEnabled(False)
-        self.HMI.TextBox_Msg4.setAlignment(Qt.AlignmentFlag.AlignLeft)
-
-        self.HMI.Button_RegistrarMudancas = QPushButton()
-        self.HMI.Button_RegistrarMudancas.pressed.connect(lambda: self.OnButtonPressed('ExportIR'))
-        self.HMI.Button_RegistrarMudancas.setFixedSize(40,40)
-        self.HMI.Button_RegistrarMudancas.setIconSize(QSize(35, 35))
-        self.HMI.Button_RegistrarMudancas.setIcon(QIcon("./images/ExportIR.png"))
-        self.HMI.Button_RegistrarMudancas.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.HMI.Button_RegistrarMudancas.setToolTip("Exportar Informe de Rendimentos")
-        self.HMI.Button_RegistrarMudancas.setStyleSheet('QPushButton{background-color: gray} QToolTip {background-color: black; color: white;border: black solid 1px}')
-
-        # self.HMI.Button_Imprimir = QPushButton()
-        # self.HMI.Button_Imprimir.pressed.connect(lambda: self.OnButtonPressed('Gerar Excel de Tributação'))
-        # self.HMI.Button_Imprimir.setFixedSize(40,40)
-        # self.HMI.Button_Imprimir.setIconSize(QSize(35, 35))
-        # self.HMI.Button_Imprimir.setIcon(QIcon("./images/printer.png"))
-        # self.HMI.Button_Imprimir.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        # self.HMI.Button_Imprimir.setStyleSheet('QPushButton {background-color: black; border: none; outline: none;} QToolTip {background-color: black; color: white;border: black solid 1px}')
-        # self.HMI.Button_Imprimir.setToolTip("Gerar Excel de Tributação")
-
-        self.HMI.Table_Tributacao_Header = QTableWidget()
-        self.HMI.Table_Tributacao = QTableWidget()
-
-        self.CreateTable_51_1()
-        self.CreateTable_51_2()
-
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_1, 0, 0, 1, 10)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_2, 1, 0, 3, 10)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(Background_3, 4, 0, 8, 10)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Titulo, 0, 0, 1, 10, Qt.AlignmentFlag.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg2, 1, 1, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignRight)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Msg2, 1, 2, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignLeft)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg3, 2, 1, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignRight)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Msg3, 2, 2, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignLeft)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Label_Msg4, 3, 1, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignRight)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.TextBox_Msg4, 3, 2, 1, 1, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignLeft)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_DTeST, 1, 5, 3, 1, Qt.AlignmentFlag.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_CriptoeB3, 1, 6, 3, 1, Qt.AlignmentFlag.AlignCenter)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_RegistrarMudancas, 4, 0, 1, 10, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
-        # self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_Imprimir, 5, 0, 1, 10, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao_Header, 5, 0, 1, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
-        self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao, 6, 0, 6, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-
-    def CreateTable_51_1(self):
-        if not self.HMI.DTeST_51 == "DTeST":
-            HHeader = ['Mês/Ano',
-                       'Resultado líquido',
-                       'Imposto devido',
-                       'Alíquota',
-                       'Lucro mínimo taxável',
-                       'Resultado bruto',
-                       'Prejuízo acumulado',
-                       'Resultado final']
-            fakedata = [('','','','','','','','')]
-        else:
-            HHeader = ['Mês/Ano',
-                       'Resultado líquido',
-                       'Imposto devido',
-                       'Resultado bruto',
-                       'Prejuízo acumulado',
-                       'Resultado final']
-            fakedata = [('','','','','','')]
-
-        self.HMI.Table_Tributacao_Header.setRowCount(1)
-        self.HMI.Table_Tributacao_Header.setColumnCount(len(HHeader))
-
-        self.HMI.Table_Tributacao_Header.setShowGrid(False)
-        self.HMI.Table_Tributacao_Header.setFont(self.HMI.font16)
-        self.HMI.Table_Tributacao_Header.setStyleSheet('''QTableWidget {background-color: rgb(0, 0, 0);
-                                                                        color: white;
-                                                                        border: 1px solid rgba(0, 0, 0, 0);}
-                                                            QTableView {border-top: 2px solid white;
-                                                                        border-right: 2px dashed white;
-                                                                        border-left: 2px dashed white;}
-                                                            QTableView::item {border-right: 1px dashed white}''') # gridline-color: rgba(255, 255, 255, 0)
-
-        self.HMI.Table_Tributacao_Header.verticalHeader().hide()
-        self.HMI.Table_Tributacao_Header.horizontalHeader().hide()
-
-        for col in range(len(HHeader)):
-            celula = QTableWidgetItem(str(HHeader[col]))
-            celula.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable))
-            celula.setTextAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
-            self.HMI.Table_Tributacao_Header.setItem(0, col, celula)
-
-        self.HMI.Table_Tributacao_Header.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.HMI.Table_Tributacao_Header.setFixedHeight(int(self.HMI.frameGeometry().height()*1/20))
-        self.HMI.Table_Tributacao_Header.resizeColumnsToContents()
-
-        if not self.HMI.DTeST_51 == "DTeST":
-            SizeCol0,SizeCol1,SizeCol2,SizeCol3,SizeCol4,SizeCol5,SizeCol6,SizeCol7 = self.HMI.GetSizeOfTableColumns(fakedata, HHeader)
-            self.HMI.Table_Tributacao_Header.adjustSize()
-            self.HMI.Table_Tributacao_Header.setColumnWidth(0, SizeCol0)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(1, SizeCol1)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(2, SizeCol2)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(3, SizeCol3)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(4, SizeCol4)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(5, SizeCol5)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(6, SizeCol6)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(7, SizeCol7)
-        else:
-            SizeCol0,SizeCol1,SizeCol2,SizeCol3,SizeCol4,SizeCol5 = self.HMI.GetSizeOfTableColumns(fakedata, HHeader)
-            self.HMI.Table_Tributacao_Header.adjustSize()
-            self.HMI.Table_Tributacao_Header.setColumnWidth(0, SizeCol0)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(1, SizeCol1)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(2, SizeCol2)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(3, SizeCol3)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(4, SizeCol4)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(5, SizeCol5)
-
-    def CreateTable_51_2(self):
-        self.HMI.Table_Tributacao.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.HMI.Table_Tributacao.setFixedHeight(int(self.HMI.frameGeometry().height()*6/20*1.4))
-        self.HMI.Table_Tributacao.setShowGrid(False)
-        self.HMI.Table_Tributacao.setStyleSheet('''QTableWidget {background-color: rgb(0, 0, 0);
-                                                                 color: white;
-                                                                 border: 1px solid rgba(0, 0, 0, 0);}
-                                                   QTableView {border-bottom: 2px dashed white;
-                                                               border-right: 1px solid white;
-                                                               border-left: 1px solid white;}
-                                                   QTableView::item {border-bottom: 1px dashed white;border-right: 1px dashed white}''') # gridline-color: rgba(255, 255, 255, 0)
-        self.HMI.Table_Tributacao.verticalHeader().hide()
-        self.HMI.Table_Tributacao.horizontalHeader().hide()
-
-        #Create Thread
-        if not self.HMI.DTeST_51 == "DTeST":
-            HHeader = ['Mês/Ano',
-                       'Resultado líquido',
-                       'Imposto devido',
-                       'Alíquota',
-                       'Lucro mínimo taxável',
-                       'Resultado bruto',
-                       'Prejuízo acumulado',
-                       'Resultado final']
-            if int(self.HMI.frameGeometry().width()*6/20*1.4) < 510:
-                self.HMI.Table_Tributacao_Header.setFont(self.HMI.font10)
-                self.HMI.Table_Tributacao.setFont(self.HMI.font10)
-            else:
-                self.HMI.Table_Tributacao_Header.setFont(self.HMI.font14)
-                self.HMI.Table_Tributacao.setFont(self.HMI.font14)
-        else:
-            HHeader = ['Mês/Ano',
-                       'Resultado líquido',
-                       'Imposto devido',
-                       'Resultado bruto',
-                       'Prejuízo acumulado',
-                       'Resultado final']
-            self.HMI.Table_Tributacao_Header.setFont(self.HMI.font14)
-            self.HMI.Table_Tributacao.setFont(self.HMI.font14)
-        self.data_51_1 = self.HMI.DBManager.GetAllTributacoes()
-        self.data_51_1 = self.data_51_1[::-1]
-        self.HMI.Table_Tributacao.setRowCount(len(self.data_51_1))
-        self.HMI.Table_Tributacao.setColumnCount(len(HHeader))
-        for i, item in enumerate(self.data_51_1):
-            for j in range(len(item)):
-                it = self.HMI.Table_Tributacao.item(i, j)
-                if self.HMI.ShowValues:
-                    if j == 0: text = datetime.strptime(item[j], '%Y-%m-%d %H:%M:%S').strftime('%Y-%m')
-                    elif '%' in str(item[j]): text = str(round(item[j],2))+'%'
-                    else: text = str(round(abs(item[j]),2))
-                    it = QTableWidgetItem(text)
-                    it.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable)) # Desabilita selecionar o item
-                    it.setFlags(it.flags() & ~Qt.ItemIsEditable) # Desabilita a edição do item
-                else:
-                    # Filtrar colunas que não serão mostradas
-                    if not self.HMI.DTeST_51 == "DTeST":
-                        if j in [1,2,5,6,7]: text = '***'
-                        elif j == 0: text = datetime.strptime(item[j], '%Y-%m-%d %H:%M:%S').strftime('%Y-%m')
-                        else: text = str(item[j])
-                    else:
-                        if not j == 0: text = '***'
-                        else: text = datetime.strptime(item[j], '%Y-%m-%d %H:%M:%S').strftime('%Y-%m')
-                    it = QTableWidgetItem(text)
-                    # Desabilitar todos os itens
-                    it.setFlags(Qt.ItemFlags(Qt.ItemFlag.ItemIsSelectable)) # Desabilita selecionar o item
-                    it.setFlags(it.flags() & ~Qt.ItemIsEditable) # Desabilita a edição do item
-                if j == 0: pass
-                elif not '%' in str(item[j]) and float(item[j]) < 0: it.setForeground(QBrush(QColor('orange')))
-                else: it.setForeground(QBrush(QColor(0, 255, 0)))
-
-                it.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                self.HMI.Table_Tributacao.setItem(i, j, it)
-
-
-        if not self.HMI.DTeST_51 == "DTeST":
-            SizeCol0,SizeCol1,SizeCol2,SizeCol3,SizeCol4,SizeCol5,SizeCol6,SizeCol7 = self.HMI.GetSizeOfTableColumns(self.data_51_1, HHeader)
-
-            self.HMI.Table_Tributacao_Header.adjustSize()
-            self.HMI.Table_Tributacao_Header.setColumnWidth(0, SizeCol0)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(1, SizeCol1)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(2, SizeCol2)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(3, SizeCol3)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(4, SizeCol4)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(5, SizeCol5)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(6, SizeCol6)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(7, SizeCol7)
-
-            self.HMI.Table_Tributacao.adjustSize()
-            self.HMI.Table_Tributacao.setColumnWidth(0, SizeCol0)
-            self.HMI.Table_Tributacao.setColumnWidth(1, SizeCol1)
-            self.HMI.Table_Tributacao.setColumnWidth(2, SizeCol2)
-            self.HMI.Table_Tributacao.setColumnWidth(3, SizeCol3)
-            self.HMI.Table_Tributacao.setColumnWidth(4, SizeCol4)
-            self.HMI.Table_Tributacao.setColumnWidth(5, SizeCol5)
-            self.HMI.Table_Tributacao.setColumnWidth(6, SizeCol6)
-            self.HMI.Table_Tributacao.setColumnWidth(7, SizeCol7)
-        else:
-            SizeCol0,SizeCol1,SizeCol2,SizeCol3,SizeCol4,SizeCol5 = self.HMI.GetSizeOfTableColumns(self.data_51_1, HHeader)
-
-            self.HMI.Table_Tributacao_Header.adjustSize()
-            self.HMI.Table_Tributacao_Header.setColumnWidth(0, SizeCol0)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(1, SizeCol1)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(2, SizeCol2)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(3, SizeCol3)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(4, SizeCol4)
-            self.HMI.Table_Tributacao_Header.setColumnWidth(5, SizeCol5)
-
-            self.HMI.Table_Tributacao.adjustSize()
-            self.HMI.Table_Tributacao.setColumnWidth(0, SizeCol0)
-            self.HMI.Table_Tributacao.setColumnWidth(1, SizeCol1)
-            self.HMI.Table_Tributacao.setColumnWidth(2, SizeCol2)
-            self.HMI.Table_Tributacao.setColumnWidth(3, SizeCol3)
-            self.HMI.Table_Tributacao.setColumnWidth(4, SizeCol4)
-            self.HMI.Table_Tributacao.setColumnWidth(5, SizeCol5)
-
+class HMI_Events:
     def CalcularTributacao(self):
         self.HMI.DBManager.LW.Label_Titulo.setText("Calculando tributação.\nPor favor aguarde...\n")
         def GenerateListOfMonthsYears(DataInicial, DataFinal):
@@ -488,6 +163,7 @@ class HMI_Tributacao(object):
             self.HMI.DBManager.LW.pbar.setValue(100)
         self.HMI.CalcularTributacao_is_running = False
 
+
     def CalcularTributacao_SemThread(self):
         def GenerateListOfMonthsYears(DataInicial, DataFinal):
             Resposta = [DataInicial]
@@ -617,6 +293,7 @@ class HMI_Tributacao(object):
             for row in content: # Overwrite Tables
                 self.HMI.DBManager.AddRowInCurrentDB(TabelaTibutacao_Nome, row)
         self.HMI.CalcularTributacao_is_running = False
+
 
     def OnButtonPressed(self, ButtonPressed):
         if ButtonPressed == 'ChangeDTeST':
@@ -800,9 +477,11 @@ class HMI_Tributacao(object):
                     except Exception as e:
                         print(e)
                         try: workbook.close()
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                         try: wb.Close(True)
-                        except: pass
+                        except Exception as e:
+                            print(e, traceback.format_exception(None, e, e.__traceback__))
                     finally:
                         self.HMI.unsetCursor()
 
@@ -826,47 +505,3 @@ class HMI_Tributacao(object):
                 self.HMI.Table_Tributacao = QTableWidget()
                 self.HMI.HMI_Tributacao.CreateTable_51_2()
                 self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Table_Tributacao, 6, 0, 6, 10, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-
-        # elif ButtonPressed == "Gerar Excel de Tributação":
-        #     # MessageBox_Msg1 = QMessageBox.about(self,'Informação','Funcionalidade ainda não implementada.')
-        #     if not self.filedialogIsOpen:
-        #         MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Para continuar a exportação,\nSALVE seu trabalho e FECHE todas\nas janelas de EXCEL abertas.')
-        #         root = tkinter.Tk()
-        #         root.withdraw() # Used to hide tkinter window
-        #         self.filedialogIsOpen = True
-        #         DB_Path = filedialog.askdirectory() # Select folder path
-        #         self.setCursor(Qt.CursorShape.WaitCursor)
-        #         self.filedialogIsOpen = False
-        #         try:
-        #             if len(DB_Path)>0:
-        #                 agora = datetime.now().strftime("%Y %m %d")
-        #                 FileName = self.User+"_database_"+agora+'.xlsx'
-        #                 workbook = xlsxwriter.Workbook(DB_Path+"/"+FileName)
-        #                 tables = ["TributaçãoDTBolsa", "TributaçãoSTBolsa", "TributaçãoDTCripto", "TributaçãoSTCripto"]
-        #                 conn = sqlite3.connect(self.User+'.db')
-        #                 cursor = conn.cursor()
-        #                 for TableName in tables:
-        #                     workbook.add_worksheet(name=TableName)
-        #                     CONTENT, cursor = self.HMI.DBManager.GetDataDB('SELECT * FROM '+TableName)
-        #                     headers = list(map(lambda x: x[0], cursor.description))
-        #                     row1 = []
-        #                     if len(CONTENT)>0: row1 = CONTENT[0]
-        #                     for column_number, item in enumerate(row1):
-        #                         worksheet.write(0, column_number, headers[column_number])
-
-        #                     for row_number, row in enumerate(CONTENT):
-        #                         for column_number, item in enumerate(row):
-        #                             try: worksheet.write(row_number+1, column_number, item)
-        #                             except:pass
-        #                 workbook.close()
-
-        #                 excel = win32.gencache.EnsureDispatch('Excel.Application')
-        #                 wb = excel.Workbooks.Open(DB_Path+"/"+FileName)
-        #                 for table in tables:
-        #                     ws = wb.Worksheets(table[0:31])
-        #                     ws.Columns.AutoFit()
-        #                 wb.Save()
-        #                 excel.Application.Quit()
-        #         except:
-        #             workbook.close()
-        #         finally: self.unsetCursor()

@@ -1,34 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Sep 18 22:54:52 2021
-
-@author: Caio Moreira Porta
+Trades behaviour split into a single concern.
+HMI_PageBuilders - pagebuilders helpers (inherited by the composition root).
 """
-from PyQt5.QtGui import (
-    QFont, QCursor,
-    QIcon, QMovie,
-)
+import traceback
+from PyQt5.QtGui import (QCursor, QIcon, QMovie)
 from PyQt5.QtWidgets import (
-    QLabel, QPushButton, QLineEdit,
-    QComboBox, QToolTip, QMessageBox
+    QLabel,
+    QPushButton,
+    QLineEdit,
+    QComboBox,
+    QToolTip,
+    QMessageBox,
 )
-from PyQt5.QtCore import (
-    QSize, Qt
-)
-
-from ui.pages import PAGE_BY_NAME
-
-import ui.HMI_Trades_Bolsa_page as HMI_Trades_Bolsa_page
-import ui.HMI_Trades_Criptomoedas_page as HMI_Trades_Criptomoedas_page
+from PyQt5.QtCore import (QSize, Qt)
+from ui.pages import (PAGE_BY_NAME)
 
 
-class HMI_Trades(object):
-    def __init__(self, HMI):
-        self.HMI = HMI
-        QToolTip.setFont(QFont('Arial', 12))
-        self.HMI_Trades_Bolsa = HMI_Trades_Bolsa_page.HMI_Trades_Bolsa(HMI)
-        self.HMI_Trades_Criptomoedas = HMI_Trades_Criptomoedas_page.HMI_Trades_Criptomoedas(HMI)
-
+class HMI_PageBuilders:
     def CreatePage10(self):
         self.HMI.DTeST = "NotDefined"
 
@@ -129,6 +118,7 @@ class HMI_Trades(object):
 
         self.HMI.unsetCursor()
 
+
     def CreatePageBancos(self):
         black = 'rgb(0, 0, 0)'
         Background_1 = QLabel()
@@ -177,7 +167,8 @@ class HMI_Trades(object):
             self.HMI.ComboBox_Bancos.addItem(banco)
             try:
                 if banco == self.HMI.TextBox_NovoBanco.text(): self.HMI.idxBanco = idx
-            except: pass
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
         if self.HMI.idxBanco < len(self.HMI.DBManager.GetBancos()):
             self.HMI.ComboBox_Bancos.setCurrentIndex(self.HMI.idxBanco)
 
@@ -276,6 +267,7 @@ class HMI_Trades(object):
             self.HMI.Button_AtuatizarCC.setEnabled(False)
         else: self.HMI.TextBox_CC.setFocus()
 
+
     def CreatePageBancosAdd(self):
         black = 'rgb(0, 0, 0)'
         Background_1 = QLabel()
@@ -334,6 +326,7 @@ class HMI_Trades(object):
 
         self.HMI.TextBox_NovoBanco.setFocus()
 
+
     def CreatePageBancosDelete(self):
         MessageBox_Msg1 = QMessageBox()
         MessageBox_Msg1.setWindowTitle("Deletar banco")
@@ -347,6 +340,7 @@ class HMI_Trades(object):
         if returnValue == QMessageBox.Yes:
             self.HMI.DBManager.DeleteBanco()
             self.HMI.CreatePage(PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id)
+
 
     def CreatePageBancosRename(self):
         black = 'rgb(0, 0, 0)'
@@ -393,14 +387,3 @@ class HMI_Trades(object):
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_RenomearBanco, 12, 0, 2, 1, Qt.AlignmentFlag.AlignHCenter)
 
         self.HMI.TextBox_NovoNomeBanco.setFocus()
-
-    def OnButtonPressed(self, ButtonPressed):
-        if ButtonPressed == 'BancosUpdateCC':
-            try:
-                teste = float(self.HMI.TextBox_CC.text())
-                self.HMI.DBManager.UpdateContaCorrente_Banco()
-                self.HMI.TextBox_CC.setStyleSheet('background-color: white; color: green')
-                self.HMI.TextBox_CC.setText('')
-                self.HMI.TextBox_Msg2.setText(self.HMI.DBManager.GetBancoCoinCurrency(self.HMI.ComboBox_Bancos.currentText())+' '+str(self.HMI.DBManager.GetValorEmContaCorrente_Banco(self.HMI.ComboBox_Bancos.currentText())))
-            except:
-                self.HMI.TextBox_CC.setStyleSheet('background-color: white; color: red')

@@ -7,8 +7,8 @@ this single source of truth, so PageID literals like '0' or '5' are never hardco
 Usage:
     from ui.pages import PAGES, PAGE_BY_ID, PAGE_BY_NAME
 
-    # Index access, like "page[0] is Home, page[5] is Análise do Mercado":
-    PAGES[0].name   # -> 'Home'
+    # Index access, like "page[0] is Login, page[5] is Análise do Mercado":
+    PAGES[0].name   # -> 'Login'
     PAGES[5].page_id  # -> '5'
 
     # Look up by the PageID string the app sets on window.PageID:
@@ -33,10 +33,10 @@ class PageInfo:
     parent: Optional[str] = None  # PageID that navigates here (None for root / dialogs).
 
 
-# Top-level navigation order, by numeric PageID. ``PAGES[0]`` is Home, ``PAGES[5]`` is Análise do Mercado.
+# Top-level navigation order, by numeric PageID. ``PAGES[0]`` is Login, ``PAGES[5]`` is Análise do Mercado.
 PAGES: list[PageInfo] = [
-    PageInfo('0', 'Home', "Tela inicial / login ('Entrar')"),
-    PageInfo('1', 'MinhaCarteira', "Dashboard logado ('Minha carteira')", parent='0'),
+    PageInfo('0', 'Login', "Tela inicial / login ('Entrar')"),
+    PageInfo('1', 'Home', "Dashboard logado ('Minha carteira')", parent='0'),
     PageInfo('2', 'AuxilioSenha', "Esqueci a senha ('Auxílio de senha')", parent='0'),
     PageInfo('3', 'ImportarUsuario', "Importar usuário", parent='0'),
     PageInfo('3b', 'ImportacaoUsuario', "Importação de usuário (após importar)", parent='3'),

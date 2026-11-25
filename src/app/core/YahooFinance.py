@@ -11,10 +11,13 @@ from yahoo_fin.stock_info import * # Dar preferencia pra usar essa. Da menos BUG
 
 import pandas as pd
 import pandas_datareader.data as web
+import traceback
 
 from binance.client import Client
-try: client = Client("", "")
-except: pass
+try: 
+    client = Client("", "")
+except Exception as e:
+    print(e, traceback.format_exception(None, e, e.__traceback__))
 
 from datetime import datetime
 from datetime import timedelta
@@ -398,8 +401,10 @@ class YahooFinance(object):
 
             list_of_files = glob.glob(DownloadsPath+"/*")
             Last_File = max(list_of_files, key=os.path.getctime)
-            try: os.remove(os.getcwd()+"\\IBOV.csv")
-            except: pass
+            try:
+                os.remove(os.getcwd()+"\\IBOV.csv")
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             shutil.move(Last_File, os.getcwd()+"\\IBOV.csv")
             # print("Lendo arquivo csv") # Debug
             self.HMI.LW.pbar.setValue(90)
@@ -409,8 +414,10 @@ class YahooFinance(object):
             self.HMI.LW.Label_Titulo.setText("Lista de setores atualizada.")
             self.HMI.LW.Label_Titulo.setStyleSheet('color: green')
             self.HMI.LW.pbar.setValue(100)
-            try: os.remove(os.getcwd()+"\\IBOV.csv")
-            except: pass
+            try:
+                os.remove(os.getcwd()+"\\IBOV.csv")
+            except Exception as e:
+                print(e, traceback.format_exception(None, e, e.__traceback__))
             time.sleep(2) # Tempo pra ler que deu certo
             self.HMI.LW.close()
         except Exception as error:

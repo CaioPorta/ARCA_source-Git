@@ -1,30 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Sep 18 22:55:39 2021
-
-@author: Caio Moreira Porta
+Mercado behaviour split into a single concern.
+HMI_PageBuilders - pagebuilders helpers (inherited by the composition root).
 """
-from PyQt5.QtGui import (
-    QFont, QCursor, QMovie,
-)
-from PyQt5.QtWidgets import (
-    QLabel, QPushButton,
-    QToolTip, 
-)
-from PyQt5.QtCore import (
-    QSize, Qt,
-)
-
-from ui.pages import PAGE_BY_NAME
+from PyQt5.QtGui import (QCursor, QMovie)
+from PyQt5.QtWidgets import (QLabel, QPushButton, QToolTip)
+from PyQt5.QtCore import (QSize, Qt)
+from ui.pages import (PAGE_BY_NAME)
 
 
-class HMI_Mercado(object):
-    def __init__(self, HMI):
-        self.HMI = HMI
-        QToolTip.setFont(QFont('Arial', 12))
-
+class HMI_PageBuilders:
     def CreatePage5(self):
         self.CreatePage13() # Mudar isso aqui, criar outro ramo provavelmente. Com loggedIn True da pra salvar preferências pessoais, tipo ativo favorito etc
+
 
     def CreatePage13(self):
         self.Background_1 = QLabel()
@@ -135,8 +123,11 @@ class HMI_Mercado(object):
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_MercadoInvisivel3, 0, 2, 4, 1, Qt.AlignmentFlag.AlignCenter)
         self.HMI.F_GLayout[self.HMI.GCount-1].addWidget(self.HMI.Button_Mercado3, 4, 2, 1, 1)
 
+
     def CreatePage51(self):pass
 
+
     def CreatePage52(self):pass
+
 
     def CreatePage53(self):pass

@@ -1,11 +1,16 @@
+# -*- coding: utf-8 -*-
+from os.path import exists
+from tests.libs.logger_setup import logger
 import os
 import sys
 import pytest
+import toml
 from PyQt5.QtCore import QEventLoop, QTimer, Qt, qInstallMessageHandler
 from PyQt5.QtWidgets import QApplication
 
 from ui.HMI import IHMmain
 import tests.libs.ui_helpers as ui
+from ui.pages import PAGE_BY_ID
 
 def _suppress_font_database_warning():
     # Headless (offscreen) Qt has no font directory, so it prints a spurious QFontDatabase warning.
@@ -17,7 +22,6 @@ def _suppress_font_database_warning():
         sys.stderr.flush()
 
     qInstallMessageHandler(_handler)
-
 
 def pytest_configure(config):
     # Hide the GUI during normal test runs; reveal it on screen only when --visual-check is passed.
@@ -34,9 +38,20 @@ def pytest_configure(config):
         os.makedirs(out_dir, exist_ok=True)
         config.option.htmlpath = os.path.join(out_dir, os.path.basename(htmlpath))
 
+def _wait_until_window_closed(window):
+    """Block the event loop, keeping the window visible and responsive until the user closes it."""
+    loop = QEventLoop()
+    timer = QTimer()
+    timer.timeout.connect(lambda: (loop.quit() if not window.isVisible() else None))
+    timer.start(200)
+    window.show()
+    window.raise_()
+    window.activateWindow()
+    loop.exec_()
+
 
 @pytest.fixture(scope="function", autouse=True)
-def window(qtbot, request: pytest.FixtureRequest):
+def window(qtbot, request: pytest.FixtureRequest) -> IHMmain:
     """
     Fixture to launch the application.
     """
@@ -46,10 +61,10 @@ def window(qtbot, request: pytest.FixtureRequest):
     QApplication.instance().processEvents()  # let showMaximized() and the maximized layout fully apply (real app runs app.exec_()).
     if not request.config.getoption("--no-teardown", default=False):
         qtbot.addWidget(window)  # Track the window so pytest-qt closes it at end of test. Skipped with --no-teardown.
-    yield window
+    return window
 
 @pytest.fixture(scope="function", autouse=True)
-def teardown(window, request):
+def teardown(window, qtbot, request) -> None:
     """
     Teardown function to clean up after tests: reset the window to the home page.
     With --no-teardown (only allowed with --visual-check for a single test), keep the window open
@@ -64,53 +79,124 @@ def teardown(window, request):
         _wait_until_window_closed(window)
         return
     yield
-    ui.go_home(window)
+
+@pytest.fixture(scope="session", autouse=True)
+def for_visual_check(request: pytest.FixtureRequest) -> bool:
+    return request.config.getoption("--visual-check", default=False)
 
 
-def _wait_until_window_closed(window):
-    """Block the event loop, keeping the window visible and responsive until the user closes it."""
-    loop = QEventLoop()
-    timer = QTimer()
-    timer.timeout.connect(lambda: (loop.quit() if not window.isVisible() else None))
-    timer.start(200)
-    window.show()
-    window.raise_()
-    window.activateWindow()
-    loop.exec_()
+class _UIHarness:
+    """Bundle of test-time dependencies exposed by the single `harness` fixture."""
+
+    def __init__(self, window, qtbot, for_visual_check):
+        self.window = window
+        self.qtbot = qtbot
+        self.for_visual_check = for_visual_check
+
+@pytest.fixture(scope="function")
+def harness(window, qtbot, for_visual_check) -> _UIHarness:
+    """Single fixture exposing the app window, pytest-qt qtbot helper and visual-check flag.
+
+    Tests declare only this fixture and access its members (harness.window, harness.qtbot,
+    harness.for_visual_check). window/for_visual_check remain autouse so their setup still runs."""
+    yield _UIHarness(window=window, qtbot=qtbot, for_visual_check=for_visual_check)
 
 @pytest.fixture(scope="function", autouse=False)
-def for_visual_check(request: pytest.FixtureRequest):
-    yield request.config.getoption("--visual-check", default=False)
-
-@pytest.fixture(scope="function", autouse=False)
-def login():
+def login(user_info, window, qtbot, for_visual_check) -> tuple[str, str]:
     """
     Fixture to log in to the application.
+    Ensures the tester account exists and authenticates through the UI, landing on the logged-in
+    MinaCarteira page so tests can explore the authenticated workflow.
     """
-    Email, NomeDeUsuario = "moreiraporta@gmail.com", "Caio_tester"
-    yield Email, NomeDeUsuario
+    NomeDeUsuario, Senha, _, _, _ = user_info
+    
+    expected_page = 'Login'
+    observed_page = PAGE_BY_ID[window.PageID].name
+    assert observed_page == expected_page, f"Expected {expected_page} page, but got {observed_page} page."
+    logger.info(f"[OK] App started on {observed_page} page.")
+    for attr in ('TextBox_NomeDeUsuario', 'TextBox_Senha', 'Button_LogIn'):
+        assert getattr(window, attr, None) is not None, \
+            f"'{attr}' not found; expected the home/login page."
+    window.TextBox_NomeDeUsuario.setText(NomeDeUsuario)
+    window.TextBox_Senha.setText(Senha)
+    ui.visual_sleep(for_visual_check)
+    qtbot.mouseClick(window.Button_LogIn, Qt.LeftButton)
+    yield NomeDeUsuario, Senha
 
 @pytest.fixture(scope="function", autouse=False)
-def delete_users_db():
+def delete_users_db() -> None:
     """
     Helper function to delete the users.db file.
-    Shall be called when argument "--delete-users-db" is passed to pytest.
     """
     pass
 
-@pytest.fixture(scope="function", autouse=False)
-def delete_tester_account():
+def delete_account(window) -> None:
     """
     Helper function to delete the tester account from the database.
-    Shall be called when argument "--delete-tester-account" is passed to pytest.
     Shall be executed only if Users.db exists.
     """
-    pass
+    assert not window.DBManager.DeleteUserDB()
 
 @pytest.fixture(scope="function", autouse=False)
-def assure_tester_account_exists():
+def assure_account_exists(window, user_info, request: pytest.FixtureRequest) -> None:
     """
     Helper function to assure that the tester account exists in the database.
     Shall be called when argument "--assure-account-exists" is passed to pytest.
+
+    Create a minimal tester account (Users.db + per-user db) when it does not already exist, so the
+    app can authenticate during tests. Uses os.getcwd() -- redirected to tests/test_output by the
+    session fixture -- as both the Users.db location and the user's Path, which keeps logout's
+    Disconnect() from deleting the account (it only removes the db when Path differs from cwd).
+
+    When this fixture creates the account it registers a finalizer that deletes it at teardown, so no
+    leftover test account is left behind. Accounts that already existed before the test are kept.
     """
-    pass
+    user, password, email, moedacorrente, userpath = user_info
+
+    if request.config.getoption("--use-official-db", default=False):
+        # if file at userpath exists, continue
+        if email is not None and userpath is not None and exists(userpath+"\\"+user+".db"):
+            logger.info(f"Using user {user}")
+            yield
+        else:
+            raise ValueError(f"User {user} not found")
+    else:
+        account_db_path = os.path.join(userpath, f"{user}.db")
+        if not exists(account_db_path):
+            logger.info(f"currdir: {userpath}")
+            test_result = window.DBManager.CriarNovoPerfil(user, password, email, moedacorrente, userpath)
+            assert test_result == True, f"Expected True, but got {test_result}"
+            # The account was created for this test; remove it once the test finishes.
+            request.addfinalizer(lambda: delete_account(window))
+        else:
+            logger.info(f"User {user} already exists; leaving it in place.")
+        yield
+
+@pytest.fixture(scope="function", autouse=False)
+def user_info(window, request: pytest.FixtureRequest) -> tuple[str, str, str, str]:
+    """
+    A fixture to get from tests/login_tester.toml or from tests/login_official.toml the user, password and email.
+    Depends on --use-official-db.
+    """
+    if request.config.getoption("--use-official-db", default=False):
+        # Load official user info from tests/login_official.toml.
+        login_file = os.path.join(os.path.dirname(__file__), "login_official.toml")
+        with open(login_file, "r") as f:
+            login_data = toml.load(f)
+        NomeDeUsuario = login_data["USER"]
+        Senha = login_data["PASSWORD"]
+        Email = window.DBManager.GetEmailByUser(NomeDeUsuario)
+        Currency = window.DBManager.GetUserCoinCurrency()
+        userpath = window.DBManager.GetUserPathByUserName(NomeDeUsuario)
+    else:
+        # Load tester user info from tests/login_tester.toml.
+        login_file = os.path.join(os.path.dirname(__file__), "login_tester.toml")
+        with open(login_file, "r") as f:
+            login_data = toml.load(f)
+        NomeDeUsuario = login_data["USER"]
+        Senha = login_data["PASSWORD"]
+        Email = login_data["EMAIL"]
+        Currency = login_data["CURRENCY"]
+        userpath = os.getcwd()
+    logger.info(f"Using user {NomeDeUsuario}")
+    return NomeDeUsuario, Senha, Email, Currency, userpath
