@@ -1132,6 +1132,7 @@ class HMI_Events:
                     Item = len(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.data_40_1)-self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes[self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.item]-1
 
                     if self.HMI.DBManager.AlterOperacao_Cripto(Item, Data, Tipo, ParEsquerdo, ParDireito, Qqt, Preco, Taxa, MoedaDaTaxa, Conversao, Obs):
+                        self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
                         if self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.item+1 >= len(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes):
                             self.HMI.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id) # Última alteração da lista
                         else: self.HMI.CreatePage(PAGE_BY_NAME['AlterarOperacaoCripto'].page_id) # Ir pra próxima alteração
@@ -1161,6 +1162,7 @@ class HMI_Events:
         elif ButtonPressed == 'Deletar Ativos da Pagina 44':
             if not self.HMI.DBManager.CalcularTributacao_is_running:
                 self.HMI.DBManager.DeleteOperacao(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes)
+                self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
                 self.HMI.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id)
             else:
                 MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')

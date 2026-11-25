@@ -161,6 +161,7 @@ class WorkerThread(QThread):
             if len(Setores) > 0:
                 Atualizou = self.HMI.DBManager.AlterSetores(Setores)
                 if Atualizou:
+                    self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
                     self.HMI.UpdatePage()
             self.HMI.unsetCursor()
         except Exception as e:

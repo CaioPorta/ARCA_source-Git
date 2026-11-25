@@ -250,6 +250,7 @@ class HMI_Events:
                     Item = len(self.HMI.HMI_Trades.HMI_Trades_Bolsa.data_23_1)-self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes[self.HMI.HMI_Trades.HMI_Trades_Bolsa.item]-1
                     
                     if self.HMI.DBManager.AlterOperacao(Item, Data, Tipo, Qqt, Preco, Corretagem, TaxaB3, TaxaB3Per, Obs):
+                        self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
                         if self.HMI.HMI_Trades.HMI_Trades_Bolsa.item+1 >= len(self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes):
                             self.HMI.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id) # Última alteração da lista
                         else:
@@ -280,6 +281,7 @@ class HMI_Events:
         elif ButtonPressed == 'Deletar Ativos da Pagina 23':
             if not self.HMI.DBManager.CalcularTributacao_is_running:
                 self.HMI.DBManager.DeleteOperacao(self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes)
+                self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
                 self.HMI.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id)
             else:
                 MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')

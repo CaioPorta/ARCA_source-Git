@@ -309,7 +309,6 @@ class DBManager:
         return True
 
     def AddCorretora(self):
-        self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
         def CorretoraExists(corretora):
             retorno, _ = self.GetDataDB("SELECT * FROM Corretoras")
             retorno = list(filter(lambda x: str(corretora+"¨"+self.HMI.BolsaOuCripto).lower() == str(x[0]).lower(), retorno))
@@ -359,7 +358,6 @@ class DBManager:
 
     def AddAtivo(self):
         try:
-            self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
             # Adicionar linha na Table Bolsa
             ativo = self.HMI.TextBox_NomeNovoAtivo.text()
             ModoManualAtivo = self.HMI.ModoManualAtivo
@@ -435,7 +433,6 @@ class DBManager:
         finally: self.AtualizarCotacoes()
 
     def AddOperacao(self):
-        self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
         def ThereIsAnotherOPWithTheSameDate(TableName, data):
             Table_Inicial, _ = self.GetDataDB("SELECT rowid, * FROM "+TableName+"¨Bruto")
             if "¨Bolsa" in TableName:
@@ -787,7 +784,6 @@ class DBManager:
 
     #%% Renames
     def RenameAtivo(self):
-        self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
         def GetRowId(Table,ativo):
             retorno, _ = self.GetDataDB("SELECT rowid, * FROM "+Table)
             retorno = list(filter(lambda x: str(x).find(ativo)>-1, retorno))
@@ -861,7 +857,6 @@ class DBManager:
             return False
 
     def RenameCorretora(self):
-        self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
         def GetRowId(Table,corretora):
             retorno, _ = self.GetDataDB("SELECT rowid, * FROM "+Table)
             retorno = list(filter(lambda x: str(x).find(corretora)>-1, retorno))
@@ -910,7 +905,6 @@ class DBManager:
     #%% Alterações
 
     def AlterSetores(self, Setores):
-        self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
         Table_Inicial, _ = self.GetDataDB("SELECT * FROM Setores")
         Table_Inicial = list(map(lambda x: x[0],Table_Inicial))
         if not Table_Inicial == Setores:
@@ -925,7 +919,6 @@ class DBManager:
         return False
 
     def AlterOperacao(self, Item, Data, Tipo, Qqt, Preco, Corretagem, TaxaB3, TaxaB3Per, Obs):
-        self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
         def ThereIsAnotherOPWithTheSameDate(TableName, data, rowid):
             data = datetime.strptime(data,"%Y/%m/%d %H:%M:%S")
             Table_Inicial, _ = self.GetDataDB("SELECT rowid, * FROM "+TableName+"¨Bruto")
@@ -972,7 +965,6 @@ class DBManager:
         return True
 
     def AlterOperacao_Cripto(self, Item, Data, Tipo, ParEsquerdo, ParDireito, Qqt, Preco, Taxa, MoedaDaTaxa, Conversao, Obs):
-        self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
         def ThereIsAnotherOPWithTheSameDate(TableName, data, rowid):
             data = datetime.strptime(data,"%Y/%m/%d %H:%M:%S")
             Table_Inicial, _ = self.GetDataDB("SELECT rowid, * FROM "+TableName+"¨Bruto")
@@ -1020,7 +1012,6 @@ class DBManager:
         finally: self.UpdatePatrimonioRendimento()
 
     def DeleteCorretora(self):
-        self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
         def GetRowId(corretora):
             retorno, _ = self.GetDataDB("SELECT rowid, * FROM Corretoras")
             retorno = list(filter(lambda x: str(corretora+"¨"+self.HMI.BolsaOuCripto).lower() == str(x[1]).lower(), retorno))
@@ -1061,7 +1052,6 @@ class DBManager:
         finally: self.UpdatePatrimonioRendimento()
 
     def DeleteOperacao(self, Items):
-        self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
         if self.HMI.BolsaOuCripto == "Bolsa":
             # Delete linha
             Items = list(map(lambda x: len(self.HMI.HMI_Trades.HMI_Trades_Bolsa.data_23_1)-x,Items)) # Items = list(map(lambda x: x+1,Items)) # Debug: Para quando a tabela de registros é mostrada em ordem crescente

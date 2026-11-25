@@ -711,6 +711,7 @@ class HMI_PageNavigation:
                             if not self.DBManager.CalcularTributacao_is_running:
                                 Executado = self.DBManager.AddCorretora()
                                 if Executado:
+                                    self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     self.ClearPage()
                                     self.PageID= PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id
                                     self.PageIDAux = ''
@@ -744,6 +745,7 @@ class HMI_PageNavigation:
                             if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                                 Executado = self.DBManager.RenameCorretora()
                                 if Executado:
+                                    self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     self.ClearPage()
                                     self.PageID= PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id
                                     self.PageIDAux = ''
@@ -808,6 +810,7 @@ class HMI_PageNavigation:
                             if not self.DBManager.CalcularTributacao_is_running:
                                 Executado = self.DBManager.AddCorretora()
                                 if Executado:
+                                    self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     self.ClearPage()
                                     self.PageID= PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id
                                     self.PageIDAux = ''
@@ -840,6 +843,7 @@ class HMI_PageNavigation:
                             if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                                 Executado = self.DBManager.RenameCorretora()
                                 if Executado:
+                                    self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     self.ClearPage()
                                     self.PageID= PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id
                                     self.PageIDAux = ''
@@ -1003,9 +1007,11 @@ class HMI_PageNavigation:
                         if PageID == PAGE_BY_NAME['_RegistrosBolsa_'].page_id:
                             self.Modo = 'Manual'
                             self.DBManager.RenameAtivo()
+                            self.HMI_ARCA.Flag_RecalcularGraficos = True
                         elif PageID == PAGE_BY_NAME['RegistrosBolsa_'].page_id:
                             self.Modo = 'Auto'
                             self.DBManager.RenameAtivo()
+                            self.HMI_ARCA.Flag_RecalcularGraficos = True
                     else:
                         MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                 elif self.PageID== PAGE_BY_NAME['CotacaoNaoEncontradaManualBolsa'].page_id:
@@ -1013,6 +1019,7 @@ class HMI_PageNavigation:
                         if PageID == PAGE_BY_NAME['RegistrosBolsa_'].page_id:
                             self.Modo = 'Manual'
                             self.DBManager.RenameAtivo()
+                            self.HMI_ARCA.Flag_RecalcularGraficos = True
                     else:
                         MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
                 self.ClearPage()
@@ -1097,6 +1104,7 @@ class HMI_PageNavigation:
                             if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                                 deubom = self.DBManager.AddOperacao()
                                 if deubom:
+                                    self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     try:
                                         self.Msg = OperacaoRegistradaComSucesso.OperacaoRegistradaComSucesso(self, 4)
                                         self.LimparPage()
@@ -1157,7 +1165,9 @@ class HMI_PageNavigation:
 
                             if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                                 try:
+                                    self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     self.DBManager.AddAtivo()
+                                    self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     self.DBManager.AddOperacao() # Sempre vai dar bom na criação do ativo
                                     self.AcabouDeRegistrarNovoAtivo = True
                                     self.ComboBox_Ativos.clear()
@@ -1331,6 +1341,7 @@ class HMI_PageNavigation:
                                 if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                                     deubom = self.DBManager.AddOperacao()
                                     if deubom:
+                                        self.HMI_ARCA.Flag_RecalcularGraficos = True
                                         try:
                                             self.Msg = OperacaoRegistradaComSucesso.OperacaoRegistradaComSucesso(self, 5)
                                             self.LimparPage()

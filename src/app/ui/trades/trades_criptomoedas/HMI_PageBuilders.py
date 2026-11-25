@@ -325,6 +325,7 @@ class HMI_PageBuilders:
         returnValue = MessageBox_Msg1.exec()
         if returnValue == QMessageBox.Yes:
             self.HMI.DBManager.DeleteCorretora()
+            self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
             self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id)
 
 
