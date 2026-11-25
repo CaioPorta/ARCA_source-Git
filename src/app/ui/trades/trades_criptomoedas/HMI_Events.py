@@ -1164,7 +1164,14 @@ class HMI_Events:
             if not self.HMI.DBManager.CalcularTributacao_is_running:
                 Corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
                 table_data = self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.data_40_1
-                self.HMI.DBManager.DeleteOperacao(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes, Corretora, table_data)
+                _, need_CalcularTributacao = self.HMI.DBManager.DeleteOperacao(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes,
+                                                                                table_data,
+                                                                                Corretora,
+                                                                                self.HMI.BolsaOuCripto,
+                                                                                )
+                if need_CalcularTributacao:
+                    # self.CalcularTributacao() # Via thread
+                    self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
                 self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
                 self.HMI.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id)
             else:

@@ -1072,11 +1072,13 @@ class DBManager:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.UpdatePatrimonioRendimento()
 
-    def DeleteOperacao(self, Items, table_data, Corretora: str, BolsaOuCripto: str):
+    def DeleteOperacao(self, Items, table_data, Corretora: str, BolsaOuCripto: str, ativo: str | None):
+        need_CalcularTributacao = False
         if BolsaOuCripto == "Bolsa":
             # Delete linha
+            if ativo is None:
+                return False, need_CalcularTributacao
             Items = list(map(lambda x: len(table_data)-x,Items)) # Items = list(map(lambda x: x+1,Items)) # Debug: Para quando a tabela de registros é mostrada em ordem crescente
-            ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
             TableName = str('OPs¨'+
                         ativo +
                         '¨'+Corretora+
@@ -1102,8 +1104,10 @@ class DBManager:
                     self.CopiarBrutoPraDT(ativo)
                     # Calcular todas as células automatizadas e fazer update pra cada célula
                     self.CalcularCelsAutomatizadas(TableNameDT)
-                # self.CalcularTributacao() # Via thread
-                self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
+                
+                need_CalcularTributacao = True
+                
+                return True, need_CalcularTributacao
             else:
                 self.ModifyDB("DROP TABLE "+TableNameBruto)
                 self.ModifyDB("DROP TABLE "+TableNameST)
@@ -1116,6 +1120,7 @@ class DBManager:
                     self.ModifyDB("VACUUM")
                     self.ModifyDB("DELETE FROM Cotações WHERE Ativo = (?)",[(ativo)])
                     self.ModifyDB("VACUUM")
+                return True, need_CalcularTributacao
 
         elif BolsaOuCripto == "Cripto":
             # Delete linha
@@ -1132,9 +1137,9 @@ class DBManager:
             if len(retornoBruto)>0: self.ModifyDB("VACUUM")
             self.CalcularCelsAutomatizadas_CriptoRefinado(TableName)
             self.UpdateContaCorrente_Cripto(Corretora)
-            # self.CalcularTributacao() # Via thread
-            self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
+            need_CalcularTributacao = True
         self.UpdatePatrimonioRendimento()
+        return True, need_CalcularTributacao
 
     def DeleteDepositoOuSaque(self, Items):
         # Delete linha

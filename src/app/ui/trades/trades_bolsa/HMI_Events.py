@@ -282,11 +282,16 @@ class HMI_Events:
             if not self.HMI.DBManager.CalcularTributacao_is_running:
                 Corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
                 table_data = self.HMI.HMI_Trades.HMI_Trades_Bolsa.data_23_1
-                self.HMI.DBManager.DeleteOperacao(self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes,
-                                                  table_data,
-                                                  Corretora,
-                                                  self.HMI.BolsaOuCripto
-                                                  )
+                ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
+                _, need_CalcularTributacao = self.HMI.DBManager.DeleteOperacao(self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes,
+                                                                                table_data,
+                                                                                Corretora,
+                                                                                self.HMI.BolsaOuCripto,
+                                                                                ativo,
+                                                                                )
+                if need_CalcularTributacao:
+                    # self.CalcularTributacao() # Via thread
+                    self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
                 self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
                 self.HMI.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id)
             else:
