@@ -3,6 +3,8 @@ Created on Sun Sep  5 01:44:04 2021
 
 @author: Caio Moreira Porta
 """
+from src.app.core.logger_setup import logger
+
 import os
 from os.path import exists
 import copy
@@ -64,7 +66,7 @@ class DBManager:
                conn.cursor()
                return True
             except Exception as e:
-               print(e, traceback.format_exception(None, e, e.__traceback__))
+               logger.error(e, traceback.format_exception(None, e, e.__traceback__))
                return False
 
         if chk_conn(self.conn): return "Conectado a base de dados: " + str(self.User) + ".db"
@@ -140,7 +142,7 @@ class DBManager:
 
             return True
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
             return e, traceback.format_exception(None, e, e.__traceback__)
 
     def CheckIfEmailExists(self, EmailToCheck):
@@ -159,7 +161,7 @@ class DBManager:
                 else:
                     Exists = "Arquivo não encontrado"
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally:conn.close()
         return Exists
 
@@ -169,7 +171,7 @@ class DBManager:
             currdir = os.getcwd() # Get current directory
             conn = sqlite3.connect(currdir+'\\Users.db')
             retorno = list(conn.execute("SELECT Usuário FROM Usuários WHERE Usuário = (?)",[(UserToCheck)]))
-            print(f"retorno {retorno}")
+            logger.debug(f"retorno {retorno}")
             for row in retorno:
                 retorno = list(conn.execute("SELECT Path FROM Usuários WHERE Usuário = (?)",[(UserToCheck)]))
                 UserPath = retorno[0][0]
@@ -177,10 +179,10 @@ class DBManager:
                 if file_exists:
                     Exists = True
                 else:
-                    # print("usuário ta na user.db mas nao tem o arquivo.db")
+                    # logger.debug("usuário ta na user.db mas nao tem o arquivo.db")
                     Exists = "Arquivo não encontrado"
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally:conn.close()
         return Exists
 
@@ -248,16 +250,17 @@ class DBManager:
             self.conn.close()
 
             currdir = os.getcwd() # Bug Fix
-            if self.UserPath is not None and self.User is not None and not self.UserPath.replace("/","\\") == currdir and exists(currdir+"\\"+self.User+".db"):
+            if self.UserPath is not None and self.User is not None and self.UserPath.replace("/","\\") != currdir and exists(currdir+"\\"+self.User+".db"):
                 # Verificar se tem uma "self.User"+.db na currdir
                 os.remove(currdir+"\\"+self.User+".db")
 
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
-        finally: return False  # Set self.LoggedIn as False
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
+        finally: 
+            return False  # Set self.LoggedIn as False
         
     # def PersistenceDB(self): #ideia abandonada
-    #     print("running PersistenceDB")
+    #     logger.debug("running PersistenceDB")
     #     tabelas = pd.read_sql("SELECT name FROM sqlite_master WHERE type='table'", self.conn)['name']
     #     df_tabelas = pd.DataFrame({'nomes':[]})
     #     df_TabelasBrutoBolsa = pd.DataFrame({'nomes':[]})
@@ -269,14 +272,14 @@ class DBManager:
     #             df_TabelasBrutoBolsa=df_TabelasBrutoBolsa.append({'nomes':tabela.replace("¨Bruto","¨DT")}, ignore_index=True)
     #         elif "¨Cripto¨Bruto" in tabela:
     #             df_TabelasBrutoCripto=df_TabelasBrutoCripto.append({'nomes':tabela.replace("¨Bruto","¨Refinado")}, ignore_index=True)
-    #     # print("df_TabelasBrutoBolsa ", df_TabelasBrutoBolsa)
-    #     # print("df_TabelasBrutoCripto ", df_TabelasBrutoCripto)
-    #     print("df_tabelas ", df_tabelas)
+    #     # logger.debug("df_TabelasBrutoBolsa ", df_TabelasBrutoBolsa)
+    #     # logger.debug("df_TabelasBrutoCripto ", df_TabelasBrutoCripto)
+    #     logger.debug("df_tabelas ", df_tabelas)
         
     #     for tabela in df_TabelasBrutoBolsa['nomes']:
-    #         #print(tabela, " is in df? ", df_tabelas['nomes'].isin([tabela]))
+    #         logger.debug(tabela, " is in df? ", df_tabelas['nomes'].isin([tabela]))
     #         if df_tabelas['nomes'].isin([tabela]).all():
-    #             print(tabela, 'contém apenas valores False')
+    #             logger.debug(tabela, 'contém apenas valores False')
 
     #%% Adições
 
@@ -362,7 +365,7 @@ class DBManager:
             retorno, _ = self.GetDataDB("SELECT * FROM Bolsa")
             retorno = list(filter(lambda x: str(x[0]).find(ativo.replace(" ","_"))>-1, retorno))
             if len(retorno) == 0:
-                print("add ativo: ",ativo)
+                logger.info("add ativo: ",ativo)
                 self.AddRowInCurrentDB("Bolsa", [('Ativo', ativo.replace(" ","_")),
                                                  ('TipoDeAtivo', self.HMI.ComboBox_TipoDeAtivo.currentText()),
                                                  ('SubtipoDeAtivo', self.HMI.ComboBox_SubtipoDeAtivo.currentText()),
@@ -373,7 +376,7 @@ class DBManager:
                 # try:
                 #     if not ModoManualAtivo: Cotacao = self.HMI.YahooFinance.GetCotacao(ativo, self.GetUserCoinCurrency())
                 # except Exception as e:
-                    # print(e, traceback.format_exception(None, e, e.__traceback__))
+                    # logger.error(e, traceback.format_exception(None, e, e.__traceback__))
                 Cotacao = self.HMI.Cache_Cotacao
                 self.AddRowInCurrentDB('Cotações', [('Modo', "Manual" if ModoManualAtivo else "Auto"),
                                                     ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
@@ -426,7 +429,7 @@ class DBManager:
                                                         ('CustoMédio', 'REAL'),
                                                         ('Resultado', 'REAL')])
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.AtualizarCotacoes()
 
     def AddOperacao(self):
@@ -607,7 +610,7 @@ class DBManager:
                         Cotacao, CotacaoDolar = self.HMI.YahooFinance.GetCotacaoCripto(ativo, self.GetUserCoinCurrency())
                         if Cotacao > 0: Modo = "Auto"
                     except Exception as e:
-                        print(e, traceback.format_exception(None, e, e.__traceback__))
+                        logger.error(e, traceback.format_exception(None, e, e.__traceback__))
                     finally:
                         self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
                                                             ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
@@ -622,7 +625,7 @@ class DBManager:
                         Cotacao, CotacaoDolar = self.HMI.YahooFinance.GetCotacaoCripto(ativo, self.GetUserCoinCurrency())
                         if Cotacao > 0: Modo = "Auto"
                     except Exception as e:
-                        print(e, traceback.format_exception(None, e, e.__traceback__))
+                        logger.error(e, traceback.format_exception(None, e, e.__traceback__))
                     finally:
                         self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
                                                             ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
@@ -777,7 +780,7 @@ class DBManager:
                 if ativo not in AtivosSendoUtilizados and not ativo == "USD" and not ativo == self.GetUserCoinCurrency():
                     self.ModifyDB("DELETE FROM Cotações WHERE Ativo = (?)", [(ativo)])
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally:
             self.ModifyDB("VACUUM")
 
@@ -812,7 +815,7 @@ class DBManager:
             if Modo == "Auto":
                 try: Cotacao = self.HMI.YahooFinance.GetCotacao(NomeNovo, self.GetUserCoinCurrency())
                 except Exception as e:
-                    print(e, traceback.format_exception(None, e, e.__traceback__))
+                    logger.error(e, traceback.format_exception(None, e, e.__traceback__))
             self.ModifyDB("UPDATE Cotações SET Modo = (?) Where rowid = "+IDc, [(Modo)])
             self.ModifyDB("UPDATE Cotações SET DataDeAtualização = (?) Where rowid = "+IDc, [(DataDeAtualizacao)])
             if NomeAntigo != NomeNovo:
@@ -853,7 +856,7 @@ class DBManager:
 
             return True
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
             return False
 
     def RenameCorretora(self):
@@ -1011,8 +1014,8 @@ class DBManager:
             self.ModifyDB("DELETE FROM Bancos WHERE Banco = (?)",[("¨"+Banco+"¨")])
             self.ModifyDB("VACUUM")
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
-            print('erro deletando banco')
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error('erro deletando banco')
         finally: self.UpdatePatrimonioRendimento()
 
     def DeleteCorretora(self):
@@ -1053,7 +1056,7 @@ class DBManager:
                     self.ModifyDB("DELETE FROM Cotações WHERE Ativo = (?)",[(ativo)])
                     self.ModifyDB("VACUUM")
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.UpdatePatrimonioRendimento()
 
     def DeleteOperacao(self, Items):
@@ -1223,7 +1226,7 @@ class DBManager:
         for corretora in corretorasCripto:
             try: Ativos.extend(self.GetAtivos(corretora, "Cripto"))
             except Exception as e:
-                print(e, traceback.format_exception(None, e, e.__traceback__))
+                logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         Ativos = list(set(Ativos))
         return sorted(Ativos)
 
@@ -1250,7 +1253,7 @@ class DBManager:
         for corretora in corretorasBolsa:
             try: Ativos.extend(self.GetAtivos(corretora, "Bolsa"))
             except Exception as e:
-                print(e, traceback.format_exception(None, e, e.__traceback__))
+                logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         Ativos = list(set(Ativos))
         return Ativos
 
@@ -1397,7 +1400,7 @@ class DBManager:
                 column = headers.index("StakeDe¨"+ativo)
                 estoque += retorno[-1][column]
             except Exception as e:
-                print(e, traceback.format_exception(None, e, e.__traceback__))
+                logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         return estoque
 
     def GetEstoqueAtivo(self, ativo='', BolsaOuCripto=''):
@@ -1414,7 +1417,7 @@ class DBManager:
                     if retorno[-1][8] != "NULL":
                         estoque += retorno[-1][8]
                 except Exception as e:
-                    print(e, traceback.format_exception(None, e, e.__traceback__))
+                    logger.error(e, traceback.format_exception(None, e, e.__traceback__))
 
         elif BolsaOuCripto == "Cripto":
             for corretoraCripto in corretorasCripto:
@@ -1431,7 +1434,7 @@ class DBManager:
                     if retorno[-1][column+2] != "NULL":
                         estoque += retorno[-1][column+2] # Stake
                 except Exception as e:
-                    print(e, traceback.format_exception(None, e, e.__traceback__))
+                    logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         return estoque
 
     def GetCusto(self, ativo = '', corretora = '', BolsaOuCripto = ''):
@@ -1755,7 +1758,7 @@ class DBManager:
             retorno, _ = self.GetDataDB("SELECT Modo FROM Cotações WHERE Ativo = (?)",[(ativo)])
             Modo = retorno[0][0]
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: return Modo
 
     def GetUserCoinCurrency(self):
@@ -1979,7 +1982,7 @@ class DBManager:
             for row in retorno:
                 Email = row[1]
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally:
             conn.close()
             return Email
@@ -1993,7 +1996,7 @@ class DBManager:
             for row in retorno:
                 User = row[0]
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally:
             conn.close()
             return User
@@ -2006,7 +2009,7 @@ class DBManager:
             for row in retorno:
                 Passwd = row[1]
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally:
             conn.close()
             return Passwd
@@ -2025,17 +2028,17 @@ class DBManager:
             corretoras = self.HMI.DBManager.GetCorretoras("Bolsa")
             for corretora in corretoras:
                 PatrimonioAux = self.HMI.DBManager.GetPatrimonioTotalCorretora(corretora, "Bolsa")
-                # print(corretora, PatrimonioAux)
+                logger.debug(corretora, PatrimonioAux)
                 if PatrimonioAux == -1: return -2
                 Patrimonio += PatrimonioAux
             corretoras = self.HMI.DBManager.GetCorretoras("Cripto")
             for corretora in corretoras:
                 PatrimonioAux = self.HMI.DBManager.GetPatrimonioTotalCorretora(corretora, "Cripto")
-                # print(corretora, PatrimonioAux)
+                logger.debug(corretora, PatrimonioAux)
                 if PatrimonioAux == -1: return -2
                 Patrimonio += PatrimonioAux
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
             return -1
         return round(Patrimonio, 2)
 
@@ -3020,9 +3023,9 @@ class DBManager:
             cursor = self.conn.cursor()
             cursor.executemany('INSERT INTO Tickers VALUES(?);', ListOfTuples)
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.ThreadLock.release()
-        # print(self.GetAllTickers()) # Debug
+        logger.debug(self.GetAllTickers()) # Debug
 
     #%% Funções auxiliares
 
@@ -3036,7 +3039,7 @@ class DBManager:
             else:
                 os.popen('attrib +h '+DB) # Torna o arquivo oculto na pasta do APP
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
 
     def CreateTableInCurrentDB(self, TableName, ContentType):
         Header = ''
@@ -3100,8 +3103,10 @@ class DBManager:
                 for item in oneRowTupleNotInShape: oneRowListOfTuples.append(('',item))
                 content.append(oneRowListOfTuples)
             for row in content: self.AddRowInCurrentDB(TableName, row)
-        except Exception as e: print("erro: DBManager função SortByDate\n"+str(e))
-        finally: self.ModifyDB("DROP TABLE "+TableName+"¨NotSorted") # Deleta a tabela antiga
+        except Exception as e: 
+            logger.error("erro: DBManager função SortByDate\n"+str(e))
+        finally: 
+            self.ModifyDB("DROP TABLE "+TableName+"¨NotSorted") # Deleta a tabela antiga
 
     def SepararDTeST(self, TableName, AcabouDeAdd = True):
         def OPEhAMaisRecenteDeTodas(OP, OPs):
@@ -3114,7 +3119,7 @@ class DBManager:
                 NovaDT_Reposta = []
                 NovaST_Reposta = []
                 # Para cada data, começando da mais antiga pra mais recente, faça:
-                # print(datas)
+                logger.debug(datas)
                 for Data in datas:
                     # Identificar DT
                     OPsNaData = []
@@ -3127,7 +3132,7 @@ class DBManager:
                         ListaDeIdxDeOPsDeVendaNaData_Variavel = copy.deepcopy(ListaDeIdxDeOPsDeVendaNaData)
                         for idx, aux in enumerate(ListaDeIdxDeOPsDeVendaNaData):
                             i, V = aux
-                            # print(idx)
+                            logger.debug(idx)
                             ComprasDoDT = 0
                             VendasNoDT = V[2]
                             PassePraProximaOPDeVenda = False
@@ -3167,8 +3172,8 @@ class DBManager:
                                                 doing = False
                                                 PassePraProximaOPDeVenda = True
                                                 # Adiciona uma parte em DT e a outra em ST
-                                                # print('Split')
-                                                # print("ComprasDoDT > VendasNoDT, Add ao DT:\n",tuple(AoDT),"\ne:\n",V)
+                                                logger.debug('Split')
+                                                logger.debug("ComprasDoDT > VendasNoDT, Add ao DT:\n",tuple(AoDT),"\ne:\n",V)
                                                 AoDT = tuple(AoDT)
                                                 NovaDT_Reposta.append([('Data', AoDT[0]),
                                                                        ('Tipo', AoDT[1]),
@@ -3203,7 +3208,7 @@ class DBManager:
                                             elif ComprasDoDT == VendasNoDT: # Caso perfeito
                                                 # Adiciona ListaDeIdxDeOPsDeCompraNaData_Variavel[0] e V ao DT
                                                 # pop ListaDeIdxDeOPsDeCompraNaData_Variavel[0] da lista ListaDeIdxDeOPsDeCompraNaData_Variavel
-                                                # print("Add ao DT:\n",ListaDeIdxDeOPsDeCompraNaData_Variavel[0][1],"\ne:\n",V)
+                                                logger.debug("Add ao DT:\n",ListaDeIdxDeOPsDeCompraNaData_Variavel[0][1],"\ne:\n",V)
                                                 AoDT = ListaDeIdxDeOPsDeCompraNaData_Variavel[0][1]
                                                 NovaDT_Reposta.append([('Data', AoDT[0]),
                                                                        ('Tipo', AoDT[1]),
@@ -3238,7 +3243,7 @@ class DBManager:
                                                 PassePraProximaOPDeVenda = True
                                             # Caso insuficiente
                                             else:
-                                                # print("Add ao DT:\n",ListaDeIdxDeOPsDeCompraNaData_Variavel[0][1])
+                                                logger.debug("Add ao DT:\n",ListaDeIdxDeOPsDeCompraNaData_Variavel[0][1])
                                                 if len(ListaDeIdxDeOPsDeCompraNaData_Variavel) == 1 or datetime.strptime(ListaDeIdxDeOPsDeCompraNaData_Variavel[1][1][0],"%Y-%m-%d %H:%M:%S")>datetime.strptime(V[0],"%Y-%m-%d %H:%M:%S"): # Se é a ultima tentativa e ainda assim é insuficiente # Split venda: houve uma parte em DT e outra em ST
                                                     AoDT = ListaDeIdxDeOPsDeCompraNaData_Variavel[0][1]
                                                     NovaDT_Reposta.append([('Data', AoDT[0]),
@@ -3312,7 +3317,7 @@ class DBManager:
                                                     # Continua buscando no While
                                         else: # Restante que configura ST
                                             # Adiciona totalmente ListaDeIdxDeOPsDeVendaNaData[i] ao ST
-                                            # print("Add ao ST:\n",V)
+                                            logger.debug("Add ao ST:\n",V)
                                             if len(ListaDeIdxDeOPsDeVendaNaData_Variavel) > 0:
                                                 AoST = ListaDeIdxDeOPsDeVendaNaData_Variavel[0][1]
                                                 NovaST_Reposta.append([('Data', AoST[0]),
@@ -3331,7 +3336,7 @@ class DBManager:
                                                 ListaDeIdxDeOPsDeVendaNaData_Variavel.pop(0)
                                             doing = False
                                 else: # Houve ST
-                                    # print("else; Add ao ST:\n",V)
+                                    logger.debug("else; Add ao ST:\n",V)
                                     if len(ListaDeIdxDeOPsDeVendaNaData_Variavel) > 0:
                                         AoST = ListaDeIdxDeOPsDeVendaNaData_Variavel[0][1]
                                         NovaST_Reposta.append([('Data', AoST[0]),
@@ -3351,7 +3356,7 @@ class DBManager:
                                     PassePraProximaOPDeVenda = True
                         for OP in ListaDeIdxDeOPsDeCompraNaData_Variavel:
                             # Add OPs de compra restante em ST pois não são DT
-                            # print("Add ao ST:\n",OP[1])
+                            logger.debug("Add ao ST:\n",OP[1])
                             AoST = OP[1]
                             NovaST_Reposta.append([('Data', AoST[0]),
                                                    ('Tipo', AoST[1]),
@@ -3369,7 +3374,7 @@ class DBManager:
                         if len(ListaDeIdxDeOPsDeVendaNaData) == idx:
                             for OP in ListaDeIdxDeOPsDeVendaNaData_Variavel:
                                 # Add OPs de compra restante em ST pois não são DT
-                                # print("Add ao ST:\n",OP[1])
+                                logger.debug("Add ao ST:\n",OP[1])
                                 AoST = OP[1]
                                 NovaST_Reposta.append([('Data', AoST[0]),
                                                        ('Tipo', AoST[1]),
@@ -3428,11 +3433,11 @@ class DBManager:
         # TableDTeST_sorted = sorted(TableBruto_Inicial, key=lambda sub: (datetime.strptime(sub[0],"%Y-%m-%d %H:%M:%S"), sub[1]))
         aux = [t[0][:-9] for t in TableBruto_Inicial]
         datas = list(dict.fromkeys(aux))
-        # print('vetor datas:',datas)
+        logger.debug('vetor datas:',datas)
 
         if AcabouDeAdd:
             OPAdded = TableBruto_Inicial[-1]
-            # print(100*'-'+"\n\nOPAdded:\n",OPAdded)
+            logger.debug(100*'-'+"\n\nOPAdded:\n",OPAdded)
             if OPAdded[1] == "Compra":
                 if not OPEhAMaisRecenteDeTodas(OPAdded, TableBruto_Inicial): # Reescrever tabelas DT e ST: executar procedimento completo
                     OPsNaData = []
@@ -3453,8 +3458,8 @@ class DBManager:
             NovaDT_Reposta, NovaST_Reposta = RedefinirDTeST(datas, TableBruto_Inicial)
 
         if not (len(NovaDT_Reposta) == 0 and len(NovaST_Reposta) == 0): # Overwrite tables
-            # print("\nOverwirting...\n") # Debug
-            # print("DT:\n") # Debug
+            logger.debug("\nOverwirting...\n") # Debug
+            logger.debug("DT:\n") # Debug
             self.ModifyDB("DROP TABLE "+TableName+"¨DT")
             self.CreateTableInCurrentDB(TableName+"¨DT", [('Data', 'DATETIME'),
                                                             ('Tipo', 'TEXT'),
@@ -3470,11 +3475,11 @@ class DBManager:
                                                             ('CustoMédio', 'REAL'),
                                                             ('Resultado', 'REAL')])
             for row in NovaDT_Reposta:
-                # print(row) # Debug
+                logger.debug(row) # Debug
                 # Overwrite DT
                 self.AddRowInCurrentDB(TableName+"¨DT", row)
 
-            # print("ST:\n") # Debug
+            logger.debug("ST:\n") # Debug
 
             self.ModifyDB("DROP TABLE "+TableName+"¨ST")
             self.CreateTableInCurrentDB(TableName+"¨ST", [('Data', 'DATETIME'),
@@ -3491,7 +3496,7 @@ class DBManager:
                                                             ('CustoMédio', 'REAL'),
                                                             ('Resultado', 'REAL')])
             for row in NovaST_Reposta:
-                # print(row) # Debug
+                logger.debug(row) # Debug
                 # Overwrite ST
                 self.AddRowInCurrentDB(TableName+"¨ST", row)
 
@@ -3504,14 +3509,14 @@ class DBManager:
         #     # TableDTeST_sorted = sorted(TableBruto_Inicial, key=lambda sub: (datetime.strptime(sub[1],"%Y-%m-%d %H:%M:%S"), sub[1]))
         #     aux = [t[1][:-9] for t in TableBruto_Inicial]
         #     datas = list(dict.fromkeys(aux))
-        #     print('vetor datas:',datas)
+        #     logger.debug('vetor datas:',datas)
         #     NovaDT_Reposta, NovaST_Reposta, HEADER = RedefinirDTeST(datas, TableBruto_Inicial)
 
         #
         #     self.ModifyDB("DROP TABLE "+TableName+"¨DT")
         #     self.CreateTableInCurrentDB(TableName+"¨DT", [HEADER])
         #     for row in NovaDT_Reposta:
-        #         print("DT: ",row) # Debug
+        #         logger.debug("DT: ",row) # Debug
         #         # Overwrite DT
         #         self.AddRowInCurrentDB(TableName+"¨DT", row)
 
@@ -3519,7 +3524,7 @@ class DBManager:
         #     self.ModifyDB("DROP TABLE "+TableName+"¨ST")
         #     self.CreateTableInCurrentDB(TableName+"¨ST", [HEADER])
         #     for row in NovaDT_Reposta:
-        #         print("ST: ",row) # Debug
+        #         logger.debug("ST: ",row) # Debug
         #         # Overwrite DT
         #         self.AddRowInCurrentDB(TableName+"¨ST", row)
 
@@ -3556,7 +3561,7 @@ class DBManager:
                             ('CustoMédio', row[11]),
                             ('Resultado', row[12])])
         for row in content:
-            # print(row) # Debug
+            logger.debug(row) # Debug
             self.AddRowInCurrentDB(TableName+"¨DT", row)
 
     def CalcularCelsAutomatizadas(self, TableName):
@@ -3653,12 +3658,12 @@ class DBManager:
                                         ('CustoTotal', CustoTotal),
                                         ('CustoMédio', CustoMedio),
                                         ('Resultado', round(Resultado, 2))])
-            # print(TableName) # Debug
+            logger.debug(TableName) # Debug
             for row in content:
-                # print(row) # Debug
+                logger.debug(row) # Debug
                 self.AddRowInCurrentDB(TableName, row)
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally:
             self.ModifyDB("DROP TABLE "+TableName+"¨NA") # Deleta a tabela antiga
 
@@ -3726,11 +3731,11 @@ class DBManager:
         ListaDeMoedas = list(dict.fromkeys(ListaDeMoedas))
         try:ListaDeMoedas.remove('')
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         try:ListaDeMoedas.remove(None)
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
-        # print("Moedas encontradas: ", ListaDeMoedas) # Debug
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
+        logger.debug("Moedas encontradas: ", ListaDeMoedas) # Debug
         # 3)
         for coin in ListaDeMoedas:
             Header.append(('EstoqueDe¨'+coin,'REAL'))
@@ -3763,7 +3768,7 @@ class DBManager:
             row.append(('StakeDe¨'+coin, 0))
             row.append(('CustoDe¨'+coin, 0))
             row.append(('PreçoMédioDe¨'+coin, 0))
-        # print(row) #Debug
+        logger.debug(row) #Debug
         self.AddRowInCurrentDB(TableNameRefinado, row)
         for op in TableBruto:
             # 4.2) Somar ou Subtrair os efeitos da operação nas colunas correspondentes
@@ -4009,7 +4014,7 @@ class DBManager:
                 row[PrecoMedio_idx] = (row[PrecoMedio_idx][0], 0) # Preço Médio
 
             self.AddRowInCurrentDB(TableNameRefinado, row)
-            # print(row) # Debug
+            logger.debug(row) # Debug
 
     def CalcularTributacao(self):
         self.CalcularTributacao_is_running = True
@@ -4051,10 +4056,10 @@ class DBManager:
         for thread in thread_list: thread.start()
         for thread in thread_list: thread.join()
 
-        # print('waiting') # Debug
+        logger.debug('waiting') # Debug
         self.UpdatePatrimonioRendimento()
         if self.HMI.PageID in ["18", "19"]: self.HMI.UpdatePage()
-        # print('UpdatePatrimonioRendimento executed') # Debug
+        logger.debug('UpdatePatrimonioRendimento executed') # Debug
 
     def UpdatePatrimonioRendimento(self):
         Background_Header = 'rgb(20, 20, 40)'
@@ -4089,7 +4094,7 @@ class DBManager:
                 self.HMI.Rendimento = 0
                 self.HMI.TextBox_Rendimento.setText('Att. cot. (C)')
                 self.HMI.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: orange; border: 1px solid '+Background_Header+'}')
-        except Exception as e: print(e)
+        except Exception as e: logger.error(e)
 
     #%% Verificações de coerência
 
@@ -4137,7 +4142,7 @@ class DBManager:
                         retorno = list(filter(lambda x: x[idx+13]<0 or +x[idx+14]<0 or x[idx+15]<0, Tabela))
                         if len(retorno) > 0: Status = True
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: return Status
 
     def VerificarSeTemCustoNegativo(self, ativo='', corretora='', BolsaOuCripto=''):
@@ -4163,7 +4168,7 @@ class DBManager:
                         retorno = list(filter(lambda x: x[idx+16]<0, Tabela))
                         if len(retorno) > 0: Status = True
         except Exception as e:
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: return Status
 
     #%% Interface DB
@@ -4178,8 +4183,8 @@ class DBManager:
             else: data = list(cursor.execute(command, params))
         except Exception as e:
             if not "no such column: EstoqueDe" in str(e): # Awaited error
-                print("Erro GetDataDB: ",str(e),"\nO comando solicitado foi:\n",command,"\nparâmetros:",params)
-                print(e, traceback.format_exception(None, e, e.__traceback__))
+                logger.error("Erro GetDataDB: ",str(e),"\nO comando solicitado foi:\n",command,"\nparâmetros:",params)
+                logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.HMI.ThreadLock.release()
         return data, cursor.description
 
@@ -4188,11 +4193,11 @@ class DBManager:
             self.HMI.ThreadLock.acquire()
             self.HMI.unsetCursor()
             cursor = self.conn.cursor()
-            # print(command, params)
+            logger.debug(command, params)
             if params=='': cursor.execute(command)
             else: cursor.execute(command, params)
             self.conn.commit()
         except Exception as e:
-            print("Erro ModifyDB: ",str(e),"\nO comando solicitado foi:\n",command,"\nparâmetros:",params)
-            print(e, traceback.format_exception(None, e, e.__traceback__))
+            logger.error("Erro ModifyDB: ",str(e),"\nO comando solicitado foi:\n",command,"\nparâmetros:",params)
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.HMI.ThreadLock.release()
