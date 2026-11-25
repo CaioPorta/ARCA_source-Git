@@ -36,8 +36,8 @@ class HMI_Presentation:
         self.GraphWidget_Carteira_Storage.clear()
         self.GraphWidget_Carteira_Storage.set_facecolor("black")
         data = GetData()
+        normalize = True
         if sum(data)==0: normalize = False # Bugfix
-        else: normalize = True
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -71,8 +71,8 @@ class HMI_Presentation:
         self.GraphWidget_Carteira_Storage.clear()
         self.GraphWidget_Carteira_Storage.set_facecolor("black")
         data = GetData()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -115,8 +115,8 @@ class HMI_Presentation:
         self.GraphWidget_AcoesENegocios_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -165,8 +165,8 @@ class HMI_Presentation:
         self.GraphWidget_RealEstate_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -219,8 +219,8 @@ class HMI_Presentation:
         self.GraphWidget_Caixa_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -274,8 +274,8 @@ class HMI_Presentation:
         self.GraphWidget_AtivosInternacionais_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -286,7 +286,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='purple', align='center', color='purple')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
@@ -329,8 +329,8 @@ class HMI_Presentation:
         self.GraphWidget_Especifica_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -341,7 +341,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='orange', align='center', color='orange')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
@@ -384,8 +384,8 @@ class HMI_Presentation:
         self.GraphWidget_Especifica_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -396,7 +396,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='orange', align='center', color='orange')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
@@ -439,8 +439,8 @@ class HMI_Presentation:
         self.GraphWidget_Especifica_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -451,7 +451,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='blue', align='center', color='blue')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
@@ -494,8 +494,8 @@ class HMI_Presentation:
         self.GraphWidget_Especifica_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -506,7 +506,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='blue', align='center', color='blue')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
@@ -549,8 +549,8 @@ class HMI_Presentation:
         self.GraphWidget_Especifica_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -561,7 +561,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='blue', align='center', color='blue')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
@@ -604,8 +604,8 @@ class HMI_Presentation:
         self.GraphWidget_Especifica_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -616,7 +616,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='green', align='center', color='green')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
@@ -659,8 +659,8 @@ class HMI_Presentation:
         self.GraphWidget_Especifica_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -671,7 +671,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='green', align='center', color='green')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
@@ -714,8 +714,8 @@ class HMI_Presentation:
         self.GraphWidget_Especifica_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -726,7 +726,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='green', align='center', color='green')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
@@ -769,8 +769,8 @@ class HMI_Presentation:
         self.GraphWidget_Especifica_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -781,7 +781,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='green', align='center', color='green')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
@@ -824,8 +824,8 @@ class HMI_Presentation:
         self.GraphWidget_Especifica_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -836,7 +836,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='green', align='center', color='green')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
@@ -878,8 +878,8 @@ class HMI_Presentation:
         self.GraphWidget_Especifica_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -890,7 +890,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='purple', align='center', color='purple')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
@@ -933,8 +933,8 @@ class HMI_Presentation:
         self.GraphWidget_Especifica_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -945,7 +945,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='purple', align='center', color='purple')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
@@ -991,8 +991,8 @@ class HMI_Presentation:
         self.GraphWidget_Especifica_Storage.set_facecolor("black")
         data = GetData()
         labels = GetLabels()
-        if 0.0 in data: normalize = False # Bugfix
-        else: normalize = True
+        # normalize = True
+        # if 0.0 in data: normalize = False # Bugfix
         explode = ()
         for i in data: explode += (0.03,)
 
@@ -1003,7 +1003,7 @@ class HMI_Presentation:
             graph = plt.bar(list(range(len(data))), data, width=0.75, linewidth=4, edgecolor='purple', align='center', color='purple')
             plt.xticks(list(range(len(labels))), labels, rotation=30, color='white', fontsize=14)
 
-        if not sum(data) == 0:
+        if sum(data) != 0:
             percentage = list(map(lambda x: round(x/sum(data)*100,1), data))
         else:
             percentage = list(map(lambda x: 0, data))
