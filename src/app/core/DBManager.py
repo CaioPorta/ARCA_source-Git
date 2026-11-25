@@ -353,20 +353,19 @@ class DBManager:
                                                         ('Conversão', 'REAL')])
         return True
 
-    def AddAtivo(self):
+    def AddAtivo(self, ativo, ModoManualAtivo, TipoDeAtivo, SubtipoDeAtivo, Setor, Cotacao, Corretora, BolsaOuCripto):
         try:
             # Adicionar linha na Table Bolsa
-            ativo = self.HMI.TextBox_NomeNovoAtivo.text()
-            ModoManualAtivo = self.HMI.ModoManualAtivo
-            if not ModoManualAtivo: ativo = ativo.upper()
+            if not ModoManualAtivo:
+                ativo = ativo.upper()
             retorno, _ = self.GetDataDB("SELECT * FROM Bolsa")
             retorno = list(filter(lambda x: str(x[0]).find(ativo.replace(" ","_"))>-1, retorno))
             if len(retorno) == 0:
                 logger.info("add ativo: ",ativo)
                 self.AddRowInCurrentDB("Bolsa", [('Ativo', ativo.replace(" ","_")),
-                                                 ('TipoDeAtivo', self.HMI.ComboBox_TipoDeAtivo.currentText()),
-                                                 ('SubtipoDeAtivo', self.HMI.ComboBox_SubtipoDeAtivo.currentText()),
-                                                 ('Setor', self.HMI.ComboBox_SetorAtivo.currentText())])
+                                                 ('TipoDeAtivo', TipoDeAtivo),
+                                                 ('SubtipoDeAtivo', SubtipoDeAtivo),
+                                                 ('Setor', Setor)])
 
                 # Adicionar linha na Table Cotações: Se modo manual, add 0 à cotação
                 # Cotacao = 0.
@@ -374,15 +373,14 @@ class DBManager:
                 #     if not ModoManualAtivo: Cotacao = self.HMI.YahooFinance.GetCotacao(ativo, self.GetUserCoinCurrency())
                 # except Exception as e:
                     # logger.error(e, traceback.format_exception(None, e, e.__traceback__))
-                Cotacao = self.HMI.Cache_Cotacao
                 self.AddRowInCurrentDB('Cotações', [('Modo', "Manual" if ModoManualAtivo else "Auto"),
                                                     ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
                                                     ('Ativo', ativo),
                                                     ('Cotação', Cotacao)])
 
             TableName = str('OPs¨'+ativo.replace(" ","_")+
-                            '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
-                            '¨'+self.HMI.BolsaOuCripto)
+                            '¨'+Corretora+
+                            '¨'+BolsaOuCripto)
             TableNameBruto = TableName+'¨Bruto'
             TableNameDT = TableName+'¨DT'
             TableNameST = TableName+'¨ST'
@@ -429,7 +427,17 @@ class DBManager:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.AtualizarCotacoes()
 
-    def AddOperacao(self):
+    def AddOperacao_Bolsa(self,
+                    Corretora: str,
+                    data: datetime,
+                    Preco_text: str,
+                    Qqt_text: str,
+                    ativo: str,
+                    TipoDeOperacao: str,
+                    TaxaB3_text: str,
+                    Corretagem_text: str,
+                    Obs_text: str="",
+                    ):
         def ThereIsAnotherOPWithTheSameDate(TableName, data):
             Table_Inicial, _ = self.GetDataDB("SELECT rowid, * FROM "+TableName+"¨Bruto")
             if "¨Bolsa" in TableName:
@@ -438,195 +446,231 @@ class DBManager:
                 aux = list(filter(lambda x: datetime.strptime(x[2],"%Y-%m-%d %H:%M:%S") == data, Table_Inicial))
             return len(aux) > 0
         try:
-            if self.HMI.BolsaOuCripto == "Bolsa":
-                if self.HMI.PageID in ['36a','36b']: ativo = self.HMI.TextBox_NomeNovoAtivo.text().replace(" ","_")
-                elif self.HMI.PageID == PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
-                # Adicionar linha na Table OPs_Ativo_Corretora_Bolsa_DT. (Add novos dados. Células de cálculo automatizado, inserir zero)
-                TableName = str('OPs¨'+ativo+
-                                '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
-                                '¨'+self.HMI.BolsaOuCripto)
-                TableNameBruto = TableName+'¨Bruto'
-                TableNameDT = TableName+'¨DT'
-                TableNameST = TableName+'¨ST'
-                data = self.HMI.Selecao_Dia+"/"+self.HMI.Selecao_Mes+"/"+self.HMI.Selecao_Ano+" "+self.HMI.Selecao_Hora+":"+self.HMI.Selecao_Minuto+":"+self.HMI.Selecao_Segundo
-                data = datetime.strptime(data, '%d/%m/%Y %H:%M:%S')
-                if "%" in self.HMI.TextBox_TaxaB3.text():
-                    TaxaB3Per = float(self.HMI.TextBox_TaxaB3.text().replace("%",""))
-                    TaxaB3 = round(TaxaB3Per/100*int(self.HMI.TextBox_Qqt.text())*float(self.HMI.TextBox_Preco.text()),2)
-                else:
-                    TaxaB3 = float(self.HMI.TextBox_TaxaB3.text())
-                    TaxaB3Per = round(TaxaB3/int(self.HMI.TextBox_Qqt.text())/float(self.HMI.TextBox_Preco.text())*100,2)
+            # Adicionar linha na Table OPs_Ativo_Corretora_Bolsa_DT. (Add novos dados. Células de cálculo automatizado, inserir zero)
+            BolsaOuCripto = "Bolsa"
+            
+            TableName = str('OPs¨'+ativo+
+                            '¨'+Corretora+
+                            '¨'+BolsaOuCripto)
+            TableNameBruto = TableName+'¨Bruto'
+            TableNameDT = TableName+'¨DT'
+            TableNameST = TableName+'¨ST'
+            
+            if "%" in TaxaB3_text:
+                TaxaB3Per = float(TaxaB3_text.replace("%",""))
+                TaxaB3 = round(TaxaB3Per/100*int(Qqt_text)*float(Preco_text),2)
+            else:
+                TaxaB3 = float(TaxaB3_text)
+                TaxaB3Per = round(TaxaB3/int(Qqt_text)/float(Preco_text)*100,2)
 
-                if ThereIsAnotherOPWithTheSameDate(TableName, data): return False
-                if data > datetime.now(): return False
+            if ThereIsAnotherOPWithTheSameDate(TableName, data): return False
+            if data > datetime.now(): return False
 
-                # if self.HMI.TipoDeOperacao in ["Compra", "Venda"]:
-                self.AddRowInCurrentDB(TableNameBruto, [('Data', data),
-                                                        ('Tipo', self.HMI.TipoDeOperacao),
-                                                        ('Qqt', int(self.HMI.TextBox_Qqt.text())),
-                                                        ('Preço', float(self.HMI.TextBox_Preco.text())),
-                                                        ('Corretagem', float(self.HMI.TextBox_Corretagem.text())),
-                                                        ('TaxaB3Per', TaxaB3Per),
-                                                        ('TaxaB3', TaxaB3),
-                                                        ('Obs', self.HMI.TextBox_Obs.text()),
-                                                        ('Estoque', 'NULL'),
-                                                        ('CustoDaOperação', TaxaB3+float(self.HMI.TextBox_Corretagem.text())),
-                                                        ('CustoTotal', 'NULL'),
-                                                        ('CustoMédio', 'NULL'),
-                                                        ('Resultado', 'NULL')])
-                if not 'Fundos Imobiliários' == self.GetSubtipoDeAtivoDeAtivo(ativo):
-                    self.AddRowInCurrentDB(TableNameST, [('Data', data),
-                                                        ('Tipo', self.HMI.TipoDeOperacao),
-                                                        ('Qqt', int(self.HMI.TextBox_Qqt.text())),
-                                                        ('Preço', float(self.HMI.TextBox_Preco.text())),
-                                                        ('Corretagem', float(self.HMI.TextBox_Corretagem.text())),
-                                                        ('TaxaB3Per', TaxaB3Per),
-                                                        ('TaxaB3', TaxaB3),
-                                                        ('Obs', self.HMI.TextBox_Obs.text()),
-                                                        ('Estoque', 'NULL'),
-                                                        ('CustoDaOperação', TaxaB3+float(self.HMI.TextBox_Corretagem.text())),
-                                                        ('CustoTotal', 'NULL'),
-                                                        ('CustoMédio', 'NULL'),
-                                                        ('Resultado', 'NULL')])
-                # else:
-                #     if self.HMI.TipoDeOperacao == "Desdobramento":
-                #         self.AddRowInCurrentDB(TableNameBruto, [('Data', data),
-                #                                                 ('Tipo', "Venda"),
-                #                                                 ('Qqt', int(self.HMI.DBManager.GetEstoque(self.HMI.ComboBox_Ativos.currentText()))), # Vende tudo
-                #                                                 ('Preço', float(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText()))), # Ao preço médio anterior
-                #                                                 ('Corretagem', 0), # 0
-                #                                                 ('TaxaB3Per', 0), # 0
-                #                                                 ('TaxaB3', 0), # 0
-                #                                                 ('Obs', self.HMI.TextBox_Obs.text()),
-                #                                                 ('Estoque', 'NULL'),
-                #                                                 ('CustoDaOperação', 0), # 0
-                #                                                 ('CustoTotal', 'NULL'),
-                #                                                 ('CustoMédio', 'NULL'),
-                #                                                 ('Resultado', 'NULL')])
-                #         self.AddRowInCurrentDB(TableNameBruto, [('Data', data),
-                #                                                 ('Tipo', "Compra"),
-                #                                                 ('Qqt', int(self.HMI.TextBox_Qqt.text())), # Compra tudo
-                #                                                 ('Preço', float(self.HMI.TextBox_Preco.text())),
-                #                                                 ('Corretagem', float(self.HMI.TextBox_Corretagem.text())), # 0
-                #                                                 ('TaxaB3Per', TaxaB3Per), # 0
-                #                                                 ('TaxaB3', TaxaB3), # 0
-                #                                                 ('Obs', self.HMI.TextBox_Obs.text()),
-                #                                                 ('Estoque', 'NULL'),
-                #                                                 ('CustoDaOperação', TaxaB3+float(self.HMI.TextBox_Corretagem.text())), # 0
-                #                                                 ('CustoTotal', 'NULL'),
-                #                                                 ('CustoMédio', 'NULL'),
-                #                                                 ('Resultado', 'NULL')])
-                #         if not 'Fundos Imobiliários' == self.GetSubtipoDeAtivoDeAtivo(ativo):
-                #             self.AddRowInCurrentDB(TableNameST, [('Data', data),
-                #                                                 ('Tipo', self.HMI.TipoDeOperacao),
-                #                                                 ('Qqt', int(self.HMI.TextBox_Qqt.text())),
-                #                                                 ('Preço', float(self.HMI.TextBox_Preco.text())),
-                #                                                 ('Corretagem', float(self.HMI.TextBox_Corretagem.text())),
-                #                                                 ('TaxaB3Per', TaxaB3Per),
-                #                                                 ('TaxaB3', TaxaB3),
-                #                                                 ('Obs', self.HMI.TextBox_Obs.text()),
-                #                                                 ('Estoque', 'NULL'),
-                #                                                 ('CustoDaOperação', TaxaB3+float(self.HMI.TextBox_Corretagem.text())),
-                #                                                 ('CustoTotal', 'NULL'),
-                #                                                 ('CustoMédio', 'NULL'),
-                #                                                 ('Resultado', 'NULL')])
-                #             self.AddRowInCurrentDB(TableNameST, [('Data', data),
-                #                                                 ('Tipo', self.HMI.TipoDeOperacao),
-                #                                                 ('Qqt', int(self.HMI.TextBox_Qqt.text())),
-                #                                                 ('Preço', float(self.HMI.TextBox_Preco.text())),
-                #                                                 ('Corretagem', float(self.HMI.TextBox_Corretagem.text())),
-                #                                                 ('TaxaB3Per', TaxaB3Per),
-                #                                                 ('TaxaB3', TaxaB3),
-                #                                                 ('Obs', self.HMI.TextBox_Obs.text()),
-                #                                                 ('Estoque', 'NULL'),
-                #                                                 ('CustoDaOperação', TaxaB3+float(self.HMI.TextBox_Corretagem.text())),
-                #                                                 ('CustoTotal', 'NULL'),
-                #                                                 ('CustoMédio', 'NULL'),
-                #                                                 ('Resultado', 'NULL')])
+            # if TipoDeOperacao in ["Compra", "Venda"]:
+            self.AddRowInCurrentDB(TableNameBruto, [('Data', data),
+                                                    ('Tipo', TipoDeOperacao),
+                                                    ('Qqt', int(Qqt_text)),
+                                                    ('Preço', float(Preco_text)),
+                                                    ('Corretagem', float(Corretagem_text)),
+                                                    ('TaxaB3Per', TaxaB3Per),
+                                                    ('TaxaB3', TaxaB3),
+                                                    ('Obs', Obs_text),
+                                                    ('Estoque', 'NULL'),
+                                                    ('CustoDaOperação', TaxaB3+float(Corretagem_text)),
+                                                    ('CustoTotal', 'NULL'),
+                                                    ('CustoMédio', 'NULL'),
+                                                    ('Resultado', 'NULL')])
+            if 'Fundos Imobiliários' != self.GetSubtipoDeAtivoDeAtivo(ativo):
+                self.AddRowInCurrentDB(TableNameST, [('Data', data),
+                                                    ('Tipo', TipoDeOperacao),
+                                                    ('Qqt', int(Qqt_text)),
+                                                    ('Preço', float(Preco_text)),
+                                                    ('Corretagem', float(Corretagem_text)),
+                                                    ('TaxaB3Per', TaxaB3Per),
+                                                    ('TaxaB3', TaxaB3),
+                                                    ('Obs', Obs_text),
+                                                    ('Estoque', 'NULL'),
+                                                    ('CustoDaOperação', TaxaB3+float(Corretagem_text)),
+                                                    ('CustoTotal', 'NULL'),
+                                                    ('CustoMédio', 'NULL'),
+                                                    ('Resultado', 'NULL')])
+            # else:
+            #     if TipoDeOperacao == "Desdobramento":
+            #         self.AddRowInCurrentDB(TableNameBruto, [('Data', data),
+            #                                                 ('Tipo', "Venda"),
+            #                                                 ('Qqt', int(self.HMI.DBManager.GetEstoque(self.HMI.ComboBox_Ativos.currentText()))), # Vende tudo
+            #                                                 ('Preço', float(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText()))), # Ao preço médio anterior
+            #                                                 ('Corretagem', 0), # 0
+            #                                                 ('TaxaB3Per', 0), # 0
+            #                                                 ('TaxaB3', 0), # 0
+            #                                                 ('Obs', Obs_text),
+            #                                                 ('Estoque', 'NULL'),
+            #                                                 ('CustoDaOperação', 0), # 0
+            #                                                 ('CustoTotal', 'NULL'),
+            #                                                 ('CustoMédio', 'NULL'),
+            #                                                 ('Resultado', 'NULL')])
+            #         self.AddRowInCurrentDB(TableNameBruto, [('Data', data),
+            #                                                 ('Tipo', "Compra"),
+            #                                                 ('Qqt', int(Qqt_text)), # Compra tudo
+            #                                                 ('Preço', float(Preco_text)),
+            #                                                 ('Corretagem', float(Corretagem_text)), # 0
+            #                                                 ('TaxaB3Per', TaxaB3Per), # 0
+            #                                                 ('TaxaB3', TaxaB3), # 0
+            #                                                 ('Obs', Obs_text),
+            #                                                 ('Estoque', 'NULL'),
+            #                                                 ('CustoDaOperação', TaxaB3+float(Corretagem_text)), # 0
+            #                                                 ('CustoTotal', 'NULL'),
+            #                                                 ('CustoMédio', 'NULL'),
+            #                                                 ('Resultado', 'NULL')])
+            #         if not 'Fundos Imobiliários' == self.GetSubtipoDeAtivoDeAtivo(ativo):
+            #             self.AddRowInCurrentDB(TableNameST, [('Data', data),
+            #                                                 ('Tipo', TipoDeOperacao),
+            #                                                 ('Qqt', int(Qqt_text)),
+            #                                                 ('Preço', float(Preco_text)),
+            #                                                 ('Corretagem', float(Corretagem_text)),
+            #                                                 ('TaxaB3Per', TaxaB3Per),
+            #                                                 ('TaxaB3', TaxaB3),
+            #                                                 ('Obs', Obs_text),
+            #                                                 ('Estoque', 'NULL'),
+            #                                                 ('CustoDaOperação', TaxaB3+float(Corretagem_text)),
+            #                                                 ('CustoTotal', 'NULL'),
+            #                                                 ('CustoMédio', 'NULL'),
+            #                                                 ('Resultado', 'NULL')])
+            #             self.AddRowInCurrentDB(TableNameST, [('Data', data),
+            #                                                 ('Tipo', TipoDeOperacao),
+            #                                                 ('Qqt', int(Qqt_text)),
+            #                                                 ('Preço', float(Preco_text)),
+            #                                                 ('Corretagem', float(Corretagem_text)),
+            #                                                 ('TaxaB3Per', TaxaB3Per),
+            #                                                 ('TaxaB3', TaxaB3),
+            #                                                 ('Obs', Obs_text),
+            #                                                 ('Estoque', 'NULL'),
+            #                                                 ('CustoDaOperação', TaxaB3+float(Corretagem_text)),
+            #                                                 ('CustoTotal', 'NULL'),
+            #                                                 ('CustoMédio', 'NULL'),
+            #                                                 ('Resultado', 'NULL')])
 
-                # Separar DT e ST se não for FII. Se for FII fazer só pra DT
-                if 'Fundos Imobiliários' != self.GetSubtipoDeAtivoDeAtivo(ativo):
-                    self.SepararDTeST(TableName)
-                    # Calcular todas as células automatizadas e fazer update pra cada célula
-                    self.CalcularCelsAutomatizadas(TableNameBruto)
-                    self.CalcularCelsAutomatizadas(TableNameDT)
-                    self.CalcularCelsAutomatizadas(TableNameST)
-                else:
-                    self.CopiarBrutoPraDT(TableName)
-                    # Calcular todas as células automatizadas e fazer update pra cada célula
-                    self.CalcularCelsAutomatizadas(TableNameBruto)
-                    self.CalcularCelsAutomatizadas(TableNameDT)
-            elif self.HMI.BolsaOuCripto == "Cripto":
-                TableName = str('OPs'+
-                                '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
-                                '¨'+self.HMI.BolsaOuCripto)
-                TableNameBruto = TableName+'¨Bruto'
-                data = self.HMI.Selecao_Dia+"/"+self.HMI.Selecao_Mes+"/"+self.HMI.Selecao_Ano+" "+self.HMI.Selecao_Hora+":"+self.HMI.Selecao_Minuto+":"+self.HMI.Selecao_Segundo
-                data = datetime.strptime(data, '%d/%m/%Y %H:%M:%S')
+            # Separar DT e ST se não for FII. Se for FII fazer só pra DT
+            if 'Fundos Imobiliários' != self.GetSubtipoDeAtivoDeAtivo(ativo):
+                self.SepararDTeST(TableName)
+                # Calcular todas as células automatizadas e fazer update pra cada célula
+                self.CalcularCelsAutomatizadas(TableNameBruto)
+                self.CalcularCelsAutomatizadas(TableNameDT)
+                self.CalcularCelsAutomatizadas(TableNameST)
+            else:
+                self.CopiarBrutoPraDT(TableName)
+                # Calcular todas as células automatizadas e fazer update pra cada célula
+                self.CalcularCelsAutomatizadas(TableNameBruto)
+                self.CalcularCelsAutomatizadas(TableNameDT)
+        except Exception as e:
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
+            return False
 
-                if ThereIsAnotherOPWithTheSameDate(TableName, data):
-                    return False
-                if data > datetime.now(): return False
+        # Calcular a tributação devida de ST e de DT
+        # self.CalcularTributacao() # Via thread
+        self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
+        self.UpdatePatrimonioRendimento()
+        return True
 
-                Taxa = 0; MoedaDaTaxa = self.GetUserCoinCurrency(); Conversao = 1
+    def AddOperacao_Cripto(self,
+                           Corretora: str,
+                           data: datetime,
+                           Preco_text: str,
+                           Qqt_text: str,
+                           ativo: str,
+                           TipoDeOperacao: str,
+                           Taxa_text: str,
+                           MoedaDaTaxa_text: str,
+                           Conversao_text: str,
+                           Par_Esquerda_text: str,
+                           Par_Direita_text: str,
+                           Obs_text: str="",
+                           ):
+        def ThereIsAnotherOPWithTheSameDate(TableName, data):
+            Table_Inicial, _ = self.GetDataDB("SELECT rowid, * FROM "+TableName+"¨Bruto")
+            if "¨Bolsa" in TableName:
+                aux = list(filter(lambda x: datetime.strptime(x[1],"%Y-%m-%d %H:%M:%S") == data, Table_Inicial))
+            else:
+                aux = list(filter(lambda x: datetime.strptime(x[2],"%Y-%m-%d %H:%M:%S") == data, Table_Inicial))
+            return len(aux) > 0
+        
+        try:
+            BolsaOuCripto = "Cripto"
+            TableName = str('OPs'+
+                            '¨'+Corretora+
+                            '¨'+BolsaOuCripto)
+            TableNameBruto = TableName+'¨Bruto'
 
-                if len(self.HMI.TextBox_Taxa.text())>0: Taxa = round(float(self.HMI.TextBox_Taxa.text()),8)
-                if len(self.HMI.TextBox_MoedaDaTaxa.text())>0: MoedaDaTaxa = self.HMI.TextBox_MoedaDaTaxa.text()
-                if len(self.HMI.TextBox_Conversao.text())>0: Conversao = round(float(self.HMI.TextBox_Conversao.text()),8)
+            if ThereIsAnotherOPWithTheSameDate(TableName, data):
+                return False
+            if data > datetime.now(): return False
 
-                self.AddRowInCurrentDB(TableNameBruto, [('Observação', self.HMI.TextBox_Obs.text() if not self.HMI.TextBox_Obs.text() == '' else " "),
-                                                        ('Data', data),
-                                                        ('Tipo', self.HMI.TipoDeOperacao),
-                                                        ('ParEsquerdo', self.HMI.TextBox_Par_Esquerda.text()),
-                                                        ('ParDireito', self.HMI.TextBox_Par_Direita.text()),
-                                                        ('Preço', round(float(self.HMI.TextBox_Preco.text()),8)),
-                                                        ('Qqt', round(float(self.HMI.TextBox_Qqt.text()),8)),
-                                                        ('Taxa', Taxa),
-                                                        ('MoedaDaTaxa', MoedaDaTaxa),
-                                                        ('Conversão', Conversao)])
-                self.CalcularCelsAutomatizadas_CriptoRefinado(TableName)
-                self.UpdateContaCorrente_Cripto()
+            Taxa = 0
+            MoedaDaTaxa = self.GetUserCoinCurrency()
+            Conversao = 1
 
-                # Verificar se os dois ativos estão na Cotações. Se não estiverem, coloque e atualize a cotação se for encontrado online.
-                def AtivoExisteNaTabelaDeCotacoes(ativo):
-                    Table, _ = self.GetDataDB("SELECT * FROM Cotações")
-                    aux = list(filter(lambda x: x[2]==ativo, Table))
-                    return len(aux) > 0
+            if len(Taxa_text)>0: Taxa = round(float(Taxa_text),8)
+            if len(MoedaDaTaxa_text)>0: MoedaDaTaxa = MoedaDaTaxa_text
+            if len(Conversao_text)>0: Conversao = round(float(Conversao_text),8)
 
-                JaFezOPopUp = False
+            self.AddRowInCurrentDB(TableNameBruto, [('Observação', Obs_text if Obs_text != '' else " "),
+                                                    ('Data', data),
+                                                    ('Tipo', TipoDeOperacao),
+                                                    ('ParEsquerdo', Par_Esquerda_text),
+                                                    ('ParDireito', Par_Direita_text),
+                                                    ('Preço', round(float(Preco_text),8)),
+                                                    ('Qqt', round(float(Qqt_text),8)),
+                                                    ('Taxa', Taxa),
+                                                    ('MoedaDaTaxa', MoedaDaTaxa),
+                                                    ('Conversão', Conversao)])
+            self.CalcularCelsAutomatizadas_CriptoRefinado(TableName)
+            self.UpdateContaCorrente_Cripto()
 
-                ativo = self.HMI.TextBox_Par_Esquerda.text()
-                if not ativo == self.GetUserCoinCurrency() and not ativo in ["USD", "BUSD", "USDT", "USDC", "USDP", "TUSD"] and not AtivoExisteNaTabelaDeCotacoes(ativo):
-                    Cotacao = 0.
-                    Modo = "Manual"
-                    try:
-                        MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso',"Identificamos uma nova moeda na base de dados("+ativo+").\nA operação seguinte pode levar alguns minutos,\npois irá buscar online a cotação atual dessa moeda.\nNÃO FECHE O PROGRAMA DURANTE O PROCESSO SEGUINTE!")
-                        JaFezOPopUp = True
-                        Cotacao, CotacaoDolar = self.HMI.YahooFinance.GetCotacaoCripto(ativo, self.GetUserCoinCurrency())
-                        if Cotacao > 0: Modo = "Auto"
-                    except Exception as e:
-                        logger.error(e, traceback.format_exception(None, e, e.__traceback__))
-                    finally:
-                        self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
-                                                            ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
-                                                            ('Ativo', ativo),
-                                                            ('Cotação', Cotacao)])
-                ativo = self.HMI.TextBox_Par_Direita.text()
-                if not ativo == self.GetUserCoinCurrency() and not ativo in ["USD", "BUSD", "USDT", "USDC", "USDP", "TUSD"] and not AtivoExisteNaTabelaDeCotacoes(ativo) and not ativo == "":
-                    Cotacao = 0.
-                    Modo = "Manual"
-                    try:
-                        if not JaFezOPopUp: MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso',"Identificamos uma nova moeda na base de dados("+ativo+").\nA operação seguinte pode levar alguns minutos,\npois irá buscar online a cotação atual dessa moeda.\nNÃO FECHE O PROGRAMA DURANTE O PROCESSO SEGUINTE!")
-                        Cotacao, CotacaoDolar = self.HMI.YahooFinance.GetCotacaoCripto(ativo, self.GetUserCoinCurrency())
-                        if Cotacao > 0: Modo = "Auto"
-                    except Exception as e:
-                        logger.error(e, traceback.format_exception(None, e, e.__traceback__))
-                    finally:
-                        self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
-                                                            ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
-                                                            ('Ativo', ativo),
-                                                            ('Cotação', Cotacao)])
-        except Exception as e: return False
+            # Verificar se os dois ativos estão na Cotações. Se não estiverem, coloque e atualize a cotação se for encontrado online.
+            def AtivoExisteNaTabelaDeCotacoes(ativo):
+                Table, _ = self.GetDataDB("SELECT * FROM Cotações")
+                aux = list(filter(lambda x: x[2]==ativo, Table))
+                return len(aux) > 0
+
+            JaFezOPopUp = False
+
+            ativo = Par_Esquerda_text
+            if (ativo != self.GetUserCoinCurrency() and
+                not ativo in ["USD", "BUSD", "USDT", "USDC", "USDP", "TUSD"] and
+                not AtivoExisteNaTabelaDeCotacoes(ativo)
+                ):
+                Cotacao = 0.
+                Modo = "Manual"
+                try:
+                    MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso',"Identificamos uma nova moeda na base de dados("+ativo+").\nA operação seguinte pode levar alguns minutos,\npois irá buscar online a cotação atual dessa moeda.\nNÃO FECHE O PROGRAMA DURANTE O PROCESSO SEGUINTE!")
+                    JaFezOPopUp = True
+                    Cotacao, _ = self.HMI.YahooFinance.GetCotacaoCripto(ativo, self.GetUserCoinCurrency())
+                    if Cotacao > 0: Modo = "Auto"
+                except Exception as e:
+                    logger.error(e, traceback.format_exception(None, e, e.__traceback__))
+                finally:
+                    self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
+                                                        ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
+                                                        ('Ativo', ativo),
+                                                        ('Cotação', Cotacao)])
+            ativo = Par_Direita_text
+            if ativo != self.GetUserCoinCurrency() and not ativo in ["USD", "BUSD", "USDT", "USDC", "USDP", "TUSD"] and not AtivoExisteNaTabelaDeCotacoes(ativo) and not ativo == "":
+                Cotacao = 0.
+                Modo = "Manual"
+                try:
+                    if not JaFezOPopUp: MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso',"Identificamos uma nova moeda na base de dados("+ativo+").\nA operação seguinte pode levar alguns minutos,\npois irá buscar online a cotação atual dessa moeda.\nNÃO FECHE O PROGRAMA DURANTE O PROCESSO SEGUINTE!")
+                    Cotacao, _ = self.HMI.YahooFinance.GetCotacaoCripto(ativo, self.GetUserCoinCurrency())
+                    if Cotacao > 0: Modo = "Auto"
+                except Exception as e:
+                    logger.error(e, traceback.format_exception(None, e, e.__traceback__))
+                finally:
+                    self.AddRowInCurrentDB('Cotações', [('Modo', Modo),
+                                                        ('DataDeAtualização', datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")),
+                                                        ('Ativo', ativo),
+                                                        ('Cotação', Cotacao)])
+        except Exception as e:
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
+            return False
 
         # Calcular a tributação devida de ST e de DT
         # self.CalcularTributacao() # Via thread

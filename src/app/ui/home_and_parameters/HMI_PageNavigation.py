@@ -1108,7 +1108,30 @@ class HMI_PageNavigation:
                             check = float(self.TextBox_Preco.text())
                             check = float(self.TextBox_Corretagem.text())
                             if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
-                                deubom = self.DBManager.AddOperacao()
+                                if self.PageID in ['36a','36b']:
+                                    ativo = self.TextBox_NomeNovoAtivo.text().replace(" ","_")
+                                elif self.PageID == PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id:
+                                    ativo = self.ComboBox_Ativos.currentText().replace(" ","_")
+                                Corretora = self.ComboBox_Corretoras.currentText().replace(" ","_")
+                                data = self.HMI.Selecao_Dia+"/"+self.HMI.Selecao_Mes+"/"+self.HMI.Selecao_Ano+" "+self.HMI.Selecao_Hora+":"+self.HMI.Selecao_Minuto+":"+self.HMI.Selecao_Segundo
+                                data = datetime.strptime(data, '%d/%m/%Y %H:%M:%S')
+                                TaxaB3_text = self.HMI.TextBox_TaxaB3.text()
+                                Qqt_text = self.HMI.TextBox_Qqt.text()
+                                Preco_text = self.HMI.TextBox_Preco.text()
+                                TipoDeOperacao = self.HMI.TipoDeOperacao
+                                Corretagem_text = self.HMI.TextBox_Corretagem.text()
+                                Obs_text = self.HMI.TextBox_Obs.text()
+
+                                deubom = self.DBManager.AddOperacao_Bolsa(Corretora = Corretora,
+                                                                          data = data,
+                                                                          Preco_text = Preco_text,
+                                                                          Qqt_text = Qqt_text,
+                                                                          ativo = ativo,
+                                                                          TipoDeOperacao = TipoDeOperacao,
+                                                                          TaxaB3_text = TaxaB3_text,
+                                                                          Corretagem_text = Corretagem_text,
+                                                                          Obs_text = Obs_text
+                                                                          )
                                 if deubom:
                                     self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     try:
@@ -1172,9 +1195,49 @@ class HMI_PageNavigation:
                             if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                                 try:
                                     self.HMI_ARCA.Flag_RecalcularGraficos = True
-                                    self.DBManager.AddAtivo()
+                                    ativo = self.TextBox_NomeNovoAtivo.text()
+                                    ModoManualAtivo = self.ModoManualAtivo
+                                    TipoDeAtivo = self.HMI.ComboBox_TipoDeAtivo.currentText()
+                                    SubtipoDeAtivo = self.HMI.ComboBox_SubtipoDeAtivo.currentText()
+                                    Setor = self.HMI.ComboBox_SetorAtivo.currentText()
+                                    Cotacao = self.HMI.Cache_Cotacao
+                                    Corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
+                                    BolsaOuCripto = self.HMI.BolsaOuCripto
+                                    self.DBManager.AddAtivo(ativo,
+                                                            ModoManualAtivo,
+                                                            TipoDeAtivo,
+                                                            SubtipoDeAtivo,
+                                                            Setor,
+                                                            Cotacao,
+                                                            Corretora,
+                                                            BolsaOuCripto
+                                                            )
+                                    
                                     self.HMI_ARCA.Flag_RecalcularGraficos = True
-                                    self.DBManager.AddOperacao() # Sempre vai dar bom na criação do ativo
+                                    if self.PageID in ['36a','36b']:
+                                        ativo = self.TextBox_NomeNovoAtivo.text().replace(" ","_")
+                                    elif self.PageID == PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id:
+                                        ativo = self.ComboBox_Ativos.currentText().replace(" ","_")
+                                    Corretora = self.ComboBox_Corretoras.currentText().replace(" ","_")
+                                    data = self.HMI.Selecao_Dia+"/"+self.HMI.Selecao_Mes+"/"+self.HMI.Selecao_Ano+" "+self.HMI.Selecao_Hora+":"+self.HMI.Selecao_Minuto+":"+self.HMI.Selecao_Segundo
+                                    data = datetime.strptime(data, '%d/%m/%Y %H:%M:%S')
+                                    TaxaB3_text = self.HMI.TextBox_TaxaB3.text()
+                                    Qqt_text = self.HMI.TextBox_Qqt.text()
+                                    Preco_text = self.HMI.TextBox_Preco.text()
+                                    TipoDeOperacao = self.HMI.TipoDeOperacao
+                                    Corretagem_text = self.HMI.TextBox_Corretagem.text()
+                                    Obs_text = self.HMI.TextBox_Obs.text()
+
+                                    self.DBManager.AddOperacao_Bolsa(Corretora = Corretora,
+                                                                     data = data,
+                                                                     Preco_text = Preco_text,
+                                                                     Qqt_text = Qqt_text,
+                                                                     ativo = ativo,
+                                                                     TipoDeOperacao = TipoDeOperacao,
+                                                                     TaxaB3_text = TaxaB3_text,
+                                                                     Corretagem_text = Corretagem_text,
+                                                                     Obs_text = Obs_text
+                                                                     ) # Sempre vai dar bom na criação do ativo
                                     self.AcabouDeRegistrarNovoAtivo = True
                                     self.ComboBox_Ativos.clear()
                                     ativos = self.DBManager.GetAtivos()
@@ -1345,7 +1408,39 @@ class HMI_PageNavigation:
                         if not self.TextBox_Par_Esquerda.text() == self.TextBox_Par_Direita.text():
                             if not self.TextBox_Par_Esquerda.text() == '' or not self.TextBox_Par_Direita.text() == '':
                                 if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
-                                    deubom = self.DBManager.AddOperacao()
+                                    if self.PageID in ['36a','36b']:
+                                        ativo = self.TextBox_NomeNovoAtivo.text().replace(" ","_")
+                                    elif self.PageID == PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id:
+                                        ativo = self.ComboBox_Ativos.currentText().replace(" ","_")
+                                    Corretora = self.ComboBox_Corretoras.currentText().replace(" ","_")
+                                    data = self.Selecao_Dia+"/"+self.Selecao_Mes+"/"+self.Selecao_Ano+" "+self.Selecao_Hora+":"+self.Selecao_Minuto+":"+self.Selecao_Segundo
+                                    data = datetime.strptime(data, '%d/%m/%Y %H:%M:%S')
+                                    TaxaB3_text = self.TextBox_TaxaB3.text()
+                                    Qqt_text = self.TextBox_Qqt.text()
+                                    Preco_text = self.TextBox_Preco.text()
+                                    TipoDeOperacao = self.TipoDeOperacao
+                                    Corretagem_text = self.TextBox_Corretagem.text()
+                                    Obs_text = self.TextBox_Obs.text()
+                                    Taxa_text = self.TextBox_Taxa.text()
+                                    MoedaDaTaxa_text = self.TextBox_MoedaDaTaxa.text()
+                                    Conversao_text = self.TextBox_Conversao.text()
+                                    Par_Esquerda_text = self.TextBox_Par_Esquerda.text()
+                                    Par_Direita_text = self.TextBox_Par_Direita.text()
+
+                                    deubom = self.DBManager.AddOperacao_Cripto(Corretora = Corretora,
+                                                                               data = data,
+                                                                               TaxaB3_text = TaxaB3_text,
+                                                                               Qqt_text = Qqt_text,
+                                                                               Preco_text = Preco_text,
+                                                                               TipoDeOperacao = TipoDeOperacao,
+                                                                               Corretagem_text = Corretagem_text,
+                                                                               Obs_text = Obs_text,
+                                                                               Taxa_text = Taxa_text,
+                                                                               MoedaDaTaxa_text = MoedaDaTaxa_text,
+                                                                               Conversao_text = Conversao_text,
+                                                                               Par_Esquerda_text = Par_Esquerda_text,
+                                                                               Par_Direita_text = Par_Direita_text,
+)
                                     if deubom:
                                         self.HMI_ARCA.Flag_RecalcularGraficos = True
                                         try:
