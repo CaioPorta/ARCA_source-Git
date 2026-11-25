@@ -617,7 +617,7 @@ class HMI_PageNavigation:
                         if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                             if self.TextBox_CodigoDeConfirmacao.text() == self.CodigoDeConfirmacaoGerado: # Condições para passar pra página 9
                                 # Mudar Email
-                                self.DBManager.UpdateEmail(self.TextBox_Email.text())
+                                self.Email = self.DBManager.UpdateEmail(self.TextBox_Email.text())
                                 self.ClearPage()
                                 self.PageIDAux= PAGE_BY_NAME['Perfil'].page_id
                                 self.InsertGridLayout(1, 0, 1, 3)
@@ -1045,7 +1045,8 @@ class HMI_PageNavigation:
                         sinal = 1 if self.Deposito else -1
                         Valor = float(self.TextBox_Valor.text())*sinal
                         if not self.DBManager.CalcularTributacao_is_running:
-                            if self.DBManager.AddDepositoOuSaque(Data, Valor):
+                            Corretora = self.ComboBox_Corretoras.currentText().replace(" ","_")
+                            if self.DBManager.AddDepositoOuSaque(Data, Valor, self.BolsaOuCripto, Corretora):
                                 self.TextBox_Valor.setText('')
                                 self.OnButtonPressed('Deposito')
                                 self.HMI_Trades.HMI_Trades_Bolsa.CreateTable_24_2()

@@ -679,36 +679,19 @@ class DBManager:
         self.UpdatePatrimonioRendimento()
         return True
 
-    def AddTipoDeAtivo(self): # Eu uso isso ainda?
-        # Adicionar linha nova
-        TipoDeAtivo = self.HMI.TextBox_NovoTipoDeAtivo.text()
-        self.AddRowInCurrentDB('TiposDeAtivos', [('TiposDeAtivos', TipoDeAtivo)])
-
-    def AddSubtipoDeAtivo(self): # Eu uso isso ainda?
-        # Adicionar linha nova: (Tipo de ativo, Subtipo de Ativo)
-        TipoDeAtivo = self.HMI.ComboBox_TipoDeAtivo.currentText()
-        SubtipoDeAtivo =self.HMI.TextBox_NovoSubtipoDeAtivo.text()
-        self.AddRowInCurrentDB('SubtipoDeAtivos', [('TiposDeAtivos', TipoDeAtivo),('SubtiposDeAtivos', SubtipoDeAtivo)])
-
-    def AddSetor(self): # Eu uso isso ainda?
-        # Adicionar linha nova
-        Setor = self.HMI.TextBox_NovoSetor.text()
-        self.AddRowInCurrentDB('Setores', [('Setor', Setor)])
-
-    def AddDepositoOuSaque(self, Data, Valor):
+    def AddDepositoOuSaque(self, Data, Valor, BolsaOuCripto: str, Corretora: str):
         # Verificar se já tem movimentação nessa data. Se sim, return False
         def ThereIsAnotherOPWithTheSameDate(TableName, data):
             Table, _ = self.GetDataDB("SELECT rowid, * FROM "+TableName)
             aux = list(filter(lambda x: datetime.strptime(x[1],"%Y-%m-%d %H:%M:%S") == data, Table))
             return len(aux) > 0
-        corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
-        if ThereIsAnotherOPWithTheSameDate("¨"+corretora+"¨"+self.HMI.BolsaOuCripto+"¨DepSaq", Data):
+        if ThereIsAnotherOPWithTheSameDate("¨"+Corretora+"¨"+BolsaOuCripto+"¨DepSaq", Data):
             return False
         # Adicionar linha nova: (Data, Valor)
-        self.AddRowInCurrentDB("¨"+corretora+"¨"+self.HMI.BolsaOuCripto+"¨DepSaq", [('Data', Data),('Valor', Valor)])
-        self.SortByDate("¨"+corretora+"¨"+self.HMI.BolsaOuCripto+"¨DepSaq")
+        self.AddRowInCurrentDB("¨"+Corretora+"¨"+BolsaOuCripto+"¨DepSaq", [('Data', Data),('Valor', Valor)])
+        self.SortByDate("¨"+Corretora+"¨"+BolsaOuCripto+"¨DepSaq")
 
-        retorno, _ = self.GetDataDB("SELECT * FROM ¨"+corretora+"¨"+self.HMI.BolsaOuCripto+"¨DepSaq")
+        retorno, _ = self.GetDataDB("SELECT * FROM ¨"+Corretora+"¨"+BolsaOuCripto+"¨DepSaq")
         if len(retorno)==1: self.ModifyDB("VACUUM")
         self.UpdatePatrimonioRendimento()
         return True
@@ -728,7 +711,7 @@ class DBManager:
 
         self.ConnectToDB(self.UserPath + "\\" + self.User + '.db')
         self.Email = Email
-        self.HMI.Email = Email
+        return Email
 
     def UpdateTaxa(self, TaxaB3Per):
         # Update TaxaB3Per em Table Perfil
