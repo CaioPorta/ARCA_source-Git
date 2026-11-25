@@ -4167,7 +4167,6 @@ class DBManager:
     def GetDataDB(self, command, params=''):
         try:
             self.ThreadLock.acquire()
-            self.HMI.unsetCursor()
             cursor = self.conn.cursor()
             data = []
             if params=='': data = list(cursor.execute(command))
@@ -4183,7 +4182,6 @@ class DBManager:
     def ModifyDB(self, command, params=''):
         try:
             self.ThreadLock.acquire()
-            self.HMI.unsetCursor()
             cursor = self.conn.cursor()
             logger.debug(command, params)
             if params=='': cursor.execute(command)
