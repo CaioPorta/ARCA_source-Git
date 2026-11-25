@@ -442,8 +442,7 @@ class DBManager:
                 aux = list(filter(lambda x: datetime.strptime(x[1],"%Y-%m-%d %H:%M:%S") == data, Table_Inicial))
             else:
                 aux = list(filter(lambda x: datetime.strptime(x[2],"%Y-%m-%d %H:%M:%S") == data, Table_Inicial))
-            if len(aux)>0: return True
-            return False
+            return len(aux) > 0
         try:
             if self.HMI.BolsaOuCripto == "Bolsa":
                 if self.HMI.PageID in ['36a','36b']: ativo = self.HMI.TextBox_NomeNovoAtivo.text().replace(" ","_")
@@ -552,7 +551,7 @@ class DBManager:
                 #                                                 ('Resultado', 'NULL')])
 
                 # Separar DT e ST se não for FII. Se for FII fazer só pra DT
-                if not 'Fundos Imobiliários' == self.GetSubtipoDeAtivoDeAtivo(ativo):
+                if 'Fundos Imobiliários' != self.GetSubtipoDeAtivoDeAtivo(ativo):
                     self.SepararDTeST(TableName)
                     # Calcular todas as células automatizadas e fazer update pra cada célula
                     self.CalcularCelsAutomatizadas(TableNameBruto)
