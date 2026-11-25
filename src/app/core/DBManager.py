@@ -308,14 +308,14 @@ class DBManager:
                                                 ('Cotação', Cotacao)])
         return True
 
-    def CorretoraExists(self, corretora: str):
+    def CorretoraExists(self, corretora: str, BolsaOuCripto: str):
         retorno, _ = self.GetDataDB("SELECT * FROM Corretoras")
-        retorno = list(filter(lambda x: str(corretora+"¨"+self.HMI.BolsaOuCripto).lower() == str(x[0]).lower(), retorno))
+        retorno = list(filter(lambda x: str(corretora+"¨"+BolsaOuCripto).lower() == str(x[0]).lower(), retorno))
         return len(retorno) > 0
     
     def AddCorretora(self, BolsaOuCripto: str, Corretora: str, MoedaCorrente: str):
         # Adicionar linha na Table Corretoras: Nome da corretora e coin currency
-        if self.CorretoraExists(Corretora):
+        if self.CorretoraExists(Corretora, BolsaOuCripto):
             return False
         if BolsaOuCripto == 'Bolsa':
             self.AddRowInCurrentDB('Corretoras', [('Corretora', Corretora+"¨"+BolsaOuCripto),('MoedaCorrente', MoedaCorrente),('ContaCorrente', 0)])
@@ -880,7 +880,7 @@ class DBManager:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
             return False
 
-    def RenameCorretora(self):
+    def RenameCorretora(self, BolsaOuCripto):
         def GetRowId(Table,corretora):
             retorno, _ = self.GetDataDB("SELECT rowid, * FROM "+Table)
             retorno = list(filter(lambda x: str(x).find(corretora)>-1, retorno))
@@ -890,11 +890,11 @@ class DBManager:
         NewCorretoraName = self.HMI.TextBox_NovoNomeCorretora.text().replace(" ","_")
         OldCorretoraName = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
 
-        if self.CorretoraExists(NewCorretoraName):
+        if self.CorretoraExists(NewCorretoraName, BolsaOuCripto):
             return False
         # Alter all Tables e linhas que contêm "OldCorretoraName"
         # Update Corretora em Table Corretoras
-        self.ModifyDB("UPDATE Corretoras SET Corretora = (?) Where rowid = "+GetRowId('Corretoras',OldCorretoraName), [(NewCorretoraName+"¨"+self.HMI.BolsaOuCripto)])
+        self.ModifyDB("UPDATE Corretoras SET Corretora = (?) Where rowid = "+GetRowId('Corretoras',OldCorretoraName), [(NewCorretoraName+"¨"+BolsaOuCripto)])
         # Alter all Tables que contêm "OPs_Ativo_Corretora_BolsaOuCripto"
         retorno, _ = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
         tables = list(map(lambda x: x[0],retorno))

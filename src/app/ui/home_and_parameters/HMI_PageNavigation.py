@@ -746,7 +746,7 @@ class HMI_PageNavigation:
                     elif self.PageID== PAGE_BY_NAME['RenomearCorretoraBolsa'].page_id:
                         if len(self.TextBox_NovoNomeCorretora.text())>0 and len(self.TextBox_NovoNomeCorretora.text())<9:
                             if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
-                                Executado = self.DBManager.RenameCorretora()
+                                Executado = self.DBManager.RenameCorretora(self.BolsaOuCripto)
                                 if Executado:
                                     self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     self.ClearPage()
@@ -849,7 +849,7 @@ class HMI_PageNavigation:
                     elif self.PageID== PAGE_BY_NAME['RenomearCorretoraCripto'].page_id:
                         if len(self.TextBox_NovoNomeCorretora.text())>0 and len(self.TextBox_NovoNomeCorretora.text())<12:
                             if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
-                                Executado = self.DBManager.RenameCorretora()
+                                Executado = self.DBManager.RenameCorretora(self.BolsaOuCripto)
                                 if Executado:
                                     self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     self.ClearPage()
