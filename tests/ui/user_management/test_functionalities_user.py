@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import tests.libs.ui_helpers as ui
 
 

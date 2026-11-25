@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from tests.libs.logger_setup import logger
 import os
 

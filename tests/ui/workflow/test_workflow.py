@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from tests.libs.logger_setup import logger
 import tests.libs.ui_helpers as ui
 from ui.pages import PAGE_BY_ID

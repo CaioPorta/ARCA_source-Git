@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Author name: Caio Moreira Porta
 Author email: caio.porta12@gmail.com
