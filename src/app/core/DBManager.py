@@ -19,7 +19,6 @@ from core.BackgroundProcesses import BackgroundProcess as BP
 from core.BackgroundProcesses import WorkerThread
 
 from ui.popup import LoadingWindow
-from ui.pages import PAGE_BY_NAME
 
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -1073,7 +1072,7 @@ class DBManager:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.UpdatePatrimonioRendimento()
 
-    def DeleteOperacao(self, Items, Corretora, BolsaOuCripto, table_data):
+    def DeleteOperacao(self, Items, table_data, Corretora: str, BolsaOuCripto: str):
         if BolsaOuCripto == "Bolsa":
             # Delete linha
             Items = list(map(lambda x: len(table_data)-x,Items)) # Items = list(map(lambda x: x+1,Items)) # Debug: Para quando a tabela de registros é mostrada em ordem crescente

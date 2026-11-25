@@ -781,7 +781,7 @@ class HMI_PageNavigation:
                         try:
                             if not self.DBManager.CalcularTributacao_is_running:
                                 CCAtualizada_text = self.TextBox_CCAtualizada.text()
-                                Corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
+                                Corretora = self.ComboBox_Corretoras.currentText().replace(" ","_")
                                 self.DBManager.UpdateContaCorrente(CCAtualizada_text, Corretora)
                                 self.ClearPage()
                                 self.PageID= PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id
@@ -1116,14 +1116,14 @@ class HMI_PageNavigation:
                                 elif self.PageID == PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id:
                                     ativo = self.ComboBox_Ativos.currentText().replace(" ","_")
                                 Corretora = self.ComboBox_Corretoras.currentText().replace(" ","_")
-                                data = self.HMI.Selecao_Dia+"/"+self.HMI.Selecao_Mes+"/"+self.HMI.Selecao_Ano+" "+self.HMI.Selecao_Hora+":"+self.HMI.Selecao_Minuto+":"+self.HMI.Selecao_Segundo
+                                data = self.Selecao_Dia+"/"+self.Selecao_Mes+"/"+self.Selecao_Ano+" "+self.Selecao_Hora+":"+self.Selecao_Minuto+":"+self.Selecao_Segundo
                                 data = datetime.strptime(data, '%d/%m/%Y %H:%M:%S')
-                                TaxaB3_text = self.HMI.TextBox_TaxaB3.text()
-                                Qqt_text = self.HMI.TextBox_Qqt.text()
-                                Preco_text = self.HMI.TextBox_Preco.text()
-                                TipoDeOperacao = self.HMI.TipoDeOperacao
-                                Corretagem_text = self.HMI.TextBox_Corretagem.text()
-                                Obs_text = self.HMI.TextBox_Obs.text()
+                                TaxaB3_text = self.TextBox_TaxaB3.text()
+                                Qqt_text = self.TextBox_Qqt.text()
+                                Preco_text = self.TextBox_Preco.text()
+                                TipoDeOperacao = self.TipoDeOperacao
+                                Corretagem_text = self.TextBox_Corretagem.text()
+                                Obs_text = self.TextBox_Obs.text()
 
                                 result = self.DBManager.AddOperacao_Bolsa(Corretora = Corretora,
                                                                           data = data,
@@ -1200,12 +1200,12 @@ class HMI_PageNavigation:
                                     self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     ativo = self.TextBox_NomeNovoAtivo.text()
                                     ModoManualAtivo = self.ModoManualAtivo
-                                    TipoDeAtivo = self.HMI.ComboBox_TipoDeAtivo.currentText()
-                                    SubtipoDeAtivo = self.HMI.ComboBox_SubtipoDeAtivo.currentText()
-                                    Setor = self.HMI.ComboBox_SetorAtivo.currentText()
-                                    Cotacao = self.HMI.Cache_Cotacao
-                                    Corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
-                                    BolsaOuCripto = self.HMI.BolsaOuCripto
+                                    TipoDeAtivo = self.ComboBox_TipoDeAtivo.currentText()
+                                    SubtipoDeAtivo = self.ComboBox_SubtipoDeAtivo.currentText()
+                                    Setor = self.ComboBox_SetorAtivo.currentText()
+                                    Cotacao = self.Cache_Cotacao
+                                    Corretora = self.ComboBox_Corretoras.currentText().replace(" ","_")
+                                    BolsaOuCripto = self.BolsaOuCripto
                                     self.DBManager.AddAtivo(ativo,
                                                             ModoManualAtivo,
                                                             TipoDeAtivo,
@@ -1222,14 +1222,14 @@ class HMI_PageNavigation:
                                     elif self.PageID == PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id:
                                         ativo = self.ComboBox_Ativos.currentText().replace(" ","_")
                                     Corretora = self.ComboBox_Corretoras.currentText().replace(" ","_")
-                                    data = self.HMI.Selecao_Dia+"/"+self.HMI.Selecao_Mes+"/"+self.HMI.Selecao_Ano+" "+self.HMI.Selecao_Hora+":"+self.HMI.Selecao_Minuto+":"+self.HMI.Selecao_Segundo
+                                    data = self.Selecao_Dia+"/"+self.Selecao_Mes+"/"+self.Selecao_Ano+" "+self.Selecao_Hora+":"+self.Selecao_Minuto+":"+self.Selecao_Segundo
                                     data = datetime.strptime(data, '%d/%m/%Y %H:%M:%S')
-                                    TaxaB3_text = self.HMI.TextBox_TaxaB3.text()
-                                    Qqt_text = self.HMI.TextBox_Qqt.text()
-                                    Preco_text = self.HMI.TextBox_Preco.text()
-                                    TipoDeOperacao = self.HMI.TipoDeOperacao
-                                    Corretagem_text = self.HMI.TextBox_Corretagem.text()
-                                    Obs_text = self.HMI.TextBox_Obs.text()
+                                    TaxaB3_text = self.TextBox_TaxaB3.text()
+                                    Qqt_text = self.TextBox_Qqt.text()
+                                    Preco_text = self.TextBox_Preco.text()
+                                    TipoDeOperacao = self.TipoDeOperacao
+                                    Corretagem_text = self.TextBox_Corretagem.text()
+                                    Obs_text = self.TextBox_Obs.text()
 
                                     self.DBManager.AddOperacao_Bolsa(Corretora = Corretora,
                                                                      data = data,
