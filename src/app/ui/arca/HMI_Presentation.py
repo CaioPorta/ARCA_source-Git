@@ -12,9 +12,7 @@ from matplotlib.backends.backend_qt5agg import (FigureCanvasQTAgg as FigureCanva
 from PyQt5.QtGui import (QCursor)
 from PyQt5.QtWidgets import (
     QPushButton,
-    QLineEdit,
     QMessageBox,
-    QTableWidget,
     QTableWidgetItem,
     QAbstractScrollArea,
 )
