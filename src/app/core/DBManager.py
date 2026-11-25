@@ -308,7 +308,7 @@ class DBManager:
                                                 ('Cotação', Cotacao)])
         return True
 
-    def CorretoraExists(self, corretora):
+    def CorretoraExists(self, corretora: str):
         retorno, _ = self.GetDataDB("SELECT * FROM Corretoras")
         retorno = list(filter(lambda x: str(corretora+"¨"+self.HMI.BolsaOuCripto).lower() == str(x[0]).lower(), retorno))
         return len(retorno) > 0
@@ -859,15 +859,12 @@ class DBManager:
             retorno = list(filter(lambda x: str(x).find(corretora)>-1, retorno))
             retorno = retorno[0][0]
             return str(retorno)
-        def CorretoraExists(corretora):
-            retorno, _ = self.GetDataDB("SELECT * FROM Corretoras")
-            retorno = list(filter(lambda x: str(corretora+"¨"+self.HMI.BolsaOuCripto).lower() == str(x[0]).lower(), retorno))
-            return len(retorno) > 0
-
+        
         NewCorretoraName = self.HMI.TextBox_NovoNomeCorretora.text().replace(" ","_")
         OldCorretoraName = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
 
-        if CorretoraExists(NewCorretoraName): return False
+        if self.CorretoraExists(NewCorretoraName):
+            return False
         # Alter all Tables e linhas que contêm "OldCorretoraName"
         # Update Corretora em Table Corretoras
         self.ModifyDB("UPDATE Corretoras SET Corretora = (?) Where rowid = "+GetRowId('Corretoras',OldCorretoraName), [(NewCorretoraName+"¨"+self.HMI.BolsaOuCripto)])
