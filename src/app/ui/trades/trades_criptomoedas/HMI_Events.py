@@ -1130,8 +1130,9 @@ class HMI_Events:
                     Conversao = float(self.HMI.TextBox_Conversao.text())
                     Obs = self.HMI.TextBox_Obs.text()
                     Item = len(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.data_40_1)-self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes[self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.item]-1
+                    Corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
 
-                    if self.HMI.DBManager.AlterOperacao_Cripto(Item, Data, Tipo, ParEsquerdo, ParDireito, Qqt, Preco, Taxa, MoedaDaTaxa, Conversao, Obs):
+                    if self.HMI.DBManager.AlterOperacao_Cripto(Item, Data, Tipo, ParEsquerdo, ParDireito, Qqt, Preco, Taxa, MoedaDaTaxa, Conversao, Obs, Corretora):
                         self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
                         if self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.item+1 >= len(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes):
                             self.HMI.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id) # Última alteração da lista
@@ -1161,7 +1162,9 @@ class HMI_Events:
 
         elif ButtonPressed == 'Deletar Ativos da Pagina 44':
             if not self.HMI.DBManager.CalcularTributacao_is_running:
-                self.HMI.DBManager.DeleteOperacao(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes)
+                Corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
+                table_data = self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.data_40_1
+                self.HMI.DBManager.DeleteOperacao(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes, Corretora, table_data)
                 self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
                 self.HMI.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id)
             else:

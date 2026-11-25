@@ -624,7 +624,7 @@ class DBManager:
                                                     ('MoedaDaTaxa', MoedaDaTaxa),
                                                     ('Conversão', Conversao)])
             self.CalcularCelsAutomatizadas_CriptoRefinado(TableName)
-            self.UpdateContaCorrente_Cripto()
+            self.UpdateContaCorrente_Cripto(Corretora)
 
             # Verificar se os dois ativos estão na Cotações. Se não estiverem, coloque e atualize a cotação se for encontrado online.
             def AtivoExisteNaTabelaDeCotacoes(ativo):
@@ -717,27 +717,27 @@ class DBManager:
         # Update TaxaB3Per em Table Perfil
         self.ModifyDB("UPDATE Perfil SET TaxaB3Per = (?)", [(TaxaB3Per)])
 
-    def UpdateContaCorrente_Banco(self):
+    def UpdateContaCorrente_Banco(self, Banco: str, CC_text: str):
         def GetRowId(Banco):
             retorno, _ = self.GetDataDB("SELECT rowid, * FROM Bancos")
             retorno = list(filter(lambda x: str(x).find("¨"+Banco+"¨")>-1, retorno))
             retorno = retorno[0][0]
             return str(retorno)
         # Update Conta Corrente em Table ContaCorrente_Corretora_BolsaOuCripto
-        Valor = float(self.HMI.TextBox_CC.text())
-        self.ModifyDB("UPDATE Bancos SET ContaCorrente = (?) Where rowid = "+GetRowId(self.HMI.ComboBox_Bancos.currentText().replace(" ","_")), [(Valor)])
+        Valor = float(CC_text)
+        self.ModifyDB("UPDATE Bancos SET ContaCorrente = (?) Where rowid = "+GetRowId(Banco), [(Valor)])
 
         self.UpdatePatrimonioRendimento()
 
-    def UpdateContaCorrente(self):
+    def UpdateContaCorrente(self, CCAtualizada_text: str, Corretora: str):
         def GetRowId(corretora):
             retorno, _ = self.GetDataDB("SELECT rowid, * FROM Corretoras")
             retorno = list(filter(lambda x: str(x).find(corretora)>-1, retorno))
             retorno = retorno[0][0]
             return str(retorno)
         # Update Conta Corrente em Table ContaCorrente_Corretora_BolsaOuCripto
-        Valor = float(self.HMI.TextBox_CCAtualizada.text())
-        self.ModifyDB("UPDATE Corretoras SET ContaCorrente = (?) Where rowid = "+GetRowId(self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")), [(Valor)])
+        Valor = float(CCAtualizada_text)
+        self.ModifyDB("UPDATE Corretoras SET ContaCorrente = (?) Where rowid = "+GetRowId(Corretora), [(Valor)])
         self.UpdatePatrimonioRendimento()
 
     def UpdateContaCorrente_Cripto(self, corretora = ''):
@@ -747,7 +747,6 @@ class DBManager:
             retorno = retorno[0][0]
             return str(retorno)
         # Update Conta Corrente em Table ContaCorrente_Corretora_BolsaOuCripto
-        if len(corretora) == 0: corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
         Valor = self.GetEstoque(ativo = self.GetUserCoinCurrency(), corretora = corretora, BolsaOuCripto = "Cripto")
         self.ModifyDB("UPDATE Corretoras SET ContaCorrente = (?) Where rowid = "+GetRowId(corretora), [(Valor)])
 
@@ -986,7 +985,7 @@ class DBManager:
         self.UpdatePatrimonioRendimento()
         return True
 
-    def AlterOperacao_Cripto(self, Item, Data, Tipo, ParEsquerdo, ParDireito, Qqt, Preco, Taxa, MoedaDaTaxa, Conversao, Obs):
+    def AlterOperacao_Cripto(self, Item, Data, Tipo, ParEsquerdo, ParDireito, Qqt, Preco, Taxa, MoedaDaTaxa, Conversao, Obs, Corretora):
         def ThereIsAnotherOPWithTheSameDate(TableName, data, rowid):
             data = datetime.strptime(data,"%Y/%m/%d %H:%M:%S")
             Table_Inicial, _ = self.GetDataDB("SELECT rowid, * FROM "+TableName+"¨Bruto")
@@ -1015,7 +1014,7 @@ class DBManager:
 
         # Separar DT e ST se não for FII. Se for FII fazer só pra DT
         self.CalcularCelsAutomatizadas_CriptoRefinado(TableName)
-        self.UpdateContaCorrente_Cripto()
+        self.UpdateContaCorrente_Cripto(Corretora)
         # self.CalcularTributacao() # Via thread
         self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
         self.UpdatePatrimonioRendimento()
@@ -1073,15 +1072,15 @@ class DBManager:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.UpdatePatrimonioRendimento()
 
-    def DeleteOperacao(self, Items):
-        if self.HMI.BolsaOuCripto == "Bolsa":
+    def DeleteOperacao(self, Items, Corretora, BolsaOuCripto, table_data):
+        if BolsaOuCripto == "Bolsa":
             # Delete linha
-            Items = list(map(lambda x: len(self.HMI.HMI_Trades.HMI_Trades_Bolsa.data_23_1)-x,Items)) # Items = list(map(lambda x: x+1,Items)) # Debug: Para quando a tabela de registros é mostrada em ordem crescente
+            Items = list(map(lambda x: len(table_data)-x,Items)) # Items = list(map(lambda x: x+1,Items)) # Debug: Para quando a tabela de registros é mostrada em ordem crescente
             ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
             TableName = str('OPs¨'+
                         ativo +
-                        '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
-                        '¨'+self.HMI.BolsaOuCripto)
+                        '¨'+Corretora+
+                        '¨'+BolsaOuCripto)
             TableNameBruto = TableName+'¨Bruto'
             TableNameDT = TableName+'¨DT'
             TableNameST = TableName+'¨ST'
@@ -1118,11 +1117,11 @@ class DBManager:
                     self.ModifyDB("DELETE FROM Cotações WHERE Ativo = (?)",[(ativo)])
                     self.ModifyDB("VACUUM")
 
-        elif self.HMI.BolsaOuCripto == "Cripto":
+        elif BolsaOuCripto == "Cripto":
             # Delete linha
-            Items = list(map(lambda x: len(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.data_40_1)-x,Items)) # Items = list(map(lambda x: x+1,Items)) # Debug: Para quando a tabela de registros é mostrada em ordem crescente
-            TableName = str('OPs¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
-                            '¨'+self.HMI.BolsaOuCripto)
+            Items = list(map(lambda x: len(table_data)-x,Items)) # Items = list(map(lambda x: x+1,Items)) # Debug: Para quando a tabela de registros é mostrada em ordem crescente
+            TableName = str('OPs¨'+Corretora+
+                            '¨'+BolsaOuCripto)
             TableNameBruto = TableName+'¨Bruto'
 
             for Item in Items:
@@ -1132,7 +1131,7 @@ class DBManager:
             retornoBruto, _ = self.GetDataDB("SELECT * FROM "+TableNameBruto)
             if len(retornoBruto)>0: self.ModifyDB("VACUUM")
             self.CalcularCelsAutomatizadas_CriptoRefinado(TableName)
-            self.UpdateContaCorrente_Cripto()
+            self.UpdateContaCorrente_Cripto(Corretora)
             # self.CalcularTributacao() # Via thread
             self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
         self.UpdatePatrimonioRendimento()

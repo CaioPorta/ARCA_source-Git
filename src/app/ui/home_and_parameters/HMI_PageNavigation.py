@@ -780,7 +780,9 @@ class HMI_PageNavigation:
                     elif self.PageID== PAGE_BY_NAME['SaldoContaCorrenteBolsa'].page_id:
                         try:
                             if not self.DBManager.CalcularTributacao_is_running:
-                                self.DBManager.UpdateContaCorrente()
+                                CCAtualizada_text = self.TextBox_CCAtualizada.text()
+                                Corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
+                                self.DBManager.UpdateContaCorrente(CCAtualizada_text, Corretora)
                                 self.ClearPage()
                                 self.PageID= PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id
                                 self.PageIDAux = ''
