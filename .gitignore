@@ -26,4 +26,5 @@ webdriver.lock
 .copilot/
 .copilot-chat/
 .github/copilot-instructions/
-/src/src/app/logs/
+
+/src/app/logs/
