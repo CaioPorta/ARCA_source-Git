@@ -14,6 +14,13 @@ _log_dir = os.path.join(_root, "app", "logs")
 os.makedirs(_log_dir, exist_ok=True)
 _log_path = os.path.join(_log_dir, f"app_run_{datetime.now():%Y%m%d_%H%M%S}.log")
 
+# Write a UTF-8 BOM into a fresh log file so editors (e.g. Notepad) auto-detect the encoding and do
+# not render Portuguese characters as mojibake ("Ã§Ã£o"). The FileHandler below opens in append mode,
+# so it writes right after the BOM.
+if not os.path.exists(_log_path) or os.path.getsize(_log_path) == 0:
+    with open(_log_path, "wb") as _f:
+        _f.write(b"\xef\xbb\xbf")
+
 # Attach handlers directly to this logger (instead of logging.basicConfig) so the file handler is added
 # even if pytest or another plugin already configured root logging.
 formatter = logging.Formatter("%(asctime)s | %(levelname)-8s | %(name)s | %(message)s", datefmt="%H:%M:%S")
@@ -38,6 +45,25 @@ if not logger.handlers:
     logger.addHandler(stream_handler)
 
 logger.propagate = False
+
+# Forward every APP record to the "Test" logger's file handler, so that when the app runs under pytest
+# its logs also land in the test log file. The forward is one-directional (APP -> Test), so Test logs
+# never reach the APP log. It is a no-op during standalone runs, where no "Test" logger exists yet.
+test_logger = logging.getLogger("Test")
+_test_file_handler = next(
+    (h for h in test_logger.handlers if isinstance(h, logging.FileHandler)), None
+)
+if _test_file_handler is not None:
+    class _ForwardToTest(logging.Handler):
+        def emit(self, record):
+            try:
+                _test_file_handler.emit(record)
+            except Exception:
+                self.handleError(record)
+
+    forwarder = _ForwardToTest()
+    forwarder.setLevel(logging.DEBUG)
+    logger.addHandler(forwarder)
 
 
 class _PrintToLogger:

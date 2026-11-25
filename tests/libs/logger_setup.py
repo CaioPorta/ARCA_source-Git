@@ -13,6 +13,13 @@ _log_dir = os.path.join(_repo_root, "tests", "test_output", "logs")
 os.makedirs(_log_dir, exist_ok=True)
 _log_path = os.path.join(_log_dir, f"test_run_{datetime.now():%Y%m%d_%H%M%S}.log")
 
+# Write a UTF-8 BOM into a fresh log file so editors (e.g. Notepad) auto-detect the encoding and do
+# not render Portuguese characters as mojibake ("Ã§Ã£o"). The FileHandler below opens in append mode,
+# so it writes right after the BOM. Also required here because app logs are forwarded into this file.
+if not os.path.exists(_log_path) or os.path.getsize(_log_path) == 0:
+    with open(_log_path, "wb") as _f:
+        _f.write(b"\xef\xbb\xbf")
+
 # Attach handlers directly to this logger (instead of logging.basicConfig) so the file handler is added
 # even if pytest or another plugin already configured root logging.
 logger = logging.getLogger("Test")
