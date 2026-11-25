@@ -74,3 +74,4 @@ class _PrintToLogger:
 
 # Redirect stdout so every print() in the app is logged too.
 sys.stdout = _PrintToLogger()
+sys.stderr = _PrintToLogger()

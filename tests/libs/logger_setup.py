@@ -73,6 +73,7 @@ class _PrintToLogger:
 
 # Redirect stdout so every print() in the tests is logged too.
 sys.stdout = _PrintToLogger()
+sys.stderr = _PrintToLogger()
 
 # Single shared logger instance for every test folder. Import it from any test:
 #     from tests.libs.logger_setup import logger
