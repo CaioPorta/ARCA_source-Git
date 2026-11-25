@@ -308,24 +308,21 @@ class DBManager:
                                                 ('Cotação', Cotacao)])
         return True
 
-    def AddCorretora(self):
-        def CorretoraExists(corretora):
-            retorno, _ = self.GetDataDB("SELECT * FROM Corretoras")
-            retorno = list(filter(lambda x: str(corretora+"¨"+self.HMI.BolsaOuCripto).lower() == str(x[0]).lower(), retorno))
-            return len(retorno) > 0
+    def CorretoraExists(self, corretora):
+        retorno, _ = self.GetDataDB("SELECT * FROM Corretoras")
+        retorno = list(filter(lambda x: str(corretora+"¨"+self.HMI.BolsaOuCripto).lower() == str(x[0]).lower(), retorno))
+        return len(retorno) > 0
+    
+    def AddCorretora(self, BolsaOuCripto: str, Corretora: str, MoedaCorrente: str):
         # Adicionar linha na Table Corretoras: Nome da corretora e coin currency
-        BolsaOuCripto = self.HMI.BolsaOuCripto
-        Corretora = self.HMI.TextBox_NovaCorretora.text().replace(" ","_")
-        if CorretoraExists(Corretora): return False
+        if self.CorretoraExists(Corretora):
+            return False
         if BolsaOuCripto == 'Bolsa':
-            MoedaCorrente = self.HMI.ComboBox_Currency.currentText()
             self.AddRowInCurrentDB('Corretoras', [('Corretora', Corretora+"¨"+BolsaOuCripto),('MoedaCorrente', MoedaCorrente),('ContaCorrente', 0)])
             # Create Table DepósitosESaques
             self.CreateTableInCurrentDB("¨"+Corretora+"¨"+BolsaOuCripto+"¨DepSaq", [('Data', 'DATETIME'),('Valor', 'REAL')])
 
         elif BolsaOuCripto == 'Cripto':
-            MoedaCorrente = self.HMI.ComboBox_Currency.currentText()
-
             self.AddRowInCurrentDB('Corretoras', [('Corretora', Corretora+"¨"+BolsaOuCripto),('MoedaCorrente', MoedaCorrente),('ContaCorrente', 0)])
 
             TableName = str('OPs'+'¨'+Corretora+'¨'+BolsaOuCripto)

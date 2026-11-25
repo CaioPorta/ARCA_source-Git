@@ -709,7 +709,10 @@ class HMI_PageNavigation:
                     if self.PageID== PAGE_BY_NAME['AdicionarCorretoraBolsa'].page_id:
                         if len(self.TextBox_NovaCorretora.text())>0 and len(self.TextBox_NovaCorretora.text())<9:
                             if not self.DBManager.CalcularTributacao_is_running:
-                                Executado = self.DBManager.AddCorretora()
+                                BolsaOuCripto = self.BolsaOuCripto
+                                Corretora = self.TextBox_NovaCorretora.text().replace(" ","_")
+                                MoedaCorrente = self.ComboBox_Currency.currentText()
+                                Executado = self.DBManager.AddCorretora(BolsaOuCripto, Corretora, MoedaCorrente)
                                 if Executado:
                                     self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     self.ClearPage()
@@ -808,7 +811,10 @@ class HMI_PageNavigation:
                     if self.PageID== PAGE_BY_NAME['AdicionarCorretoraCripto'].page_id:
                         if len(self.TextBox_NovaCorretora.text())>0 and len(self.TextBox_NovaCorretora.text())<12:
                             if not self.DBManager.CalcularTributacao_is_running:
-                                Executado = self.DBManager.AddCorretora()
+                                BolsaOuCripto = self.BolsaOuCripto
+                                Corretora = self.TextBox_NovaCorretora.text().replace(" ","_")
+                                MoedaCorrente = self.ComboBox_Currency.currentText()
+                                Executado = self.DBManager.AddCorretora(BolsaOuCripto, Corretora, MoedaCorrente)
                                 if Executado:
                                     self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     self.ClearPage()
