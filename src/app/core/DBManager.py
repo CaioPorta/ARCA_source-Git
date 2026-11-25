@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Sun Sep  5 01:44:04 2021
 
@@ -64,7 +63,8 @@ class DBManager:
             try:
                conn.cursor()
                return True
-            except Exception:
+            except Exception as e:
+               print(e, traceback.format_exception(None, e, e.__traceback__))
                return False
 
         if chk_conn(self.conn): return "Conectado a base de dados: " + str(self.User) + ".db"
@@ -308,8 +308,7 @@ class DBManager:
         def CorretoraExists(corretora):
             retorno, _ = self.GetDataDB("SELECT * FROM Corretoras")
             retorno = list(filter(lambda x: str(corretora+"¨"+self.HMI.BolsaOuCripto).lower() == str(x[0]).lower(), retorno))
-            if len(retorno)>0: return True
-            return False
+            return len(retorno) > 0
         # Adicionar linha na Table Corretoras: Nome da corretora e coin currency
         BolsaOuCripto = self.HMI.BolsaOuCripto
         Corretora = self.HMI.TextBox_NovaCorretora.text().replace(" ","_")
