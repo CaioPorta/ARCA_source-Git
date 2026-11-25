@@ -34,12 +34,12 @@ class BackgroundProcess(Thread):
                 self.Thread_AtualizarCotacoes()
             elif self.ThreadName == 'Thread_GetCotacao':
                 Cotacao = float(self.HMI.YahooFinance.GetCotacao(self.ativo, self.currency))
-                if Cotacao > 0: self.HMI.DBManager.UpdateCotacao(self.ativo, Cotacao)
+                if Cotacao > 0: self.HMI.DBManager.UpdateCotacao(self.ativo, Cotacao, self.HMI.BolsaOuCripto)
             elif self.ThreadName == 'Thread_GetCotacaoCripto':
                 Cotacao, CotacaoDolar = self.HMI.YahooFinance.GetCotacaoCripto(self.ativo, self.currency)
                 if Cotacao > 0 and not self.ativo in ["USD", "BUSD", "USDT", "USDC", "USDP", "TUSD"]:
-                    self.HMI.DBManager.UpdateCotacao(self.ativo, Cotacao)
-                if CotacaoDolar > 0: self.HMI.DBManager.UpdateCotacao("USD", CotacaoDolar)
+                    self.HMI.DBManager.UpdateCotacao(self.ativo, Cotacao, self.HMI.BolsaOuCripto)
+                if CotacaoDolar > 0: self.HMI.DBManager.UpdateCotacao("USD", CotacaoDolar, self.HMI.BolsaOuCripto)
             elif self.ThreadName == 'Thread_GetCotacaoCripto_FromExcelImportation':
                 def AtivoExisteNaTabelaDeCotacoes(ativo):
                     Table, cursor = self.HMI.DBManager.GetDataDB("SELECT * FROM Cotações")

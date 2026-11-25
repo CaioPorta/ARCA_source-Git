@@ -297,9 +297,9 @@ class HMI_Events:
 
         elif ButtonPressed == 'Atualizar Tabela de Cotações':
             for row in range(self.Table_CotaçõesManuais.rowCount()):
-                if not str(self.data_45_1[row][2]) == str(self.Table_CotaçõesManuais.item(row, 2).text()):
+                if str(self.data_45_1[row][2]) != str(self.Table_CotaçõesManuais.item(row, 2).text()):
                     # Apenas atualizar os ativos que são diferentes do início
-                    self.DBManager.UpdateCotacao(self.data_45_1[row][0], self.Table_CotaçõesManuais.item(row, 2).text())
+                    self.DBManager.UpdateCotacao(self.data_45_1[row][0], self.Table_CotaçõesManuais.item(row, 2).text(), self.BolsaOuCripto)
             self.DBManager.AtualizarCotacoes()
 
             self.CreatePage(self.PageID)

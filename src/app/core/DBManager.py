@@ -448,6 +448,7 @@ class DBManager:
         try:
             # Adicionar linha na Table OPs_Ativo_Corretora_Bolsa_DT. (Add novos dados. Células de cálculo automatizado, inserir zero)
             BolsaOuCripto = "Bolsa"
+            need_CalcularTributacao = False
             
             TableName = str('OPs¨'+ativo+
                             '¨'+Corretora+
@@ -463,8 +464,8 @@ class DBManager:
                 TaxaB3 = float(TaxaB3_text)
                 TaxaB3Per = round(TaxaB3/int(Qqt_text)/float(Preco_text)*100,2)
 
-            if ThereIsAnotherOPWithTheSameDate(TableName, data): return False
-            if data > datetime.now(): return False
+            if ThereIsAnotherOPWithTheSameDate(TableName, data): return False, need_CalcularTributacao
+            if data > datetime.now(): return False, need_CalcularTributacao
 
             # if TipoDeOperacao in ["Compra", "Venda"]:
             self.AddRowInCurrentDB(TableNameBruto, [('Data', data),
@@ -498,8 +499,8 @@ class DBManager:
             #     if TipoDeOperacao == "Desdobramento":
             #         self.AddRowInCurrentDB(TableNameBruto, [('Data', data),
             #                                                 ('Tipo', "Venda"),
-            #                                                 ('Qqt', int(self.HMI.DBManager.GetEstoque(self.HMI.ComboBox_Ativos.currentText()))), # Vende tudo
-            #                                                 ('Preço', float(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText()))), # Ao preço médio anterior
+            #                                                 ('Qqt', int(self.GetEstoque(ativo))), # Vende tudo
+            #                                                 ('Preço', float(self.GetPrecoMedio(ativo))), # Ao preço médio anterior
             #                                                 ('Corretagem', 0), # 0
             #                                                 ('TaxaB3Per', 0), # 0
             #                                                 ('TaxaB3', 0), # 0
@@ -564,13 +565,10 @@ class DBManager:
                 self.CalcularCelsAutomatizadas(TableNameDT)
         except Exception as e:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
-            return False
+            return False, need_CalcularTributacao
 
-        # Calcular a tributação devida de ST e de DT
-        # self.CalcularTributacao() # Via thread
-        self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
-        self.UpdatePatrimonioRendimento()
-        return True
+        need_CalcularTributacao = True
+        return True, need_CalcularTributacao
 
     def AddOperacao_Cripto(self,
                            Corretora: str,
@@ -595,15 +593,17 @@ class DBManager:
             return len(aux) > 0
         
         try:
+            need_CalcularTributacao = False
             BolsaOuCripto = "Cripto"
             TableName = str('OPs'+
                             '¨'+Corretora+
                             '¨'+BolsaOuCripto)
             TableNameBruto = TableName+'¨Bruto'
 
-            if ThereIsAnotherOPWithTheSameDate(TableName, data):
-                return False
-            if data > datetime.now(): return False
+            if (ThereIsAnotherOPWithTheSameDate(TableName, data) or
+                data > datetime.now()
+                ):
+                return False, need_CalcularTributacao
 
             Taxa = 0
             MoedaDaTaxa = self.GetUserCoinCurrency()
@@ -671,13 +671,10 @@ class DBManager:
                                                         ('Cotação', Cotacao)])
         except Exception as e:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
-            return False
+            return False, need_CalcularTributacao
 
-        # Calcular a tributação devida de ST e de DT
-        # self.CalcularTributacao() # Via thread
-        self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
-        self.UpdatePatrimonioRendimento()
-        return True
+        need_CalcularTributacao = True
+        return True, need_CalcularTributacao
 
     def AddDepositoOuSaque(self, Data, Valor, BolsaOuCripto: str, Corretora: str):
         # Verificar se já tem movimentação nessa data. Se sim, return False
@@ -756,19 +753,7 @@ class DBManager:
     def Update_MesesDeReserva(self, Valor):
         self.ModifyDB("UPDATE Perfil SET MesesDeReserva = (?)", [(Valor)])
 
-    def UpdateCotacao(self, ativo, Valor):
-        def GetRowId(ativo):
-            retorno, _ = self.GetDataDB("SELECT rowid, * FROM Cotações")
-            retorno2 = list(filter(lambda x: str(x).find(ativo)>-1, retorno))
-            if len(retorno2)>0:
-                RowId = retorno2[0][0]
-            else:
-                retorno2 = list(filter(lambda x: str(x).find(ativo+"-USD")>-1, retorno))
-                if len(retorno2)>0:
-                    RowId = retorno2[0][0]
-                else:
-                    RowId = -1
-            return str(RowId)
+    def UpdateCotacao(self, ativo, Valor, BolsaOuCripto):
         def AtivoIsStillInDB(ativo):
             retorno, _ = self.GetDataDB("SELECT Ativo FROM Cotações Where Ativo = (?)",[(ativo)])
             return len(retorno) > 0
@@ -781,8 +766,8 @@ class DBManager:
                 self.ModifyDB("UPDATE Cotações SET Cotação = (?) Where Ativo = (?)", [(float(Valor)), ativo])
                 self.ModifyDB("UPDATE Cotações SET DataDeAtualização = (?) Where Ativo = (?)", [(Data), ativo])
 
-        except Exception as e:
-            if self.HMI.BolsaOuCripto == "Cripto":
+        except:
+            if BolsaOuCripto == "Cripto":
                 self.AddRowInCurrentDB('Cotações', [('Modo', "Auto"),
                                                     ('DataDeAtualização', Data),
                                                     ('Ativo', ativo+"-USD"),
@@ -807,28 +792,30 @@ class DBManager:
             self.ModifyDB("VACUUM")
 
     #%% Renames
-    def RenameAtivo(self):
-        def GetRowId(Table,ativo):
+    def RenameAtivo(self,
+                    NomeAntigo: str,
+                    NomeNovo: str,
+                    TipoDeAtivo: str,
+                    SubtipoDeAtivo: str,
+                    Setor: str,
+                    Modo: str,
+                    Corretora: str,
+                    BolsaOuCripto: str
+                    ):
+        def GetRowId(Table, ativo):
             retorno, _ = self.GetDataDB("SELECT rowid, * FROM "+Table)
             retorno = list(filter(lambda x: str(x).find(ativo)>-1, retorno))
             retorno = retorno[0][0]
             return str(retorno)
         # Alter all Tables e linhas que contêm "Ativo"
         try:
-            NomeAntigo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
-            NomeNovo = self.HMI.TextBox_NovoNomeAtivo.text().replace(" ","_")
-            ID = GetRowId('Bolsa',NomeAntigo)
-            TipoDeAtivo = self.HMI.ComboBox_TipoDeAtivo.currentText()
-            SubtipoDeAtivo = self.HMI.ComboBox_SubtipoDeAtivo.currentText()
-            Setor = self.HMI.ComboBox_SetorAtivo.currentText()
-
+            ID = GetRowId('Bolsa', NomeAntigo)
             if NomeAntigo != NomeNovo: self.ModifyDB("UPDATE Bolsa SET Ativo = (?) Where rowid = "+ID, [(NomeNovo)])
             self.ModifyDB("UPDATE Bolsa SET TipoDeAtivo = (?) Where rowid = "+ID, [(TipoDeAtivo)])
             self.ModifyDB("UPDATE Bolsa SET SubtipoDeAtivo = (?) Where rowid = "+ID, [(SubtipoDeAtivo)])
             self.ModifyDB("UPDATE Bolsa SET Setor = (?) Where rowid = "+ID, [(Setor)])
 
             # Update Table Cotações
-            Modo = self.HMI.Modo
             if Modo == "Auto": NomeNovo = NomeNovo.upper()
             IDc = GetRowId('Cotações',NomeAntigo)
             DataDeAtualizacao = datetime.strptime(datetime.now().strftime("%d/%m/%Y %H:%M:%S"), "%d/%m/%Y %H:%M:%S")
@@ -844,34 +831,34 @@ class DBManager:
             self.ModifyDB("UPDATE Cotações SET Cotação = (?) Where rowid = "+IDc, [(Cotacao)])
 
             TableNameAntiga = str('OPs¨'+NomeAntigo+
-                                '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
-                                '¨'+self.HMI.BolsaOuCripto+
+                                '¨'+Corretora+
+                                '¨'+BolsaOuCripto+
                                 '¨Bruto')
             TableNameNova = str('OPs¨'+NomeNovo+
-                                '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
-                                '¨'+self.HMI.BolsaOuCripto+
+                                '¨'+Corretora+
+                                '¨'+BolsaOuCripto+
                                 '¨Bruto')
             if NomeAntigo != NomeNovo: self.ModifyDB("ALTER TABLE "+TableNameAntiga+" RENAME TO "+TableNameNova)
 
 
             TableNameAntiga = str('OPs¨'+NomeAntigo+
-                                '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
-                                '¨'+self.HMI.BolsaOuCripto+
+                                '¨'+Corretora+
+                                '¨'+BolsaOuCripto+
                                 '¨DT')
             TableNameNova = str('OPs¨'+NomeNovo+
-                                '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
-                                '¨'+self.HMI.BolsaOuCripto+
+                                '¨'+Corretora+
+                                '¨'+BolsaOuCripto+
                                 '¨DT')
             if NomeAntigo != NomeNovo: self.ModifyDB("ALTER TABLE "+TableNameAntiga+" RENAME TO "+TableNameNova)
 
 
             TableNameAntiga = str('OPs¨'+NomeAntigo+
-                                '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
-                                '¨'+self.HMI.BolsaOuCripto+
+                                '¨'+Corretora+
+                                '¨'+BolsaOuCripto+
                                 '¨ST')
             TableNameNova = str('OPs¨'+NomeNovo+
-                                '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
-                                '¨'+self.HMI.BolsaOuCripto+
+                                '¨'+Corretora+
+                                '¨'+BolsaOuCripto+
                                 '¨ST')
             if NomeAntigo != NomeNovo: self.ModifyDB("ALTER TABLE "+TableNameAntiga+" RENAME TO "+TableNameNova)
 

@@ -1014,11 +1014,41 @@ class HMI_PageNavigation:
                     if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                         if PageID == PAGE_BY_NAME['_RegistrosBolsa_'].page_id:
                             self.Modo = 'Manual'
-                            self.DBManager.RenameAtivo()
+                            NomeAntigo = self.ComboBox_Ativos.currentText().replace(" ","_")
+                            NomeNovo = self.TextBox_NovoNomeAtivo.text().replace(" ","_")
+                            TipoDeAtivo = self.ComboBox_TipoDeAtivo.currentText()
+                            SubtipoDeAtivo = self.ComboBox_SubtipoDeAtivo.currentText()
+                            Setor = self.ComboBox_SetorAtivo.currentText()
+                            Corretora = self.ComboBox_Corretoras.currentText().replace(" ","_")
+                            self.DBManager.RenameAtivo(
+                                NomeAntigo = NomeAntigo,
+                                NomeNovo = NomeNovo,
+                                TipoDeAtivo = TipoDeAtivo,
+                                SubtipoDeAtivo = SubtipoDeAtivo,
+                                Setor = Setor,
+                                Modo = self.Modo,
+                                Corretora = Corretora,
+                                BolsaOuCripto = self.BolsaOuCripto,
+                            )
                             self.HMI_ARCA.Flag_RecalcularGraficos = True
                         elif PageID == PAGE_BY_NAME['RegistrosBolsa_'].page_id:
                             self.Modo = 'Auto'
-                            self.DBManager.RenameAtivo()
+                            NomeAntigo = self.ComboBox_Ativos.currentText().replace(" ","_")
+                            NomeNovo = self.TextBox_NovoNomeAtivo.text().replace(" ","_")
+                            TipoDeAtivo = self.ComboBox_TipoDeAtivo.currentText()
+                            SubtipoDeAtivo = self.ComboBox_SubtipoDeAtivo.currentText()
+                            Setor = self.ComboBox_SetorAtivo.currentText()
+                            Corretora = self.ComboBox_Corretoras.currentText().replace(" ","_")
+                            self.DBManager.RenameAtivo(
+                                NomeAntigo = NomeAntigo,
+                                NomeNovo = NomeNovo,
+                                TipoDeAtivo = TipoDeAtivo,
+                                SubtipoDeAtivo = SubtipoDeAtivo,
+                                Setor = Setor,
+                                Modo = self.Modo,
+                                Corretora = Corretora,
+                                BolsaOuCripto = self.BolsaOuCripto,
+                            )
                             self.HMI_ARCA.Flag_RecalcularGraficos = True
                     else:
                         MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
@@ -1026,7 +1056,22 @@ class HMI_PageNavigation:
                     if not self.DBManager.CalcularTributacao_is_running and not self.AtualizarCotacoes_is_running:
                         if PageID == PAGE_BY_NAME['RegistrosBolsa_'].page_id:
                             self.Modo = 'Manual'
-                            self.DBManager.RenameAtivo()
+                            NomeAntigo = self.ComboBox_Ativos.currentText().replace(" ","_")
+                            NomeNovo = self.TextBox_NovoNomeAtivo.text().replace(" ","_")
+                            TipoDeAtivo = self.ComboBox_TipoDeAtivo.currentText()
+                            SubtipoDeAtivo = self.ComboBox_SubtipoDeAtivo.currentText()
+                            Setor = self.ComboBox_SetorAtivo.currentText()
+                            Corretora = self.ComboBox_Corretoras.currentText().replace(" ","_")
+                            self.DBManager.RenameAtivo(
+                                NomeAntigo = NomeAntigo,
+                                NomeNovo = NomeNovo,
+                                TipoDeAtivo = TipoDeAtivo,
+                                SubtipoDeAtivo = SubtipoDeAtivo,
+                                Setor = Setor,
+                                Modo = self.Modo,
+                                Corretora = Corretora,
+                                BolsaOuCripto = self.BolsaOuCripto,
+                            )
                             self.HMI_ARCA.Flag_RecalcularGraficos = True
                     else:
                         MessageBox_Msg1 = QMessageBox.about(self,'Aviso','Existe outra operação em andamento.\nPode ser que a tabela de cotações\nesteja sendo atualizada\n\nTente novamente mais tarde.')
@@ -1125,7 +1170,7 @@ class HMI_PageNavigation:
                                 Corretagem_text = self.TextBox_Corretagem.text()
                                 Obs_text = self.TextBox_Obs.text()
 
-                                result = self.DBManager.AddOperacao_Bolsa(Corretora = Corretora,
+                                result, need_CalcularTributacao = self.DBManager.AddOperacao_Bolsa(Corretora = Corretora,
                                                                           data = data,
                                                                           Preco_text = Preco_text,
                                                                           Qqt_text = Qqt_text,
@@ -1136,6 +1181,11 @@ class HMI_PageNavigation:
                                                                           Obs_text = Obs_text
                                                                           )
                                 if result:
+                                    if need_CalcularTributacao:
+                                        # Calcular a tributação devida de ST e de DT
+                                        # self.CalcularTributacao() # Via thread
+                                        self.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
+                                        self.DBManager.UpdatePatrimonioRendimento()
                                     self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     try:
                                         self.Msg = OperacaoRegistradaComSucesso.OperacaoRegistradaComSucesso(self, 4)
@@ -1231,7 +1281,7 @@ class HMI_PageNavigation:
                                     Corretagem_text = self.TextBox_Corretagem.text()
                                     Obs_text = self.TextBox_Obs.text()
 
-                                    self.DBManager.AddOperacao_Bolsa(Corretora = Corretora,
+                                    result, need_CalcularTributacao = self.DBManager.AddOperacao_Bolsa(Corretora = Corretora,
                                                                      data = data,
                                                                      Preco_text = Preco_text,
                                                                      Qqt_text = Qqt_text,
@@ -1241,6 +1291,11 @@ class HMI_PageNavigation:
                                                                      Corretagem_text = Corretagem_text,
                                                                      Obs_text = Obs_text
                                                                      ) # Sempre vai dar bom na criação do ativo
+                                    if need_CalcularTributacao:
+                                        # Calcular a tributação devida de ST e de DT
+                                        # self.CalcularTributacao() # Via thread
+                                        self.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
+                                        self.DBManager.UpdatePatrimonioRendimento()
                                     self.AcabouDeRegistrarNovoAtivo = True
                                     self.ComboBox_Ativos.clear()
                                     ativos = self.DBManager.GetAtivos()
@@ -1430,7 +1485,7 @@ class HMI_PageNavigation:
                                     Par_Esquerda_text = self.TextBox_Par_Esquerda.text()
                                     Par_Direita_text = self.TextBox_Par_Direita.text()
 
-                                    result = self.DBManager.AddOperacao_Cripto(Corretora = Corretora,
+                                    result, need_CalcularTributacao = self.DBManager.AddOperacao_Cripto(Corretora = Corretora,
                                                                                data = data,
                                                                                TaxaB3_text = TaxaB3_text,
                                                                                Qqt_text = Qqt_text,
@@ -1445,6 +1500,11 @@ class HMI_PageNavigation:
                                                                                Par_Direita_text = Par_Direita_text,
                                                                                )
                                     if result:
+                                        if need_CalcularTributacao:
+                                            # Calcular a tributação devida de ST e de DT
+                                            # self.CalcularTributacao() # Via thread
+                                            self.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
+                                            self.DBManager.UpdatePatrimonioRendimento()
                                         self.HMI_ARCA.Flag_RecalcularGraficos = True
                                         try:
                                             self.Msg = OperacaoRegistradaComSucesso.OperacaoRegistradaComSucesso(self, 5)

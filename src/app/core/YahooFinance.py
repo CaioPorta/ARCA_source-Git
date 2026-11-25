@@ -202,7 +202,7 @@ class YahooFinance(object):
         finally:
             # print('UltimaCotacao '+ativo+': ', UltimaCotacao) # Debug
             # if UltimaCotacao > 0:
-            #     self.HMI.DBManager.UpdateCotacao(ativo, UltimaCotacao)
+            #     self.HMI.DBManager.UpdateCotacao(ativo, UltimaCotacao, self.HMI.BolsaOuCripto)
             return UltimaCotacao
 
     def GetCotacaoCripto(self, coin, currency, date=''):
