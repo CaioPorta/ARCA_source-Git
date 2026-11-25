@@ -4182,9 +4182,10 @@ class DBManager:
             if params=='': data = list(cursor.execute(command))
             else: data = list(cursor.execute(command, params))
         except Exception as e:
-            if not "no such column: EstoqueDe" in str(e): # Awaited error
-                logger.error("Erro GetDataDB: ",str(e),"\nO comando solicitado foi:\n",command,"\nparâmetros:",params)
-                logger.error(e, traceback.format_exception(None, e, e.__traceback__))
+            pass
+            # if not "no such column: EstoqueDe" in str(e): # Awaited error, uncomment only for specific debug, otherwise trades_bolsa may crash
+            #     logger.error("Erro GetDataDB: ",str(e),"\nO comando solicitado foi:\n",command,"\nparâmetros:",params)
+            #     logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.HMI.ThreadLock.release()
         return data, cursor.description
 
