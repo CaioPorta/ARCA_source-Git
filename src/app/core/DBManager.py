@@ -692,7 +692,7 @@ class DBManager:
 
         retorno, _ = self.GetDataDB("SELECT * FROM ¨"+Corretora+"¨"+BolsaOuCripto+"¨DepSaq")
         if len(retorno)==1: self.ModifyDB("VACUUM")
-        self.UpdatePatrimonioRendimento()
+        
         return True
 
     #%% Updates
@@ -726,7 +726,7 @@ class DBManager:
         Valor = float(CC_text)
         self.ModifyDB("UPDATE Bancos SET ContaCorrente = (?) Where rowid = "+GetRowId(Banco), [(Valor)])
 
-        self.UpdatePatrimonioRendimento()
+        return True
 
     def UpdateContaCorrente(self, CCAtualizada_text: str, Corretora: str):
         def GetRowId(corretora):
@@ -737,7 +737,7 @@ class DBManager:
         # Update Conta Corrente em Table ContaCorrente_Corretora_BolsaOuCripto
         Valor = float(CCAtualizada_text)
         self.ModifyDB("UPDATE Corretoras SET ContaCorrente = (?) Where rowid = "+GetRowId(Corretora), [(Valor)])
-        self.UpdatePatrimonioRendimento()
+        return True
 
     def UpdateContaCorrente_Cripto(self, corretora = ''):
         def GetRowId(corretora):
@@ -1015,7 +1015,7 @@ class DBManager:
         except Exception as e:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
             logger.error('erro deletando banco')
-        finally: self.UpdatePatrimonioRendimento()
+        return True
 
     def DeleteCorretora(self, BolsaOuCripto: str, corretora: str):
         def GetRowId(BolsaOuCripto: str, corretora: str):
@@ -1054,7 +1054,7 @@ class DBManager:
                     self.ModifyDB("VACUUM")
         except Exception as e:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
-        finally: self.UpdatePatrimonioRendimento()
+        return True
 
     def DeleteOperacao(self, Items, table_data, Corretora: str, BolsaOuCripto: str, ativo: str | None):
         need_CalcularTributacao = False
@@ -1122,7 +1122,7 @@ class DBManager:
             self.CalcularCelsAutomatizadas_CriptoRefinado(TableName)
             self.UpdateContaCorrente_Cripto(Corretora)
             need_CalcularTributacao = True
-        self.UpdatePatrimonioRendimento()
+            
         return True, need_CalcularTributacao
 
     def DeleteDepositoOuSaque(self, BolsaOuCripto, Corretora, Items, data_24_1):
@@ -1136,7 +1136,6 @@ class DBManager:
             # Se Table com conteúdo: Vacuum
             retorno, _ = self.GetDataDB("SELECT * FROM "+TableName)
             if len(retorno)>0: self.ModifyDB("VACUUM")
-            self.UpdatePatrimonioRendimento()
             return True
         return False
 
@@ -4015,7 +4014,7 @@ class DBManager:
 
     def AtualizarCotacoes_run(self): # Thread
         # Atualizar tabela de cotações, depois atualizar os valores no HMI
-        self.UpdatePatrimonioRendimento()
+        self.HMI.HMI_Presentation.UpdatePatrimonioRendimento()
         currency = self.GetUserCoinCurrency()
 
         corretoras = self.GetCorretoras("Bolsa")
@@ -4039,44 +4038,13 @@ class DBManager:
         for thread in thread_list: thread.join()
 
         logger.debug('waiting') # Debug
-        self.UpdatePatrimonioRendimento()
+        self.HMI.HMI_Presentation.UpdatePatrimonioRendimento()
         if self.HMI.PageID in ["18", "19"]: self.HMI.UpdatePage()
         logger.debug('UpdatePatrimonioRendimento executed') # Debug
 
     def UpdatePatrimonioRendimento(self):
-        Background_Header = 'rgb(20, 20, 40)'
-        try:
-            currency = self.GetUserCoinCurrency()
-            PatrimonioAux = self.HMI.Calcular.Patrimonio()
-            if PatrimonioAux >= 0:
-                self.HMI.TextBox_Patrimonio.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: green; border: 1px solid '+Background_Header+'}')
-                self.HMI.Patrimonio = PatrimonioAux
-                self.HMI.TextBox_Patrimonio.setText(currency+str(self.HMI.Patrimonio))
-                Rendimento = self.HMI.Calcular.Rendimento()
-                if isinstance(Rendimento, float):
-                    self.HMI.Rendimento = Rendimento
-                    self.HMI.TextBox_Rendimento.setText(str(self.HMI.Rendimento)+'%')
-                    if self.HMI.Rendimento >= 0: self.HMI.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: green; border: 1px solid '+Background_Header+'}')
-                    else: self.HMI.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: red; border: 1px solid '+Background_Header+'}')
-                else:
-                    self.HMI.Rendimento = 0
-                    self.HMI.TextBox_Rendimento.setText('...')
-                    self.HMI.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: yellow; border: 1px solid '+Background_Header+'}')
-            elif PatrimonioAux == -1: # Problema desconhecido, talvez conexão com a internet ou talvez um bug qualquer que na próxima atualização resolve
-                self.HMI.Patrimonio = 0
-                self.HMI.TextBox_Patrimonio.setText("...")
-                self.HMI.TextBox_Patrimonio.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: yellow; border: 1px solid '+Background_Header+'}')
-                self.HMI.Rendimento = 0
-                self.HMI.TextBox_Rendimento.setText('...')
-                self.HMI.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: yellow; border: 1px solid '+Background_Header+'}')
-            elif PatrimonioAux == -2: # Tabela de cotações tem algum valor igual a zero
-                self.HMI.Patrimonio = 0
-                self.HMI.TextBox_Patrimonio.setText("Att. cot. (C)")
-                self.HMI.TextBox_Patrimonio.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: orange; border: 1px solid '+Background_Header+'}')
-                self.HMI.Rendimento = 0
-                self.HMI.TextBox_Rendimento.setText('Att. cot. (C)')
-                self.HMI.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: orange; border: 1px solid '+Background_Header+'}')
-        except Exception as e: logger.error(e)
+        # call in HMI_Presentation
+        pass
 
     #%% Verificações de coerência
 

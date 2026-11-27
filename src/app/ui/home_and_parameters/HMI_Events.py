@@ -1042,7 +1042,7 @@ class HMI_Events:
 
                         # self.DBManager.CalcularTributacao() # Via thread
                         self.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial, mas tem que comentar as linhas que tem self.DBManager.LW... em HMI_Tributação.py # Debug
-                        self.DBManager.UpdatePatrimonioRendimento()
+                        self.HMI_Presentation.UpdatePatrimonioRendimento()
 
                         MessageBox_Msg1 = QMessageBox.about(self,'Informação','Importação bem sucedida.\nBem-vindo de volta '+UserName+'\nAcesse sua conta entrando pela página inicial.')
                     except Exception as msg:

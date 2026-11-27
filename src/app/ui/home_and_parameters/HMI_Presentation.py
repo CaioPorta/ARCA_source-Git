@@ -3,6 +3,8 @@ Created on Sun Sep  5 01:44:04 2021
 
 @author: Caio Moreira Porta
 """
+from src.app.core.logger_setup import logger
+
 import os
 import traceback
 import sys
@@ -332,6 +334,44 @@ class HMI_Presentation:
             self.GraphWidget_Distribuicao = self.HMI_ARCA.CreateGraph_Page50_Distribuicao()
             self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Distribuicao, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
+    def UpdatePatrimonioRendimento(self):
+        Background_Header = 'rgb(20, 20, 40)'
+        try:
+            PatrimonioAux = self.Calcular.Patrimonio()
+            if PatrimonioAux >= 0:
+                currency = self.DBManager.GetUserCoinCurrency()
+                self.TextBox_Patrimonio.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: green; border: 1px solid '+Background_Header+'}')
+                self.Patrimonio = PatrimonioAux
+                self.TextBox_Patrimonio.setText(currency+str(self.Patrimonio))
+                Rendimento = self.Calcular.Rendimento()
+                if isinstance(Rendimento, float):
+                    self.Rendimento = Rendimento
+                    self.TextBox_Rendimento.setText(str(self.Rendimento)+'%')
+                    if self.Rendimento >= 0: self.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: green; border: 1px solid '+Background_Header+'}')
+                    else: self.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: red; border: 1px solid '+Background_Header+'}')
+                else:
+                    self.Rendimento = 0
+                    self.TextBox_Rendimento.setText('...')
+                    self.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: yellow; border: 1px solid '+Background_Header+'}')
+            elif PatrimonioAux == -1: # Problema desconhecido, talvez conexão com a internet ou talvez um bug qualquer que na próxima atualização resolve
+                self.Patrimonio = 0
+                self.TextBox_Patrimonio.setText("...")
+                self.TextBox_Patrimonio.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: yellow; border: 1px solid '+Background_Header+'}')
+                self.Rendimento = 0
+                self.TextBox_Rendimento.setText('...')
+                self.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: yellow; border: 1px solid '+Background_Header+'}')
+            elif PatrimonioAux == -2: # Tabela de cotações tem algum valor igual a zero
+                self.Patrimonio = 0
+                self.TextBox_Patrimonio.setText("Att. cot. (C)")
+                self.TextBox_Patrimonio.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: orange; border: 1px solid '+Background_Header+'}')
+                self.Rendimento = 0
+                self.TextBox_Rendimento.setText('Att. cot. (C)')
+                self.TextBox_Rendimento.setStyleSheet('QLineEdit {background-color: '+Background_Header+'; color: orange; border: 1px solid '+Background_Header+'}')
+            return True
+        except Exception as e:
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
+            return False
+    
     def EnableAllButtons(self, condition = True):
         """Ferramentas"""
         if self.PageID== PAGE_BY_NAME['InformarNovaOperacaoBolsa'].page_id:
