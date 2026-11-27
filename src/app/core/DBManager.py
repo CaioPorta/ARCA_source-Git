@@ -4048,13 +4048,14 @@ class DBManager:
 
     #%% Verificações de coerência
 
-    def VerificarPrimeiraOperacao(self, BolsaOuCripto: str, corretora: str, ativo: str):
+    def VerificarPrimeiraOperacao(self, BolsaOuCripto: str, corretora: str, ativo: str | None):
         Status = False
         corretora = corretora.replace(" ","_")
-        ativo = ativo.replace(" ","_")
 
         try:
             if BolsaOuCripto == "Bolsa":
+                if ativo == None: return Status
+                ativo = ativo.replace(" ","_")
                 retorno, _ = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨Bruto")
                 retorno = retorno[0][1]
                 if retorno == "Venda": Status = True
@@ -4068,16 +4069,14 @@ class DBManager:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: return Status
 
-    def VerificarSeTemEstoqueNegativo(self, ativo='', corretora='', BolsaOuCripto=''):
+    def VerificarSeTemEstoqueNegativo(self, BolsaOuCripto: str, corretora: str, ativo: str | None):
         Status = False
-        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
         corretora = corretora.replace(" ","_")
 
         try:
             if BolsaOuCripto == "Bolsa":
-                if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
-                if not len(ativo)>0: return False
+                if ativo == None: return Status
+                ativo = ativo.replace(" ","_")
                 retorno, _ = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨Bruto")
                 retorno = list(filter(lambda x: x[8]<0, retorno))
                 if len(retorno) > 0: Status = True
@@ -4094,16 +4093,14 @@ class DBManager:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: return Status
 
-    def VerificarSeTemCustoNegativo(self, ativo='', corretora='', BolsaOuCripto=''):
+    def VerificarSeTemCustoNegativo(self, BolsaOuCripto: str, corretora: str, ativo: str | None):
         Status = False
-        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
         corretora = corretora.replace(" ","_")
-        if not len(ativo)>0 and BolsaOuCripto == "Bolsa": ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
-        if not len(ativo)>0: return False
 
         try:
             if BolsaOuCripto == "Bolsa":
+                if ativo == None: return Status
+                ativo = ativo.replace(" ","_")
                 retorno, _ = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨Bruto")
                 retorno = list(filter(lambda x: x[9]<0, retorno))
                 if len(retorno) > 0: Status = True

@@ -1096,9 +1096,16 @@ class HMI_PageNavigation:
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Bolsa.CreatePage23()
                 self.PutHeader()
+                ativo = None
+                if self.BolsaOuCripto == "Bolsa":
+                    ativo = self.ComboBox_Ativos.currentText()
 
-                if self.DBManager.VerificarSeTemEstoqueNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','ESTOQUE NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
-                elif self.DBManager.VerificarSeTemCustoNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','CUSTO NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
+                if self.DBManager.VerificarSeTemEstoqueNegativo(self.BolsaOuCripto,
+                                                                self.ComboBox_Corretoras.currentText(),
+                                                                ativo): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','ESTOQUE NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
+                elif self.DBManager.VerificarSeTemCustoNegativo(self.BolsaOuCripto,
+                                                                self.ComboBox_Corretoras.currentText(),
+                                                                ativo): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','CUSTO NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
             elif PageID in [PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id, '24_']:
                 if PageID  == '24_':
                     try:
@@ -1463,7 +1470,7 @@ class HMI_PageNavigation:
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage40()
                 self.PutHeader()
-                ativo = ""
+                ativo = None
                 if BolsaOuCripto == "Bolsa": 
                     ativo = self.ComboBox_Ativos.currentText()
 
@@ -1471,8 +1478,12 @@ class HMI_PageNavigation:
                                                             self.ComboBox_Corretoras.currentText(),
                                                             ativo):
                     MessageBox_Msg1 = QMessageBox.about(self,'Aviso','A primeira operação deve ser do tipo DEPÓSITO ou DROP.')
-                elif self.DBManager.VerificarSeTemEstoqueNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','ESTOQUE NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
-                elif self.DBManager.VerificarSeTemCustoNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','CUSTO NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
+                elif self.DBManager.VerificarSeTemEstoqueNegativo(self.BolsaOuCripto,
+                                                                  self.ComboBox_Corretoras.currentText(),
+                                                                  ativo): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','ESTOQUE NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
+                elif self.DBManager.VerificarSeTemCustoNegativo(self.BolsaOuCripto,
+                                                                self.ComboBox_Corretoras.currentText(),
+                                                                ativo): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','CUSTO NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
             elif PageID== PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id:
                 try: self.Label_Erro1.deleteLater()
                 except Exception as e:
