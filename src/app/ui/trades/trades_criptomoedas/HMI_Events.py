@@ -1132,7 +1132,10 @@ class HMI_Events:
                     Item = len(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.data_40_1)-self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes[self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.item]-1
                     Corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
 
-                    if self.HMI.DBManager.AlterOperacao_Cripto(Item, Data, Tipo, ParEsquerdo, ParDireito, Qqt, Preco, Taxa, MoedaDaTaxa, Conversao, Obs, Corretora):
+                    if self.HMI.DBManager.AlterOperacao_Cripto(self.HMI.BolsaOuCripto, Corretora, Item, Data, Tipo, ParEsquerdo, ParDireito, Qqt, Preco, Taxa, MoedaDaTaxa, Conversao, Obs):
+                        # self.CalcularTributacao() # Via thread
+                        self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
+                        self.UpdatePatrimonioRendimento()
                         self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
                         if self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.item+1 >= len(self.HMI.HMI_Trades.HMI_Trades_Criptomoedas.Operacoes):
                             self.HMI.CreatePage(PAGE_BY_NAME['RegistrosCripto'].page_id) # Última alteração da lista

@@ -248,8 +248,24 @@ class HMI_Events:
                         TaxaB3Per = round(TaxaB3/Qqt/Preco*100,2)
                     Obs = self.HMI.TextBox_Obs.text().replace("ST; ","").replace("DT; ","")
                     Item = len(self.HMI.HMI_Trades.HMI_Trades_Bolsa.data_23_1)-self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes[self.HMI.HMI_Trades.HMI_Trades_Bolsa.item]-1
-                    
-                    if self.HMI.DBManager.AlterOperacao(Item, Data, Tipo, Qqt, Preco, Corretagem, TaxaB3, TaxaB3Per, Obs):
+                    ativo = self.ComboBox_Ativos.currentText()
+                    Corretora = self.HMI.ComboBox_Corretoras.currentText()
+                    if self.HMI.DBManager.AlterOperacao(self.HMI.BolsaOuCripto,
+                                                        Corretora,
+                                                        ativo,
+                                                        Item,
+                                                        Data,
+                                                        Tipo,
+                                                        Qqt,
+                                                        Preco,
+                                                        Corretagem,
+                                                        TaxaB3,
+                                                        TaxaB3Per,
+                                                        Obs
+                                                        ):
+                        # self.CalcularTributacao() # Via thread
+                        self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
+                        self.UpdatePatrimonioRendimento()
                         self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
                         if self.HMI.HMI_Trades.HMI_Trades_Bolsa.item+1 >= len(self.HMI.HMI_Trades.HMI_Trades_Bolsa.Operacoes):
                             self.HMI.CreatePage(PAGE_BY_NAME['RegistrosBolsa'].page_id) # Última alteração da lista

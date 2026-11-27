@@ -338,7 +338,7 @@ class HMI_PageBuilders:
 
         returnValue = MessageBox_Msg1.exec()
         if returnValue == QMessageBox.Yes:
-            self.HMI.DBManager.DeleteBanco()
+            self.HMI.DBManager.DeleteBanco(self.HMI.ComboBox_Bancos.currentText())
             self.HMI.CreatePage(PAGE_BY_NAME['EditacaoContasCorrentesBancos'].page_id)
 
 

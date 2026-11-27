@@ -9,7 +9,7 @@ from src.app.core.logger_setup import logger
 import os
 from os.path import exists
 import copy
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 import pandas as pd
 import sqlite3
 import traceback
@@ -781,7 +781,7 @@ class DBManager:
             AtivosSendoUtilizados = self.GetAllAtivos()
 
             retorno, _ = self.GetDataDB("SELECT Ativo FROM Cotações")
-            AtivosDaTabelaCotacoes = list(map(lambda x: x[0],retorno))
+            AtivosDaTabelaCotacoes = list(map(lambda x: x[0], retorno))
 
             for ativo in AtivosDaTabelaCotacoes:
                 if ativo not in AtivosSendoUtilizados and not ativo == "USD" and not ativo == self.GetUserCoinCurrency():
@@ -867,15 +867,15 @@ class DBManager:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
             return False
 
-    def RenameCorretora(self, BolsaOuCripto):
-        def GetRowId(Table,corretora):
+    def RenameCorretora(self, BolsaOuCripto: str, NewCorretoraName: str, OldCorretoraName: str):
+        def GetRowId(Table, corretora):
             retorno, _ = self.GetDataDB("SELECT rowid, * FROM "+Table)
             retorno = list(filter(lambda x: str(x).find(corretora)>-1, retorno))
             retorno = retorno[0][0]
             return str(retorno)
-        
-        NewCorretoraName = self.HMI.TextBox_NovoNomeCorretora.text().replace(" ","_")
-        OldCorretoraName = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
+
+        NewCorretoraName = NewCorretoraName.replace(" ","_")
+        OldCorretoraName = OldCorretoraName.replace(" ","_")
 
         if self.CorretoraExists(NewCorretoraName, BolsaOuCripto):
             return False
@@ -884,14 +884,14 @@ class DBManager:
         self.ModifyDB("UPDATE Corretoras SET Corretora = (?) Where rowid = "+GetRowId('Corretoras',OldCorretoraName), [(NewCorretoraName+"¨"+BolsaOuCripto)])
         # Alter all Tables que contêm "OPs_Ativo_Corretora_BolsaOuCripto"
         retorno, _ = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        tables = list(map(lambda x: x[0],retorno))
-        tables = list(filter(lambda x: x.find("¨"+OldCorretoraName+"¨")>-1,tables))
+        tables = list(map(lambda x: x[0], retorno))
+        tables = list(filter(lambda x: x.find("¨"+OldCorretoraName+"¨")>-1, tables))
         for TableNameAntiga in tables:
             TableNameNova = TableNameAntiga.replace(OldCorretoraName, NewCorretoraName)
             self.ModifyDB("ALTER TABLE "+TableNameAntiga+" RENAME TO "+TableNameNova)
         return True
 
-    def RenameBanco(self):
+    def RenameBanco(self, NewBancoName: str, OldBancoName: str):
         def GetRowId(Table,Banco):
             retorno, _ = self.GetDataDB("SELECT rowid, * FROM "+Table)
             retorno = list(filter(lambda x: str(x).find("¨"+Banco+"¨")>-1, retorno))
@@ -902,8 +902,8 @@ class DBManager:
             retorno = list(filter(lambda x: str("¨"+Banco+"¨").lower() == str(x[0]).lower(), retorno))
             return len(retorno) > 0
 
-        NewBancoName = self.HMI.TextBox_NovoNomeBanco.text().replace(" ","_")
-        OldBancoName = self.HMI.ComboBox_Bancos.currentText().replace(" ","_")
+        NewBancoName = NewBancoName.replace(" ","_")
+        OldBancoName = OldBancoName.replace(" ","_")
 
         if BancoExists(NewBancoName): return False
         # Update Corretora em Table Corretoras
@@ -926,17 +926,18 @@ class DBManager:
             return True
         return False
 
-    def AlterOperacao(self, Item, Data, Tipo, Qqt, Preco, Corretagem, TaxaB3, TaxaB3Per, Obs):
+    def AlterOperacao(self, BolsaOuCripto, Corretora, ativo, Item, Data, Tipo, Qqt, Preco, Corretagem, TaxaB3, TaxaB3Per, Obs):
         def ThereIsAnotherOPWithTheSameDate(TableName, data, rowid):
             data = datetime.strptime(data,"%Y/%m/%d %H:%M:%S")
             Table_Inicial, _ = self.GetDataDB("SELECT rowid, * FROM "+TableName+"¨Bruto")
-            aux = list(filter(lambda x: datetime.strptime(x[1],"%Y-%m-%d %H:%M:%S") == data and not rowid == x[0], Table_Inicial))
+            aux = list(filter(lambda x: datetime.strptime(x[1],"%Y-%m-%d %H:%M:%S") == data and rowid != x[0], Table_Inicial))
             return len(aux) > 0
         Item +=1
-        ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
+        Corretora = Corretora.replace(" ","_")
+        ativo = ativo.replace(" ","_")
         TableName = str('OPs¨'+ativo +
-                        '¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
-                        '¨'+self.HMI.BolsaOuCripto)
+                        '¨'+Corretora+
+                        '¨'+BolsaOuCripto)
         TableNameBruto = TableName+'¨Bruto'
         TableNameDT = TableName+'¨DT'
         TableNameST = TableName+'¨ST'
@@ -967,20 +968,18 @@ class DBManager:
             # Calcular todas as células automatizadas e fazer update pra cada célula
             self.CalcularCelsAutomatizadas(TableNameBruto)
             self.CalcularCelsAutomatizadas(TableNameDT)
-        # self.CalcularTributacao() # Via thread
-        self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
-        self.UpdatePatrimonioRendimento()
-        return True
+        return True # DeuBom and need_CalcularTributacao
 
-    def AlterOperacao_Cripto(self, Item, Data, Tipo, ParEsquerdo, ParDireito, Qqt, Preco, Taxa, MoedaDaTaxa, Conversao, Obs, Corretora):
+    def AlterOperacao_Cripto(self, BolsaOuCripto, Corretora, Item, Data, Tipo, ParEsquerdo, ParDireito, Qqt, Preco, Taxa, MoedaDaTaxa, Conversao, Obs):
         def ThereIsAnotherOPWithTheSameDate(TableName, data, rowid):
             data = datetime.strptime(data,"%Y/%m/%d %H:%M:%S")
             Table_Inicial, _ = self.GetDataDB("SELECT rowid, * FROM "+TableName+"¨Bruto")
-            aux = list(filter(lambda x: datetime.strptime(x[2],"%Y-%m-%d %H:%M:%S") == data and not rowid == x[0], Table_Inicial))
+            aux = list(filter(lambda x: datetime.strptime(x[2],"%Y-%m-%d %H:%M:%S") == data and rowid != x[0], Table_Inicial))
             return len(aux) > 0
         Item +=1
-        TableName = str('OPs¨'+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+
-                        '¨'+self.HMI.BolsaOuCripto)
+        Corretora = Corretora.replace(" ","_")
+        TableName = str('OPs¨'+Corretora+
+                        '¨'+BolsaOuCripto)
         TableNameBruto = TableName+'¨Bruto'
 
         # Verifica se tem outra operação nessa mesma data
@@ -1002,16 +1001,13 @@ class DBManager:
         # Separar DT e ST se não for FII. Se for FII fazer só pra DT
         self.CalcularCelsAutomatizadas_CriptoRefinado(TableName)
         self.UpdateContaCorrente_Cripto(Corretora)
-        # self.CalcularTributacao() # Via thread
-        self.HMI.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
-        self.UpdatePatrimonioRendimento()
         return True
 
     #%% Deletes
 
-    def DeleteBanco(self):
+    def DeleteBanco(self, Banco):
         try:
-            Banco = self.HMI.ComboBox_Bancos.currentText().replace(" ","_")
+            Banco = Banco.replace(" ","_")
             self.ModifyDB("DELETE FROM Bancos WHERE Banco = (?)",[("¨"+Banco+"¨")])
             self.ModifyDB("VACUUM")
         except Exception as e:
@@ -1019,10 +1015,10 @@ class DBManager:
             logger.error('erro deletando banco')
         finally: self.UpdatePatrimonioRendimento()
 
-    def DeleteCorretora(self):
-        def GetRowId(corretora):
+    def DeleteCorretora(self, BolsaOuCripto, corretora):
+        def GetRowId(BolsaOuCripto, corretora):
             retorno, _ = self.GetDataDB("SELECT rowid, * FROM Corretoras")
-            retorno = list(filter(lambda x: str(corretora+"¨"+self.HMI.BolsaOuCripto).lower() == str(x[1]).lower(), retorno))
+            retorno = list(filter(lambda x: str(corretora+"¨"+BolsaOuCripto).lower() == str(x[1]).lower(), retorno))
             retorno = retorno[0][0]
             return retorno
         def GetRowId2(TableName, ativo):
@@ -1034,21 +1030,21 @@ class DBManager:
         try:
             BolsaOuCripto = self.HMI.BolsaOuCripto
             corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
-            rowid = GetRowId(corretora)
+            rowid = GetRowId(BolsaOuCripto, corretora)
             self.ModifyDB("DELETE FROM Corretoras WHERE rowid = "+str(rowid))
             self.ModifyDB("VACUUM")
 
             # Delete all Tables que contêm "Corretora_BolsaOuCripto"
             retorno, _ = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-            AllTables = list(map(lambda x: x[0],retorno))
+            AllTables = list(map(lambda x: x[0], retorno))
             Tables = list(filter(lambda x: x.find("¨"+corretora+"¨"+BolsaOuCripto)>-1,AllTables))
-            AtivosDeletados = list(filter(lambda x: x.find("OPs¨")>-1 and x.find("¨Bolsa¨Bruto")>-1,Tables))
-            AtivosDeletados = list(map(lambda x: x.replace("¨"+corretora+"¨"+BolsaOuCripto+"¨Bruto","").replace("OPs¨",""),AtivosDeletados))
+            AtivosDeletados = list(filter(lambda x: x.find("OPs¨")>-1 and x.find("¨Bolsa¨Bruto")>-1, Tables))
+            AtivosDeletados = list(map(lambda x: x.replace("¨"+corretora+"¨"+BolsaOuCripto+"¨Bruto","").replace("OPs¨",""), AtivosDeletados))
             for table in Tables:
                 self.ModifyDB("DROP TABLE "+table)
 
             retorno, _ = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-            AllTables = list(map(lambda x: x[0],retorno))
+            AllTables = list(map(lambda x: x[0], retorno))
             for ativo in AtivosDeletados:
                 if not ativo in AllTables:
                     self.ModifyDB("DELETE FROM Bolsa WHERE Ativo = (?)",[(ativo)])
@@ -1100,7 +1096,7 @@ class DBManager:
                 self.ModifyDB("DROP TABLE "+TableNameST)
                 self.ModifyDB("DROP TABLE "+TableNameDT)
                 retorno, _ = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-                ativos = list(map(lambda x: x[0],retorno))
+                ativos = list(map(lambda x: x[0], retorno))
                 ativos = list(filter(lambda x: x.find(ativo)>-1,ativos))
                 if not len(ativos)>0:
                     self.ModifyDB("DELETE FROM Bolsa WHERE Ativo = (?)",[(ativo)])
@@ -1524,21 +1520,21 @@ class DBManager:
                     if DTeST == "":
                         retornoAux, _ = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨Bruto")
                         retorno = []
-                        for row in retornoAux: retorno.append((row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7]))
+                        for row in retornoAux: retorno.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
                     elif DTeST == "DTeST":
                         retornoAux, _ = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨ST")
                         retorno = []
-                        for row in retornoAux: retorno.append((row[0],row[1],row[2],row[3],row[4],row[5],row[6],"ST; "+row[7]))
+                        for row in retornoAux: retorno.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6],"ST; "+row[7]))
                         retornoAux, _ = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨DT")
-                        for row in retornoAux: retorno.append((row[0],row[1],row[2],row[3],row[4],row[5],row[6],"DT; "+row[7]))
+                        for row in retornoAux: retorno.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6],"DT; "+row[7]))
                     elif DTeST == "DT":
                         retornoAux, _ = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨DT")
                         retorno = []
-                        for row in retornoAux: retorno.append((row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7]))
+                        for row in retornoAux: retorno.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
                     elif DTeST == "ST":
                         retornoAux, _ = self.GetDataDB("SELECT * FROM OPs¨"+ativo+"¨"+corretora+"¨"+BolsaOuCripto+"¨ST")
                         retorno = []
-                        for row in retornoAux: retorno.append((row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7]))
+                        for row in retornoAux: retorno.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
                     if not len(retorno)>0: retorno = [('00-00-0000 00:00:00','VAZIO','0','0','0','0','0',' ')]
                 else: retorno = [('00-00-0000 00:00:00','VAZIO','0','0','0','0','0',' ')]
                 return retorno
@@ -1685,20 +1681,20 @@ class DBManager:
                 if len(aux) > 0:
                     if self.HMI.DTeST_51 != "DTeST": # Tamanho 8: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Alíquota', 'Lucro mínimo taxável', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
-                        for row in aux: aux2.append((row[0],row[7],row[6],row[4],row[5],row[1],row[2],row[3]))
+                        for row in aux: aux2.append((row[0], row[7], row[6], row[4], row[5], row[1], row[2], row[3]))
                     else: # Tamanho 6: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
-                        for row in aux: aux2.append((row[0],row[7],row[6],row[1],row[2],row[3]))
+                        for row in aux: aux2.append((row[0], row[7], row[6], row[1], row[2], row[3]))
                     retorno.append(aux2)
             if 'Cripto' in self.HMI.CriptoeB3_51:
                 aux, _ = self.GetDataDB("SELECT * FROM TributaçãoSTCripto") # 'Mês/Ano', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final', 'Alíquota', 'Lucro mínimo taxável', 'Imposto devido', 'Resultado líquido'
                 if len(aux) > 0:
                     if self.HMI.DTeST_51 != "DTeST": # Tamanho 8: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Alíquota', 'Lucro mínimo taxável', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
-                        for row in aux: aux2.append((row[0],row[7],row[6],row[4],row[5],row[1],row[2],row[3]))
+                        for row in aux: aux2.append((row[0], row[7], row[6], row[4], row[5], row[1], row[2], row[3]))
                     else: # Tamanho 6: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
-                        for row in aux: aux2.append((row[0],row[7],row[6],row[1],row[2],row[3]))
+                        for row in aux: aux2.append((row[0], row[7], row[6], row[1], row[2], row[3]))
                     retorno.append(aux2)
         if 'DT' in self.HMI.DTeST_51:
             if 'B3' in self.HMI.CriptoeB3_51:
@@ -1706,20 +1702,20 @@ class DBManager:
                 if len(aux) > 0:
                     if self.HMI.DTeST_51 != "DTeST": # Tamanho 8: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Alíquota', 'Lucro mínimo taxável', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
-                        for row in aux: aux2.append((row[0],row[7],row[6],row[4],row[5],row[1],row[2],row[3]))
+                        for row in aux: aux2.append((row[0], row[7], row[6], row[4], row[5], row[1], row[2], row[3]))
                     else: # Tamanho 6: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
-                        for row in aux: aux2.append((row[0],row[7],row[6],row[1],row[2],row[3]))
+                        for row in aux: aux2.append((row[0], row[7], row[6], row[1], row[2], row[3]))
                     retorno.append(aux2)
             if 'Cripto' in self.HMI.CriptoeB3_51:
                 aux, _ = self.GetDataDB("SELECT * FROM TributaçãoDTCripto") # 'Mês/Ano', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final', 'Alíquota', 'Lucro mínimo taxável', 'Imposto devido', 'Resultado líquido'
                 if len(aux) > 0:
                     if self.HMI.DTeST_51 != "DTeST": # Tamanho 8: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Alíquota', 'Lucro mínimo taxável', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
-                        for row in aux: aux2.append((row[0],row[7],row[6],row[4],row[5],row[1],row[2],row[3]))
+                        for row in aux: aux2.append((row[0], row[7], row[6], row[4], row[5], row[1], row[2], row[3]))
                     else: # Tamanho 6: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
-                        for row in aux: aux2.append((row[0],row[7],row[6],row[1],row[2],row[3]))
+                        for row in aux: aux2.append((row[0], row[7], row[6], row[1], row[2], row[3]))
                     retorno.append(aux2)
         if len(retorno) > 0:
             retornoAux = retorno
@@ -2051,14 +2047,14 @@ class DBManager:
         Soma = 0
 
         retorno, _ = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        tables = list(map(lambda x: x[0],retorno))
+        tables = list(map(lambda x: x[0], retorno))
         tables = list(filter(lambda x: x.find("¨DepSaq")>-1, tables))
         for corretoraDepSaq in tables: # Para Bolsa
             retorno, _ = self.GetDataDB("SELECT * FROM "+corretoraDepSaq)
             valores = list(map(lambda x: x[1], retorno))
             Soma += sum(valores)
         retorno, _ = self.GetDataDB("SELECT name FROM sqlite_master WHERE type='table';")
-        tables = list(map(lambda x: x[0],retorno))
+        tables = list(map(lambda x: x[0], retorno))
         tables = list(filter(lambda x: x.find("¨Cripto¨Refinado")>-1, tables))
         for corretoraCriptoRefinado in tables: # Para Criptomoedas
             retorno, _ = self.GetDataDB("SELECT * FROM "+corretoraCriptoRefinado)
@@ -3172,12 +3168,12 @@ class DBManager:
                                                 aux[4] = round(float(aux[4])*(1-proporcao),2)
                                                 aux[6] = round(float(aux[6])*(1-proporcao),2)
                                                 aux[9] = round(aux[4],2) + round(aux[6],2)
-                                                ListaDeIdxDeOPsDeCompraNaData_Variavel[0]=(ListaDeIdxDeOPsDeCompraNaData_Variavel[0][0],tuple(aux))
+                                                ListaDeIdxDeOPsDeCompraNaData_Variavel[0]=(ListaDeIdxDeOPsDeCompraNaData_Variavel[0][0], tuple(aux))
                                                 doing = False
                                                 PassePraProximaOPDeVenda = True
                                                 # Adiciona uma parte em DT e a outra em ST
                                                 logger.debug('Split')
-                                                logger.debug("ComprasDoDT > VendasNoDT, Add ao DT:\n",tuple(AoDT),"\ne:\n",V)
+                                                logger.debug("ComprasDoDT > VendasNoDT, Add ao DT:\n", tuple(AoDT),"\ne:\n",V)
                                                 AoDT = tuple(AoDT)
                                                 NovaDT_Reposta.append([('Data', AoDT[0]),
                                                                        ('Tipo', AoDT[1]),
@@ -3520,7 +3516,7 @@ class DBManager:
         #     self.ModifyDB("DROP TABLE "+TableName+"¨DT")
         #     self.CreateTableInCurrentDB(TableName+"¨DT", [HEADER])
         #     for row in NovaDT_Reposta:
-        #         logger.debug("DT: ",row) # Debug
+        #         logger.debug("DT: ", row) # Debug
         #         # Overwrite DT
         #         self.AddRowInCurrentDB(TableName+"¨DT", row)
 
@@ -3528,7 +3524,7 @@ class DBManager:
         #     self.ModifyDB("DROP TABLE "+TableName+"¨ST")
         #     self.CreateTableInCurrentDB(TableName+"¨ST", [HEADER])
         #     for row in NovaDT_Reposta:
-        #         logger.debug("ST: ",row) # Debug
+        #         logger.debug("ST: ", row) # Debug
         #         # Overwrite DT
         #         self.AddRowInCurrentDB(TableName+"¨ST", row)
 
@@ -4187,7 +4183,7 @@ class DBManager:
         except Exception as e:
             pass
             # if not "no such column: EstoqueDe" in str(e): # Awaited error, uncomment only for specific debug, otherwise trades_bolsa may crash
-            #     logger.error("Erro GetDataDB: ",str(e),"\nO comando solicitado foi:\n",command,"\nparâmetros:",params)
+            #     logger.error("Erro GetDataDB: ",str(e),"\nO comando solicitado foi:\n", command,"\nparâmetros:",params)
             #     logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.ThreadLock.release()
         return data, cursor.description
@@ -4201,6 +4197,6 @@ class DBManager:
             else: cursor.execute(command, params)
             self.conn.commit()
         except Exception as e:
-            logger.error("Erro ModifyDB: ",str(e),"\nO comando solicitado foi:\n",command,"\nparâmetros:",params)
+            logger.error("Erro ModifyDB: ",str(e),"\nO comando solicitado foi:\n", command,"\nparâmetros:",params)
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: self.ThreadLock.release()
