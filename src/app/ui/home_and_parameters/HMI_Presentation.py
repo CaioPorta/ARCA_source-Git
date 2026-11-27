@@ -34,7 +34,7 @@ class HMI_Presentation:
                                                                                               self.ComboBox_Corretoras.currentText(),
                                                                                               )))
             self.TextBox_Msg4.setText(self.DBManager.GetDataUltimaOPRegistrada(self.BolsaOuCripto, self.ComboBox_Corretoras.currentText()))
-            valor = round(self.DBManager.GetUltimoDepositoOuSaqueRegistrado(corretora),2)
+            valor = round(self.DBManager.GetUltimoDepositoOuSaqueRegistrado(self.BolsaOuCripto, corretora),2)
             self.TextBox_Msg5.setText(UserCoin+' '+str(valor))
             if valor >= 0: self.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: green;}')
             else: self.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: orange;}')
@@ -52,7 +52,7 @@ class HMI_Presentation:
                                                                                               self.ComboBox_Corretoras.currentText(),
                                                                                               )))
             self.TextBox_Msg4.setText(self.DBManager.GetDataUltimaOPRegistrada(self.BolsaOuCripto, self.ComboBox_Corretoras.currentText()))
-            valor = self.DBManager.GetUltimoDepositoOuSaqueRegistrado()
+            valor = self.DBManager.GetUltimoDepositoOuSaqueRegistrado(self.BolsaOuCripto, corretora)
             self.TextBox_Msg5.setText(UserCoin+' '+str(valor))
             if valor >= 0: self.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: green;}')
             else: self.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: orange;}')

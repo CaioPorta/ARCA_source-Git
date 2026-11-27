@@ -177,7 +177,7 @@ class HMI_PageBuilders:
         self.HMI.TextBox_Msg5.setFont(self.HMI.font16)
         self.HMI.TextBox_Msg5.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.TextBox_Msg5.setEnabled(False)
-        valor = round(self.HMI.DBManager.GetUltimoDepositoOuSaqueRegistrado(self.HMI.ComboBox_Corretoras.currentText()),2)
+        valor = round(self.HMI.DBManager.GetUltimoDepositoOuSaqueRegistrado(self.HMI.BolsaOuCripto, self.HMI.ComboBox_Corretoras.currentText()),2)
         if valor >= 0: self.HMI.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: green;}')
         else: self.HMI.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: orange;}')
         self.HMI.TextBox_Msg5.setText(UserCoin+' '+str(valor))

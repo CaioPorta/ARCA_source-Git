@@ -688,7 +688,7 @@ class DBManager:
             return False
         # Adicionar linha nova: (Data, Valor)
         self.AddRowInCurrentDB("¨"+Corretora+"¨"+BolsaOuCripto+"¨DepSaq", [('Data', Data),('Valor', Valor)])
-        self.SortByDate("¨"+Corretora+"¨"+BolsaOuCripto+"¨DepSaq")
+        self.SortByDate("¨"+Corretora+"¨"+BolsaOuCripto+"¨DepSaq", BolsaOuCripto)
 
         retorno, _ = self.GetDataDB("SELECT * FROM ¨"+Corretora+"¨"+BolsaOuCripto+"¨DepSaq")
         if len(retorno)==1: self.ModifyDB("VACUUM")
@@ -1753,7 +1753,7 @@ class DBManager:
         MoedaCorrente = retorno[0][0]
         return MoedaCorrente
 
-    def GetCorretoraCoinCurrency(self, BolsaOuCripto, corretora):
+    def GetCorretoraCoinCurrency(self, BolsaOuCripto: str, corretora: str):
         corretora = corretora.replace(" ","_")
         Corretora = corretora + "¨" + BolsaOuCripto
         retorno, _ = self.GetDataDB("SELECT * FROM Corretoras WHERE Corretora = (?)",[(Corretora)])
@@ -1812,10 +1812,8 @@ class DBManager:
             except: Patrimonio = -2
         return round(Patrimonio, 2)
 
-    def GetTotalInvestidoEmCorretora(self, corretora = '', BolsaOuCripto = ''):
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
+    def GetTotalInvestidoEmCorretora(self, corretora, BolsaOuCripto):
         corretora = corretora.replace(" ","_")
-        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
         Investido = 0
 
         if BolsaOuCripto == "Bolsa":
@@ -1901,19 +1899,18 @@ class DBManager:
             if len(retorno)>0: return retorno[::-1]
         return [(datetime.now().strftime('%Y-%m-%d %H:%M:%S'),0)]
 
-    def GetUltimoDepositoOuSaqueRegistrado(self, corretora = ''):
+    def GetUltimoDepositoOuSaqueRegistrado(self, BolsaOuCripto: str, corretora: str):
         valor = 0
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
         corretora = corretora.replace(" ","_")
         if len(corretora)>0:
-            if self.HMI.BolsaOuCripto == "Bolsa":
-                retorno, _ = self.GetDataDB("SELECT * FROM ¨"+corretora+"¨"+self.HMI.BolsaOuCripto+"¨DepSaq")
+            if BolsaOuCripto == "Bolsa":
+                retorno, _ = self.GetDataDB("SELECT * FROM ¨"+corretora+"¨"+BolsaOuCripto+"¨DepSaq")
                 valor = 0
                 for row in retorno:
                     valor = float(row[1])
-            elif self.HMI.BolsaOuCripto == "Cripto":
+            elif BolsaOuCripto == "Cripto":
                 # Pegar último depósito feito da tabela
-                retorno, _ = self.GetDataDB("SELECT * FROM OPs¨"+corretora+"¨"+self.HMI.BolsaOuCripto+"¨Bruto")
+                retorno, _ = self.GetDataDB("SELECT * FROM OPs¨"+corretora+"¨"+BolsaOuCripto+"¨Bruto")
                 UserCoin = self.GetUserCoinCurrency()
                 retorno = list(filter(lambda x: ("Depósito" in x[2] or "Saque" in x[2]) and x[3] == UserCoin, retorno))
                 if len(retorno)>0:
@@ -2011,15 +2008,15 @@ class DBManager:
     def GetMontanteNasCorretoras(self):
         Patrimonio = 0.
         try:
-            corretoras = self.HMI.DBManager.GetCorretoras("Bolsa")
+            corretoras = self.GetCorretoras("Bolsa")
             for corretora in corretoras:
-                PatrimonioAux = self.HMI.DBManager.GetPatrimonioTotalCorretora(corretora, "Bolsa")
+                PatrimonioAux = self.GetPatrimonioTotalCorretora(corretora, "Bolsa")
                 logger.debug(corretora, PatrimonioAux)
                 if PatrimonioAux == -1: return -2
                 Patrimonio += PatrimonioAux
-            corretoras = self.HMI.DBManager.GetCorretoras("Cripto")
+            corretoras = self.GetCorretoras("Cripto")
             for corretora in corretoras:
-                PatrimonioAux = self.HMI.DBManager.GetPatrimonioTotalCorretora(corretora, "Cripto")
+                PatrimonioAux = self.GetPatrimonioTotalCorretora(corretora, "Cripto")
                 logger.debug(corretora, PatrimonioAux)
                 if PatrimonioAux == -1: return -2
                 Patrimonio += PatrimonioAux
@@ -3049,8 +3046,7 @@ class DBManager:
         self.ModifyDB("INSERT INTO "+TableName+" VALUES ("+ColCount+")", rowcontent)
         return True
 
-    def SortByDate(self, TableName, BolsaOuCripto = ''):
-        if len(BolsaOuCripto) == 0: BolsaOuCripto = self.HMI.BolsaOuCripto
+    def SortByDate(self, TableName, BolsaOuCripto: str):
         try:
             self.ModifyDB("ALTER TABLE "+TableName+" RENAME TO "+TableName+"¨NotSorted") # Transforma a tabela antiga na auxiliar
             if "OPs¨" in TableName:
