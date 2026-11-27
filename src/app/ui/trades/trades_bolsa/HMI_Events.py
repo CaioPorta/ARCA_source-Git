@@ -189,7 +189,10 @@ class HMI_Events:
                                                                                    self.HMI.ComboBox_Corretoras.currentText(),
                                                                                    self.HMI.ComboBox_Ativos.currentText(),
                                                                                    ))))
-                self.HMI.TextBox_Preco.setText(str(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText())))
+                self.HMI.TextBox_Preco.setText(str(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText(),
+                                                                                    self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                    self.HMI.BolsaOuCripto,
+                                                                                    )))
                 self.HMI.TextBox_Corretagem.setText("0")
                 self.HMI.TextBox_TaxaB3.setText("0")
             self.HMI.TextBox_Qqt.setFocus()
@@ -202,7 +205,10 @@ class HMI_Events:
                                                                                        self.HMI.ComboBox_Corretoras.currentText(),
                                                                                        self.HMI.ComboBox_Ativos.currentText(),
                                                                                        ))))
-                    self.HMI.TextBox_Preco.setText(str(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText())))
+                    self.HMI.TextBox_Preco.setText(str(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText(),
+                                                                                        self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                        self.HMI.BolsaOuCripto,
+                                                                                        )))
                     self.HMI.TextBox_Corretagem.setText("0")
                     self.HMI.TextBox_TaxaB3.setText("0")
                 elif self.HMI.TipoDeOperacao == "Compra":
@@ -219,7 +225,10 @@ class HMI_Events:
                                                                                        self.HMI.ComboBox_Corretoras.currentText(),
                                                                                        self.HMI.ComboBox_Ativos.currentText(),
                                                                                        ))))
-                    self.HMI.TextBox_Preco.setText(str(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText())))
+                    self.HMI.TextBox_Preco.setText(str(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText(),
+                                                                                        self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                        self.HMI.BolsaOuCripto,
+                                                                                        )))
                     self.HMI.TextBox_Corretagem.setText("0")
                     self.HMI.TextBox_TaxaB3.setText("0")
                 elif self.HMI.TipoDeOperacao == "Compra":

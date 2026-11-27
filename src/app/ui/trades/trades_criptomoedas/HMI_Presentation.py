@@ -89,7 +89,11 @@ class HMI_Presentation:
                    'Moeda da taxa',
                    'Conversão',
                    'Obs']
-        self.data_40_1 = self.HMI.DBManager.GetAllOperacoes(self.HMI.DTeST)
+        self.data_40_1 = self.HMI.DBManager.GetAllOperacoes(self.HMI.BolsaOuCripto,
+                                                            self.HMI.ComboBox_Corretoras.currentText(),
+                                                            None,
+                                                            self.HMI.DTeST,
+                                                            )
         self.data_40_1 = self.data_40_1[::-1]
         self.HMI.Table_Operacoes_Realizadas.setRowCount(len(self.data_40_1))
         self.HMI.Table_Operacoes_Realizadas.setColumnCount(len(HHeader))

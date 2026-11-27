@@ -100,7 +100,11 @@ class HMI_Presentation:
                    'Taxa B3%',
                    'Taxa B3',
                    'Obs']
-        self.data_23_1 = self.HMI.DBManager.GetAllOperacoes(self.HMI.DTeST)
+        self.data_23_1 = self.HMI.DBManager.GetAllOperacoes(self.HMI.BolsaOuCripto,
+                                                            self.HMI.ComboBox_Corretoras.currentText(),
+                                                            self.HMI.ComboBox_Ativos.currentText(),
+                                                            self.HMI.DTeST,
+                                                            )
         self.data_23_1 = self.data_23_1[::-1]
         self.HMI.Table_Operacoes_Realizadas_com_Ativo.setRowCount(len(self.data_23_1))
         self.HMI.Table_Operacoes_Realizadas_com_Ativo.setColumnCount(len(HHeader))
