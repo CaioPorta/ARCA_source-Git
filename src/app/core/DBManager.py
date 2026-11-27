@@ -4014,7 +4014,7 @@ class DBManager:
 
     def AtualizarCotacoes_run(self): # Thread
         # Atualizar tabela de cotações, depois atualizar os valores no HMI
-        self.HMI.HMI_Presentation.UpdatePatrimonioRendimento()
+        self.HMI.UpdatePatrimonioRendimento()
         currency = self.GetUserCoinCurrency()
 
         corretoras = self.GetCorretoras("Bolsa")
@@ -4038,7 +4038,7 @@ class DBManager:
         for thread in thread_list: thread.join()
 
         logger.debug('waiting') # Debug
-        self.HMI.HMI_Presentation.UpdatePatrimonioRendimento()
+        self.HMI.UpdatePatrimonioRendimento()
         if self.HMI.PageID in ["18", "19"]: self.HMI.UpdatePage()
         logger.debug('UpdatePatrimonioRendimento executed') # Debug
 

@@ -166,7 +166,7 @@ class HMI_PageNavigation:
                             self.CreatePage1()
                             self.PutHeader()
                             self.YahooFinance.Thread_GetAllTickers()
-                            self.HMI_Presentation.UpdatePatrimonioRendimento()
+                            self.UpdatePatrimonioRendimento()
                             # self.DBManager.AtualizarCotacoes()
                     else:
                         if self.TextBox_NovaSenha1.text() != self.TextBox_NovaSenha2.text():
@@ -227,7 +227,7 @@ class HMI_PageNavigation:
                             self.CreatePage1()
                             self.PutHeader()
                             self.YahooFinance.Thread_GetAllTickers()
-                            self.HMI_Presentation.UpdatePatrimonioRendimento()
+                            self.UpdatePatrimonioRendimento()
                             # self.DBManager.AtualizarCotacoes()
                         else:
                             try: self.Label_Erro1.deleteLater()
@@ -277,7 +277,7 @@ class HMI_PageNavigation:
                         self.CreatePage1()
                         self.PutHeader()
                         self.YahooFinance.Thread_GetAllTickers()
-                        self.HMI_Presentation.UpdatePatrimonioRendimento()
+                        self.UpdatePatrimonioRendimento()
                         # self.DBManager.AtualizarCotacoes()
                     else:
                         self.LoggedIn = False
@@ -788,7 +788,7 @@ class HMI_PageNavigation:
                                 CCAtualizada_text = self.TextBox_CCAtualizada.text()
                                 Corretora = self.ComboBox_Corretoras.currentText().replace(" ","_")
                                 self.DBManager.UpdateContaCorrente(CCAtualizada_text, Corretora)
-                                self.HMI_Presentation.UpdatePatrimonioRendimento()
+                                self.UpdatePatrimonioRendimento()
                                 self.ClearPage()
                                 self.PageID= PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id
                                 self.PageIDAux = ''
@@ -1116,7 +1116,7 @@ class HMI_PageNavigation:
                         if not self.DBManager.CalcularTributacao_is_running:
                             Corretora = self.ComboBox_Corretoras.currentText().replace(" ","_")
                             if self.DBManager.AddDepositoOuSaque(Data, Valor, self.BolsaOuCripto, Corretora):
-                                self.HMI_Presentation.UpdatePatrimonioRendimento()
+                                self.UpdatePatrimonioRendimento()
                                 self.TextBox_Valor.setText('')
                                 self.OnButtonPressed('Deposito')
                                 self.HMI_Trades.HMI_Trades_Bolsa.CreateTable_24_2()
@@ -1208,7 +1208,7 @@ class HMI_PageNavigation:
                                         # Calcular a tributação devida de ST e de DT
                                         # self.CalcularTributacao() # Via thread
                                         self.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
-                                        self.HMI_Presentation.UpdatePatrimonioRendimento()
+                                        self.UpdatePatrimonioRendimento()
                                     self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     try:
                                         self.Msg = OperacaoRegistradaComSucesso.OperacaoRegistradaComSucesso(self, 4)
@@ -1318,7 +1318,7 @@ class HMI_PageNavigation:
                                         # Calcular a tributação devida de ST e de DT
                                         # self.CalcularTributacao() # Via thread
                                         self.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
-                                        self.HMI_Presentation.UpdatePatrimonioRendimento()
+                                        self.UpdatePatrimonioRendimento()
                                     self.AcabouDeRegistrarNovoAtivo = True
                                     self.ComboBox_Ativos.clear()
                                     ativos = self.DBManager.GetAtivos(self.ComboBox_Corretoras.currentText(),
@@ -1539,7 +1539,7 @@ class HMI_PageNavigation:
                                             # Calcular a tributação devida de ST e de DT
                                             # self.CalcularTributacao() # Via thread
                                             self.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial
-                                            self.HMI_Presentation.UpdatePatrimonioRendimento()
+                                            self.UpdatePatrimonioRendimento()
                                         self.HMI_ARCA.Flag_RecalcularGraficos = True
                                         try:
                                             self.Msg = OperacaoRegistradaComSucesso.OperacaoRegistradaComSucesso(self, 5)
