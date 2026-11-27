@@ -1463,8 +1463,14 @@ class HMI_PageNavigation:
                 self.InsertGridLayout(1, 0, 1, 20)
                 self.HMI_Trades.HMI_Trades_Criptomoedas.CreatePage40()
                 self.PutHeader()
+                ativo = ""
+                if BolsaOuCripto == "Bolsa": 
+                    ativo = self.ComboBox_Ativos.currentText()
 
-                if self.DBManager.VerificarPrimeiraOperacao(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','A primeira operação deve ser do tipo DEPÓSITO ou DROP.')
+                if self.DBManager.VerificarPrimeiraOperacao(self.BolsaOuCripto,
+                                                            self.ComboBox_Corretoras.currentText(),
+                                                            ativo):
+                    MessageBox_Msg1 = QMessageBox.about(self,'Aviso','A primeira operação deve ser do tipo DEPÓSITO ou DROP.')
                 elif self.DBManager.VerificarSeTemEstoqueNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','ESTOQUE NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
                 elif self.DBManager.VerificarSeTemCustoNegativo(): MessageBox_Msg1 = QMessageBox.about(self,'Aviso','CUSTO NEGATIVO! VERIFIQUE AS SUAS OPERAÇÕES!')
             elif PageID== PAGE_BY_NAME['InformarNovaOperacaoCripto'].page_id:

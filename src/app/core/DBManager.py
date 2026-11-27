@@ -4048,12 +4048,10 @@ class DBManager:
 
     #%% Verificações de coerência
 
-    def VerificarPrimeiraOperacao(self, ativo='', corretora='', BolsaOuCripto=''):
+    def VerificarPrimeiraOperacao(self, BolsaOuCripto: str, corretora: str, ativo: str):
         Status = False
-        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
         corretora = corretora.replace(" ","_")
-        if not len(ativo)>0 and BolsaOuCripto == "Bolsa": ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
+        ativo = ativo.replace(" ","_")
 
         try:
             if BolsaOuCripto == "Bolsa":
@@ -4066,7 +4064,8 @@ class DBManager:
                 retorno, _ = self.GetDataDB("SELECT * FROM "+TableName)
                 retorno = retorno[0][2]
                 if not retorno in ["Depósito", "Drop"]: Status = True
-        except Exception as e: pass
+        except Exception as e:
+            logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: return Status
 
     def VerificarSeTemEstoqueNegativo(self, ativo='', corretora='', BolsaOuCripto=''):
