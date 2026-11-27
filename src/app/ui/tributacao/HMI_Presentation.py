@@ -117,7 +117,8 @@ class HMI_Presentation:
                        'Resultado final']
             self.HMI.Table_Tributacao_Header.setFont(self.HMI.font14)
             self.HMI.Table_Tributacao.setFont(self.HMI.font14)
-        self.data_51_1 = self.HMI.DBManager.GetAllTributacoes()
+        self.data_51_1 = self.HMI.DBManager.GetAllTributacoes(self.HMI.DTeST_51,
+                                                              self.HMI.CriptoeB3_51)
         self.data_51_1 = self.data_51_1[::-1]
         self.HMI.Table_Tributacao.setRowCount(len(self.data_51_1))
         self.HMI.Table_Tributacao.setColumnCount(len(HHeader))

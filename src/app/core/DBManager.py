@@ -1659,44 +1659,44 @@ class DBManager:
         MoedasFiat = list(map(lambda x: x[0], retorno))
         return MoedasFiat
 
-    def GetAllTributacoes(self):
+    def GetAllTributacoes(self, DTeST_51, CriptoeB3_51):
         retorno = []
-        if 'ST' in self.HMI.DTeST_51:
-            if 'B3' in self.HMI.CriptoeB3_51:
+        if 'ST' in DTeST_51:
+            if 'B3' in CriptoeB3_51:
                 aux, _ = self.GetDataDB("SELECT * FROM TributaçãoSTBolsa") # 'Mês/Ano', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final', 'Alíquota', 'Lucro mínimo taxável', 'Imposto devido', 'Resultado líquido'
                 if len(aux) > 0:
-                    if self.HMI.DTeST_51 != "DTeST": # Tamanho 8: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Alíquota', 'Lucro mínimo taxável', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
+                    if DTeST_51 != "DTeST": # Tamanho 8: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Alíquota', 'Lucro mínimo taxável', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
                         for row in aux: aux2.append((row[0], row[7], row[6], row[4], row[5], row[1], row[2], row[3]))
                     else: # Tamanho 6: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
                         for row in aux: aux2.append((row[0], row[7], row[6], row[1], row[2], row[3]))
                     retorno.append(aux2)
-            if 'Cripto' in self.HMI.CriptoeB3_51:
+            if 'Cripto' in CriptoeB3_51:
                 aux, _ = self.GetDataDB("SELECT * FROM TributaçãoSTCripto") # 'Mês/Ano', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final', 'Alíquota', 'Lucro mínimo taxável', 'Imposto devido', 'Resultado líquido'
                 if len(aux) > 0:
-                    if self.HMI.DTeST_51 != "DTeST": # Tamanho 8: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Alíquota', 'Lucro mínimo taxável', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
+                    if DTeST_51 != "DTeST": # Tamanho 8: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Alíquota', 'Lucro mínimo taxável', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
                         for row in aux: aux2.append((row[0], row[7], row[6], row[4], row[5], row[1], row[2], row[3]))
                     else: # Tamanho 6: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
                         for row in aux: aux2.append((row[0], row[7], row[6], row[1], row[2], row[3]))
                     retorno.append(aux2)
-        if 'DT' in self.HMI.DTeST_51:
-            if 'B3' in self.HMI.CriptoeB3_51:
+        if 'DT' in DTeST_51:
+            if 'B3' in CriptoeB3_51:
                 aux, _ = self.GetDataDB("SELECT * FROM TributaçãoDTBolsa") # 'Mês/Ano', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final', 'Alíquota', 'Lucro mínimo taxável', 'Imposto devido', 'Resultado líquido'
                 if len(aux) > 0:
-                    if self.HMI.DTeST_51 != "DTeST": # Tamanho 8: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Alíquota', 'Lucro mínimo taxável', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
+                    if DTeST_51 != "DTeST": # Tamanho 8: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Alíquota', 'Lucro mínimo taxável', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
                         for row in aux: aux2.append((row[0], row[7], row[6], row[4], row[5], row[1], row[2], row[3]))
                     else: # Tamanho 6: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
                         for row in aux: aux2.append((row[0], row[7], row[6], row[1], row[2], row[3]))
                     retorno.append(aux2)
-            if 'Cripto' in self.HMI.CriptoeB3_51:
+            if 'Cripto' in CriptoeB3_51:
                 aux, _ = self.GetDataDB("SELECT * FROM TributaçãoDTCripto") # 'Mês/Ano', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final', 'Alíquota', 'Lucro mínimo taxável', 'Imposto devido', 'Resultado líquido'
                 if len(aux) > 0:
-                    if self.HMI.DTeST_51 != "DTeST": # Tamanho 8: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Alíquota', 'Lucro mínimo taxável', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
+                    if DTeST_51 != "DTeST": # Tamanho 8: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Alíquota', 'Lucro mínimo taxável', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
                         aux2 = []
                         for row in aux: aux2.append((row[0], row[7], row[6], row[4], row[5], row[1], row[2], row[3]))
                     else: # Tamanho 6: 'Mês/Ano', 'Resultado líquido', 'Imposto devido', 'Resultado bruto', 'Prejuízo acumulado', 'Resultado final'
@@ -1732,7 +1732,7 @@ class DBManager:
                             retorno[j] = (C0,C1,C2,C3,C4,C5)
             return retorno
         else:
-            if self.HMI.DTeST_51 != "DTeST": # Tamanho 8
+            if DTeST_51 != "DTeST": # Tamanho 8
                 return [(datetime.now().strftime('%Y-%m-%d %H:%M:%S'),0,0,0,0,0,0,0)]
             return [(datetime.now().strftime('%Y-%m-%d %H:%M:%S'),0,0,0,0,0)] # Tamanho 6
 
