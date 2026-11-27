@@ -1747,8 +1747,8 @@ class DBManager:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
         finally: return Modo
 
-    def GetUserCoinCurrency(self):
-        if not self.HMI.LoggedIn: return ''
+    def GetUserCoinCurrency(self, LoggedIn: bool = True):
+        if not LoggedIn: return ''
         retorno, _ = self.GetDataDB("SELECT MoedaCorrente FROM Perfil")
         MoedaCorrente = retorno[0][0]
         return MoedaCorrente
