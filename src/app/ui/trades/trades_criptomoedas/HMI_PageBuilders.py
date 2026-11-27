@@ -72,7 +72,7 @@ class HMI_PageBuilders:
         if self.HMI.idxCorretora < len(corretoras):
             self.HMI.ComboBox_Corretoras.setCurrentIndex(self.HMI.idxCorretora)
 
-        UserCoin = self.HMI.DBManager.GetCorretoraCoinCurrency()
+        UserCoin = self.HMI.DBManager.GetCorretoraCoinCurrency(self.HMI.BolsaOuCripto, self.HMI.ComboBox_Corretoras.currentText())
 
         self.HMI.Button_RenameCorretora = QPushButton()
         self.HMI.Button_RenameCorretora.setToolTip("Renomear corretora")

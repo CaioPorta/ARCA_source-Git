@@ -20,7 +20,8 @@ from ui.pages import PAGE_BY_NAME
 class HMI_Presentation:
     def UpdatePage(self):
         if self.PageID== PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id:
-            UserCoin = self.DBManager.GetCorretoraCoinCurrency()
+            UserCoin = self.DBManager.GetCorretoraCoinCurrency(self.BolsaOuCripto,
+                                                               self.ComboBox_Corretoras.currentText())
             corretora = self.ComboBox_Corretoras.currentText()
             self.idxCorretora = self.ComboBox_Corretoras.currentIndex()
             self.Label_Title2.setText(corretora)
@@ -29,8 +30,8 @@ class HMI_Presentation:
                                                                                                    )))
             Investido = round(self.DBManager.GetTotalInvestidoEmCorretora(corretora, "Bolsa"), 2)
             self.TextBox_Msg6.setText(UserCoin+' ~'+str(Investido))
-            self.TextBox_Msg3.setText(UserCoin+' '+str(self.DBManager.GetValorEmContaCorrente(self.HMI.BolsaOuCripto,
-                                                                                              self.HMI.ComboBox_Corretoras.currentText(),
+            self.TextBox_Msg3.setText(UserCoin+' '+str(self.DBManager.GetValorEmContaCorrente(self.BolsaOuCripto,
+                                                                                              self.ComboBox_Corretoras.currentText(),
                                                                                               )))
             self.TextBox_Msg4.setText(self.DBManager.GetDataUltimaOPRegistrada(self.BolsaOuCripto, self.ComboBox_Corretoras.currentText()))
             valor = round(self.DBManager.GetUltimoDepositoOuSaqueRegistrado(corretora),2)
@@ -38,7 +39,8 @@ class HMI_Presentation:
             if valor >= 0: self.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: green;}')
             else: self.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: orange;}')
         elif self.PageID== PAGE_BY_NAME['EdicaoNegociacoesCripto'].page_id:
-            UserCoin = self.DBManager.GetCorretoraCoinCurrency()
+            UserCoin = self.DBManager.GetCorretoraCoinCurrency(self.BolsaOuCripto,
+                                                               self.ComboBox_Corretoras.currentText())
             corretora = self.ComboBox_Corretoras.currentText()
             self.Label_Title2.setText(corretora)
             self.TextBox_Msg2.setText(UserCoin+' ~'+str(self.DBManager.GetPatrimonioTotalCorretora(self.ComboBox_Corretoras.currentText(),
@@ -46,8 +48,8 @@ class HMI_Presentation:
                                                                                                    )))
             Investido = round(self.DBManager.GetTotalInvestidoEmCorretora(corretora, "Cripto"), 2)
             self.TextBox_Msg6.setText(UserCoin+' ~'+str(Investido))
-            self.TextBox_Msg3.setText(UserCoin+' '+str(self.DBManager.GetValorEmContaCorrente(self.HMI.BolsaOuCripto,
-                                                                                              self.HMI.ComboBox_Corretoras.currentText(),
+            self.TextBox_Msg3.setText(UserCoin+' '+str(self.DBManager.GetValorEmContaCorrente(self.BolsaOuCripto,
+                                                                                              self.ComboBox_Corretoras.currentText(),
                                                                                               )))
             self.TextBox_Msg4.setText(self.DBManager.GetDataUltimaOPRegistrada(self.BolsaOuCripto, self.ComboBox_Corretoras.currentText()))
             valor = self.DBManager.GetUltimoDepositoOuSaqueRegistrado()
@@ -66,8 +68,8 @@ class HMI_Presentation:
             self.idxAtivo = self.ComboBox_Ativos.currentIndex()
 
             self.TextBox_Msg2.setText(str(self.DBManager.GetEstoque(self.BolsaOuCripto,
-                                                                    corretora = self.HMI.ComboBox_Corretoras.currentText(),
-                                                                    ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_"),
+                                                                    corretora = self.ComboBox_Corretoras.currentText(),
+                                                                    ativo = self.ComboBox_Ativos.currentText().replace(" ","_"),
                                                                     )))
         elif self.PageID== PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id:
             self.ComboBox_Dia.clear()
@@ -125,7 +127,7 @@ class HMI_Presentation:
                 self.ComboBox_Dia.addItem(str(dia))
 
         elif self.PageID== PAGE_BY_NAME['AcoesNegocios'].page_id:
-            UserCoin = self.DBManager.GetUserCoinCurrency()
+            UserCoin = self.DBManager.GetUserCoinCurrency(self.LoggedIn)
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page46_MainGraph_VisaoGeral()
@@ -166,7 +168,7 @@ class HMI_Presentation:
             self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
         elif self.PageID== PAGE_BY_NAME['RealEstate'].page_id:
-            UserCoin = self.DBManager.GetUserCoinCurrency()
+            UserCoin = self.DBManager.GetUserCoinCurrency(self.LoggedIn)
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page47_MainGraph_VisaoGeral()
@@ -207,7 +209,7 @@ class HMI_Presentation:
             self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
         elif self.PageID== PAGE_BY_NAME['Caixa'].page_id:
-            UserCoin = self.DBManager.GetUserCoinCurrency()
+            UserCoin = self.DBManager.GetUserCoinCurrency(self.LoggedIn)
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page48_MainGraph_VisaoGeral()
@@ -248,7 +250,7 @@ class HMI_Presentation:
             self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
         elif self.PageID== PAGE_BY_NAME['AtivosInternacionais'].page_id:
-            UserCoin = self.DBManager.GetUserCoinCurrency()
+            UserCoin = self.DBManager.GetUserCoinCurrency(self.LoggedIn)
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page49_MainGraph_VisaoGeral()
@@ -293,7 +295,7 @@ class HMI_Presentation:
             self.F_GLayout[self.GCount-1].addWidget(self.GraphWidget_Subtipos, 7, 0, 3, 3, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom)
 
         elif self.PageID== PAGE_BY_NAME['CriptoARCA'].page_id:
-            UserCoin = self.DBManager.GetUserCoinCurrency()
+            UserCoin = self.DBManager.GetUserCoinCurrency(self.LoggedIn)
             self.GraphWidget_MainGraph.deleteLater()
             if self.HMI_ARCA.MainGraphIsShowing == "Visão Geral":
                 self.GraphWidget_MainGraph = self.HMI_ARCA.CreateGraph_Page50_MainGraph_VisaoGeral()
@@ -959,7 +961,7 @@ class HMI_Presentation:
                 self.Button_Perfil.setIcon(QIcon("./images/ProfilePhoto.jpg"))
         except: self.Button_Perfil.setIcon(QIcon("./images/ProfilePhoto.jpg"))
 
-        self.Button_Currency = QPushButton('Moeda corrente: '+self.DBManager.GetUserCoinCurrency())
+        self.Button_Currency = QPushButton('Moeda corrente: '+self.DBManager.GetUserCoinCurrency(self.LoggedIn))
         self.Button_Currency.pressed.connect(lambda: self.CreatePage(PAGE_BY_NAME['EscolhaMoeda'].page_id))
         self.Button_Currency.setFixedHeight(40)
         self.Button_Currency.setIconSize(QSize(35, 35))

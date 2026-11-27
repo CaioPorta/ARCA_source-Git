@@ -405,7 +405,7 @@ class HMI_Events:
                                 if "¨Bolsa" in corretora:
                                     SheetsToBeConsidered = list(filter(lambda x: corretora+"¨Bruto" in x, sheets))
                                     corretora = corretora.replace("¨Bolsa", "")
-                                    CorretoraCoinCurrency = self.HMI.DBManager.GetCorretoraCoinCurrency(corretora, "Bolsa")
+                                    CorretoraCoinCurrency = self.HMI.DBManager.GetCorretoraCoinCurrency("Bolsa", corretora)
                                     header = ['Ativo', 'Quantidade em ' + year, 'Preço Médio (' + CorretoraCoinCurrency + ')']
                                     WriteHeader(worksheet, header)
 
@@ -422,7 +422,7 @@ class HMI_Events:
                                 elif "¨Cripto" in corretora:
                                     corretora = corretora.replace("¨Cripto", "")
                                     sheet = "OPs¨" + corretora + "¨Cripto¨Refinado"
-                                    CorretoraCoinCurrency = self.HMI.DBManager.GetCorretoraCoinCurrency(corretora, "Cripto")
+                                    CorretoraCoinCurrency = self.HMI.DBManager.GetCorretoraCoinCurrency("Cripto", corretora)
                                     header = ['Ativo', 'Quantidade em ' + year, 'Preço Médio (' + CorretoraCoinCurrency + ')', 'Custo (' + CorretoraCoinCurrency + ')']
                                     WriteHeader(worksheet, header)
 

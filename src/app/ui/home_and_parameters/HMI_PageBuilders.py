@@ -40,7 +40,7 @@ class HMI_PageBuilders:
             if self.TipoDeOperacao in ['Compra', 'Venda']: self.TextBox_Preco.setText('')
             else: self.TextBox_Preco.setText('1')
             self.TextBox_Taxa.setText('0')
-            self.TextBox_MoedaDaTaxa.setText(self.DBManager.GetUserCoinCurrency())
+            self.TextBox_MoedaDaTaxa.setText(self.DBManager.GetUserCoinCurrency(self.LoggedIn))
             self.TextBox_Conversao.setText('1')
             self.TextBox_Obs.setText('')
             self.TextBox_Par_Esquerda.setFocus()
@@ -1343,7 +1343,7 @@ class HMI_PageBuilders:
             self.F_GLayout[self.GCount-1].addWidget(self.Button_Voltar, 4, 3, 2, 1, Qt.AlignmentFlag.AlignCenter)
             HHeader = ['Ativo',
                        'Última atualização',
-                       'Cotação em '+self.DBManager.GetUserCoinCurrency()]
+                       'Cotação em '+self.DBManager.GetUserCoinCurrency(self.LoggedIn)]
             self.Table_CotaçõesManuaisHeader = QTableWidget()
             self.Table_CotaçõesManuaisHeader.setVisible(False)
             self.Table_CotaçõesManuaisHeader.setShowGrid(False)

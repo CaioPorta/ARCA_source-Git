@@ -902,7 +902,7 @@ class HMI_PageNavigation:
                             if not self.DBManager.CalcularTributacao_is_running:
                                 Banco = self.TextBox_NovoBanco.text().replace(" ","_")
                                 MoedaCorrente = self.ComboBox_Currency.currentText()
-                                UserMoedaCorrente = self.DBManager.GetUserCoinCurrency()
+                                UserMoedaCorrente = self.DBManager.GetUserCoinCurrency(self.LoggedIn)
                                 Modo = None
                                 Cotacao = None
                                 if MoedaCorrente != UserMoedaCorrente and not self.DBManager.AtivoExisteNaTabelaDeCotacoes(MoedaCorrente):

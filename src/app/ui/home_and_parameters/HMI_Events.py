@@ -144,7 +144,7 @@ class HMI_Events:
 
             elif self.PageID == "46":
                 if self.ShowValues:
-                    UserCoin = self.DBManager.GetUserCoinCurrency()
+                    UserCoin = self.DBManager.GetUserCoinCurrency(self.LoggedIn)
                     self.TextBox_Custo.setText('Custo: ' + UserCoin + ' ' + str(f'{round(self.HMI_ARCA.Custo, 2):.2f}'))
                     self.TextBox_Retorno.setText('Retorno: ' + UserCoin + ' ' + str(f'{round(self.HMI_ARCA.Retorno, 2):.2f}'))
                 else:
@@ -172,7 +172,7 @@ class HMI_Events:
 
             elif self.PageID == "47":
                 if self.ShowValues:
-                    UserCoin = self.DBManager.GetUserCoinCurrency()
+                    UserCoin = self.DBManager.GetUserCoinCurrency(self.LoggedIn)
                     self.TextBox_Custo.setText('Custo: '+UserCoin+' '+str(f'{round(self.HMI_ARCA.Custo, 2):.2f}'))
                     self.TextBox_Retorno.setText('Retorno: '+UserCoin+' '+str(f'{round(self.HMI_ARCA.Retorno, 2):.2f}'))
                 else:
@@ -200,7 +200,7 @@ class HMI_Events:
 
             elif self.PageID == "48":
                 if self.ShowValues:
-                    UserCoin = self.DBManager.GetUserCoinCurrency()
+                    UserCoin = self.DBManager.GetUserCoinCurrency(self.LoggedIn)
                     self.TextBox_Custo.setText('Custo: ' + UserCoin + ' ' + str(f'{round(self.HMI_ARCA.Custo, 2):.2f}'))
                     self.TextBox_Retorno.setText('Retorno: ' + UserCoin + ' ' + str(f'{round(self.HMI_ARCA.Retorno, 2):.2f}'))
                 else:
@@ -228,7 +228,7 @@ class HMI_Events:
 
             elif self.PageID == "49":
                 if self.ShowValues:
-                    UserCoin = self.DBManager.GetUserCoinCurrency()
+                    UserCoin = self.DBManager.GetUserCoinCurrency(self.LoggedIn)
                     self.TextBox_Custo.setText('Custo: ' + UserCoin + ' ' + str(f'{round(self.HMI_ARCA.Custo, 2):.2f}'))
                     self.TextBox_Retorno.setText('Retorno: ' + UserCoin + ' ' + str(f'{round(self.HMI_ARCA.Retorno, 2):.2f}'))
                 else:
@@ -256,7 +256,7 @@ class HMI_Events:
 
             elif self.PageID == "50":
                 if self.ShowValues:
-                    UserCoin = self.DBManager.GetUserCoinCurrency()
+                    UserCoin = self.DBManager.GetUserCoinCurrency(self.LoggedIn)
                     self.TextBox_Custo.setText('Custo: ' + UserCoin + ' ' + str(f'{round(self.HMI_ARCA.Custo, 2):.2f}'))
                     self.TextBox_Retorno.setText('Retorno: ' + UserCoin + ' ' + str(f'{round(self.HMI_ARCA.Retorno, 2):.2f}'))
                 else:
@@ -1041,7 +1041,7 @@ class HMI_Events:
                                 for thread in thread_list: thread.join()
 
                         # self.DBManager.CalcularTributacao() # Via thread
-                        self.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial, mas tem que comentar as linhas que tem self.HMI.DBManager.LW... em HMI_Tributação.py # Debug
+                        self.HMI_Tributacao.CalcularTributacao_SemThread() # Via sequencial, mas tem que comentar as linhas que tem self.DBManager.LW... em HMI_Tributação.py # Debug
                         self.DBManager.UpdatePatrimonioRendimento()
 
                         MessageBox_Msg1 = QMessageBox.about(self,'Informação','Importação bem sucedida.\nBem-vindo de volta '+UserName+'\nAcesse sua conta entrando pela página inicial.')
@@ -1153,7 +1153,7 @@ class HMI_Events:
                 elif self.PageIDAux== PAGE_BY_NAME['InsercaoCotacoesManuais'].page_id:
                     HHeader = ['Ativo',
                                'Última atualização',
-                               'Cotação em '+self.DBManager.GetUserCoinCurrency()]
+                               'Cotação em '+self.DBManager.GetUserCoinCurrency(self.LoggedIn)]
                     SizeCol0, SizeCol1, SizeCol2 = self.GetSizeOfTableColumns(self.data_45_1, HHeader)
                     self.SetTableWidth_45_1(SizeCol0, SizeCol1, SizeCol2)
                     self.Table_CotaçõesManuais.setFixedHeight(int(self.frameGeometry().height()*6/10))

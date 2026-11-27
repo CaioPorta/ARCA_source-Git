@@ -82,7 +82,7 @@ class HMI_PageBuilders:
         if self.HMI.idxCorretora < len(corretoras):
             self.HMI.ComboBox_Corretoras.setCurrentIndex(self.HMI.idxCorretora)
 
-        CorretoraCoin = self.HMI.DBManager.GetCorretoraCoinCurrency()
+        CorretoraCoin = self.HMI.DBManager.GetCorretoraCoinCurrency(self.HMI.BolsaOuCripto, self.HMI.ComboBox_Corretoras.currentText())
 
         self.HMI.Button_RenameCorretora = QPushButton()
         self.HMI.Button_RenameCorretora.setToolTip("Renomear corretora")
@@ -635,7 +635,7 @@ class HMI_PageBuilders:
         self.HMI.Button_Saque.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
 
         self.HMI.Label_Msg2 = QLabel()
-        self.HMI.Label_Msg2.setText(' no valor de '+self.HMI.DBManager.GetCorretoraCoinCurrency())
+        self.HMI.Label_Msg2.setText(' no valor de '+self.HMI.DBManager.GetCorretoraCoinCurrency(self.HMI.BolsaOuCripto, self.HMI.ComboBox_Corretoras.currentText()))
         self.HMI.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.HMI.Label_Msg2.setStyleSheet('color: white')
         self.HMI.Label_Msg2.setFont(self.HMI.font16)
@@ -732,7 +732,7 @@ class HMI_PageBuilders:
         self.HMI.TextBox_Valor.setFocus()
 
     def CreatePage25(self): # Saldo em conta-corrente
-        CorretoraCoin = self.HMI.DBManager.GetCorretoraCoinCurrency()
+        CorretoraCoin = self.HMI.DBManager.GetCorretoraCoinCurrency(self.HMI.BolsaOuCripto, self.HMI.ComboBox_Corretoras.currentText())
         black = 'rgb(0, 0, 0)'
         Background_1 = QLabel()
         Background_1.setStyleSheet("background-color: "+black)

@@ -1753,9 +1753,7 @@ class DBManager:
         MoedaCorrente = retorno[0][0]
         return MoedaCorrente
 
-    def GetCorretoraCoinCurrency(self, corretora = '', BolsaOuCripto=''):
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
-        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
+    def GetCorretoraCoinCurrency(self, BolsaOuCripto, corretora):
         corretora = corretora.replace(" ","_")
         Corretora = corretora + "¨" + BolsaOuCripto
         retorno, _ = self.GetDataDB("SELECT * FROM Corretoras WHERE Corretora = (?)",[(Corretora)])
@@ -3696,7 +3694,7 @@ class DBManager:
             # 4.3) Escrever linha auxiliar na tabela
 
         # 1)
-        MoedaCorrente = self.GetCorretoraCoinCurrency(corretora, "Cripto")
+        MoedaCorrente = self.GetCorretoraCoinCurrency("Cripto", corretora)
         Header = [('Observação', 'TEXT'),
                   ('Resultado', 'REAL'),
                   ('Data', 'DATETIME'),
