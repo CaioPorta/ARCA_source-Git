@@ -926,7 +926,7 @@ class DBManager:
             return True
         return False
 
-    def AlterOperacao(self, BolsaOuCripto, Corretora, ativo, Item, Data, Tipo, Qqt, Preco, Corretagem, TaxaB3, TaxaB3Per, Obs):
+    def AlterOperacao(self, BolsaOuCripto: str, Corretora: str, ativo, Item, Data, Tipo, Qqt, Preco, Corretagem, TaxaB3, TaxaB3Per, Obs):
         def ThereIsAnotherOPWithTheSameDate(TableName, data, rowid):
             data = datetime.strptime(data,"%Y/%m/%d %H:%M:%S")
             Table_Inicial, _ = self.GetDataDB("SELECT rowid, * FROM "+TableName+"¨Bruto")
@@ -970,7 +970,7 @@ class DBManager:
             self.CalcularCelsAutomatizadas(TableNameDT)
         return True # DeuBom and need_CalcularTributacao
 
-    def AlterOperacao_Cripto(self, BolsaOuCripto, Corretora, Item, Data, Tipo, ParEsquerdo, ParDireito, Qqt, Preco, Taxa, MoedaDaTaxa, Conversao, Obs):
+    def AlterOperacao_Cripto(self, BolsaOuCripto: str, Corretora: str, Item, Data, Tipo, ParEsquerdo, ParDireito, Qqt, Preco, Taxa, MoedaDaTaxa, Conversao, Obs):
         def ThereIsAnotherOPWithTheSameDate(TableName, data, rowid):
             data = datetime.strptime(data,"%Y/%m/%d %H:%M:%S")
             Table_Inicial, _ = self.GetDataDB("SELECT rowid, * FROM "+TableName+"¨Bruto")
@@ -1015,8 +1015,8 @@ class DBManager:
             logger.error('erro deletando banco')
         finally: self.UpdatePatrimonioRendimento()
 
-    def DeleteCorretora(self, BolsaOuCripto, corretora):
-        def GetRowId(BolsaOuCripto, corretora):
+    def DeleteCorretora(self, BolsaOuCripto: str, corretora: str):
+        def GetRowId(BolsaOuCripto: str, corretora: str):
             retorno, _ = self.GetDataDB("SELECT rowid, * FROM Corretoras")
             retorno = list(filter(lambda x: str(corretora+"¨"+BolsaOuCripto).lower() == str(x[1]).lower(), retorno))
             retorno = retorno[0][0]
@@ -1028,8 +1028,7 @@ class DBManager:
             return retorno
         # Delete corretora em Table Corretoras, Cotações, Bolsa, vacuum e todas as tabelas que contêm tal corretora no nome
         try:
-            BolsaOuCripto = self.HMI.BolsaOuCripto
-            corretora = self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")
+            corretora = corretora.replace(" ","_")
             rowid = GetRowId(BolsaOuCripto, corretora)
             self.ModifyDB("DELETE FROM Corretoras WHERE rowid = "+str(rowid))
             self.ModifyDB("VACUUM")
@@ -1124,10 +1123,10 @@ class DBManager:
         self.UpdatePatrimonioRendimento()
         return True, need_CalcularTributacao
 
-    def DeleteDepositoOuSaque(self, Items):
+    def DeleteDepositoOuSaque(self, BolsaOuCripto, Corretora, Items, data_24_1):
         # Delete linha
-        Items = list(map(lambda x: len(self.HMI.HMI_Trades.HMI_Trades_Bolsa.data_24_1)-x,Items)) # Items = list(map(lambda x: x+1,Items)) # Debug: Para quando a tabela de registros é mostrada em ordem crescente
-        TableName = "¨"+self.HMI.ComboBox_Corretoras.currentText().replace(" ","_")+'¨'+self.HMI.BolsaOuCripto+"¨DepSaq"
+        Items = list(map(lambda x: len(data_24_1)-x, Items)) # Items = list(map(lambda x: x+1,Items)) # Debug: Para quando a tabela de registros é mostrada em ordem crescente
+        TableName = "¨"+Corretora.replace(" ","_")+'¨'+BolsaOuCripto+"¨DepSaq"
 
         Table, _ = self.GetDataDB("SELECT * FROM "+TableName)
         if Table:
@@ -1163,8 +1162,7 @@ class DBManager:
         corretorasCripto = list(filter(lambda x: "¨Cripto" in x, corretoras))
         return corretorasBolsa, corretorasCripto
 
-    def GetCorretoras(self, BolsaOuCripto=''):
-        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
+    def GetCorretoras(self, BolsaOuCripto: str):
         retorno, _ = self.GetDataDB("SELECT * FROM Corretoras")
         corretoras = list(map(lambda x: x[0], retorno))
         if BolsaOuCripto == "Bolsa":

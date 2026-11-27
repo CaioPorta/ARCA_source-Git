@@ -132,7 +132,7 @@ class HMI_Events:
 
                 returnValue = MessageBox_Msg1.exec()
                 if returnValue == QMessageBox.Yes:
-                    self.HMI.DBManager.DeleteDepositoOuSaque(TotalSelecao)
+                    self.HMI.DBManager.DeleteDepositoOuSaque(self.HMI.BolsaOuCripto, self.HMI.ComboBox_Corretoras.currentText(), TotalSelecao, self.HMI.HMI_Trades.HMI_Trades_Bolsa.data_24_1)
                     self.HMI.CreatePage(PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id)
             else:
                 MessageBox_Msg1 = QMessageBox.about(self.HMI,'Aviso','Existe outra operação em andamento.\nTente novamente mais tarde.')

@@ -72,7 +72,7 @@ class HMI_PageBuilders:
         self.HMI.ComboBox_Corretoras.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.ComboBox_Corretoras.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(255, 255, 255);")
         self.HMI.ComboBox_Corretoras.activated[str].connect(lambda pct: self.HMI.UpdatePage())
-        corretoras = self.HMI.DBManager.GetCorretoras()
+        corretoras = self.HMI.DBManager.GetCorretoras(self.HMI.BolsaOuCripto)
         for idx, corretora in enumerate(corretoras):
             self.HMI.ComboBox_Corretoras.addItem(corretora)
             try:
@@ -392,7 +392,7 @@ class HMI_PageBuilders:
 
         returnValue = MessageBox_Msg1.exec()
         if returnValue == QMessageBox.Yes:
-            self.HMI.DBManager.DeleteCorretora()
+            self.HMI.DBManager.DeleteCorretora(self.HMI.BolsaOuCripto, self.HMI.ComboBox_Corretoras.currentText())
             self.HMI.HMI_ARCA.Flag_RecalcularGraficos = True
             self.HMI.CreatePage(PAGE_BY_NAME['EdicaoNegociacoesBolsa'].page_id)
 
