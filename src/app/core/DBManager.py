@@ -425,7 +425,6 @@ class DBManager:
                                                         ('Resultado', 'REAL')])
         except Exception as e:
             logger.error(e, traceback.format_exception(None, e, e.__traceback__))
-        finally: self.AtualizarCotacoes()
 
     def AddOperacao_Bolsa(self,
                     Corretora: str,
@@ -4004,43 +4003,6 @@ class DBManager:
         self.Thread_CalcularTributacao = WorkerThread('Thread_CalcularTributacao', self.HMI)
         self.Thread_CalcularTributacao.start()
         # self.Thread_CalcularTributacao.join()
-
-    def AtualizarCotacoes(self):
-        if not self.HMI.AtualizarCotacoes_is_running: # Impede mais de um requerimento na atualização de cotações
-            self.HMI.Movie_AttCotacoes.start()
-            # self.Thread_AtualizarCotacoes = WorkerThread('Thread_AtualizarCotações', self.HMI)
-            self.Thread_AtualizarCotacoes = BP(ThreadName='Thread_AtualizarCotações', HMI=self.HMI)
-            self.Thread_AtualizarCotacoes.start()
-
-    def AtualizarCotacoes_run(self): # Thread
-        # Atualizar tabela de cotações, depois atualizar os valores no HMI
-        self.HMI.UpdatePatrimonioRendimento()
-        currency = self.GetUserCoinCurrency()
-
-        corretoras = self.GetCorretoras("Bolsa")
-        ativos = []
-        thread_list = []
-        for corretora in corretoras: ativos.extend(self.GetAtivos(corretora, "Bolsa"))
-        ativos = list(dict.fromkeys(ativos))
-        for idx, ativo in enumerate(ativos):
-            if self.GetModoCotacao(ativo) == "Auto":
-                thread_list.append(BP(ThreadName='Thread_GetCotacao', HMI=self.HMI, ativo=ativo, currency=currency))
-
-        corretoras = self.GetCorretoras("Cripto")
-        ativos = []
-        for corretora in corretoras: ativos.extend(self.GetAtivos(corretora, "Cripto"))
-        ativos = list(dict.fromkeys(ativos))
-        for ativo in ativos:
-            if self.GetModoCotacao(ativo) == "Auto":
-                thread_list.append(BP(ThreadName='Thread_GetCotacaoCripto', HMI=self.HMI, ativo=ativo, currency=currency))
-
-        for thread in thread_list: thread.start()
-        for thread in thread_list: thread.join()
-
-        logger.debug('waiting') # Debug
-        self.HMI.UpdatePatrimonioRendimento()
-        if self.HMI.PageID in ["18", "19"]: self.HMI.UpdatePage()
-        logger.debug('UpdatePatrimonioRendimento executed') # Debug
 
     def UpdatePatrimonioRendimento(self):
         # call in HMI_Presentation

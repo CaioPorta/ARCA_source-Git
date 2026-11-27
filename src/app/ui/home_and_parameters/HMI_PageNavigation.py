@@ -1288,6 +1288,7 @@ class HMI_PageNavigation:
                                                             Corretora,
                                                             BolsaOuCripto
                                                             )
+                                    self.AtualizarCotacoes()
                                     
                                     self.HMI_ARCA.Flag_RecalcularGraficos = True
                                     if self.PageID in ['36a','36b']:

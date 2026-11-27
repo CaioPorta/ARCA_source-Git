@@ -78,7 +78,7 @@ class BackgroundProcess(Thread):
             except Exception as e:
                 print(e, traceback.format_exception(None, e, e.__traceback__))
             finally:
-                try: self.HMI.DBManager.AtualizarCotacoes_run()
+                try: self.HMI.AtualizarCotacoes_run()
                 except Exception as e:
                     print(e, traceback.format_exception(None, e, e.__traceback__))
         except Exception as e:

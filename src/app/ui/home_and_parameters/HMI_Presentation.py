@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import (QGridLayout, QHBoxLayout, QLabel, QLineEdit,
                              QMessageBox, QPushButton)
 from PyQt5.QtCore import QCoreApplication, QSize, Qt
 from ui.popup.LoadingWindow import LoadingWindow
+from core.BackgroundProcesses import BackgroundProcess as BP
 from ui.pages import PAGE_BY_NAME
 
 
@@ -882,11 +883,42 @@ class HMI_Presentation:
         self.GCount += 1
         self.GLayout.addLayout(self.F_GLayout[self.GCount-1], row, column, panRow, panColumn)
 
-    def AtualizarCotacoes(self, whatever): 
-        """
-            Header
-        """
-        self.DBManager.AtualizarCotacoes()
+    def AtualizarCotacoes(self):
+        if not self.AtualizarCotacoes_is_running: # Impede mais de um requerimento na atualização de cotações
+            self.Movie_AttCotacoes.start()
+            # self.Thread_AtualizarCotacoes = WorkerThread('Thread_AtualizarCotacoes', self.HMI)
+            self.Thread_AtualizarCotacoes = BP(ThreadName='Thread_AtualizarCotações', HMI=self)
+            self.Thread_AtualizarCotacoes.start()
+
+    def AtualizarCotacoes_run(self): # Thread
+        # Atualizar tabela de cotações, depois atualizar os valores no HMI
+        self.UpdatePatrimonioRendimento()
+        currency = self.DBManager.GetUserCoinCurrency()
+
+        corretoras = self.DBManager.GetCorretoras("Bolsa")
+        ativos = []
+        thread_list = []
+        for corretora in corretoras: ativos.extend(self.DBManager.GetAtivos(corretora, "Bolsa"))
+        ativos = list(dict.fromkeys(ativos))
+        for idx, ativo in enumerate(ativos):
+            if self.DBManager.GetModoCotacao(ativo) == "Auto":
+                thread_list.append(BP(ThreadName='Thread_GetCotacao', HMI=self, ativo=ativo, currency=currency))
+
+        corretoras = self.DBManager.GetCorretoras("Cripto")
+        ativos = []
+        for corretora in corretoras: ativos.extend(self.DBManager.GetAtivos(corretora, "Cripto"))
+        ativos = list(dict.fromkeys(ativos))
+        for ativo in ativos:
+            if self.DBManager.GetModoCotacao(ativo) == "Auto":
+                thread_list.append(BP(ThreadName='Thread_GetCotacaoCripto', HMI=self, ativo=ativo, currency=currency))
+
+        for thread in thread_list: thread.start()
+        for thread in thread_list: thread.join()
+
+        logger.debug('waiting') # Debug
+        self.UpdatePatrimonioRendimento()
+        if self.PageID in ["18", "19"]: self.UpdatePage()
+        logger.debug('UpdatePatrimonioRendimento executed') # Debug
 
     def PutHeader(self):
         self.Background_Header = QLabel()
