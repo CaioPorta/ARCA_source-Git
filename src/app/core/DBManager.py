@@ -499,7 +499,7 @@ class DBManager:
             #     if TipoDeOperacao == "Desdobramento":
             #         self.AddRowInCurrentDB(TableNameBruto, [('Data', data),
             #                                                 ('Tipo', "Venda"),
-            #                                                 ('Qqt', int(self.GetEstoque(ativo))), # Vende tudo
+            #                                                 ('Qqt', int(self.GetEstoque(BolsaOuCripto, corretora, ativo))), # Vende tudo
             #                                                 ('Preço', float(self.GetPrecoMedio(ativo))), # Ao preço médio anterior
             #                                                 ('Corretagem', 0), # 0
             #                                                 ('TaxaB3Per', 0), # 0
@@ -744,7 +744,7 @@ class DBManager:
             retorno = retorno[0][0]
             return str(retorno)
         # Update Conta Corrente em Table ContaCorrente_Corretora_BolsaOuCripto
-        Valor = self.GetEstoque(ativo = self.GetUserCoinCurrency(), corretora = corretora, BolsaOuCripto = "Cripto")
+        Valor = self.GetEstoque(BolsaOuCripto = "Cripto", corretora = corretora, ativo = self.GetUserCoinCurrency())
         self.ModifyDB("UPDATE Corretoras SET ContaCorrente = (?) Where rowid = "+GetRowId(corretora), [(Valor)])
 
     def Update_GastoMensal(self, Valor):
@@ -1174,10 +1174,8 @@ class DBManager:
         corretoras = list(map(lambda x: x.replace("_"," "), corretoras))
         return corretoras
 
-    def GetAtivos(self, corretora = '', BolsaOuCripto = ''):
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
+    def GetAtivos(self, corretora, BolsaOuCripto):
         corretora = corretora.replace(" ","_")
-        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
         Ativos = []
 
         if BolsaOuCripto == "Bolsa":
@@ -1228,8 +1226,7 @@ class DBManager:
         Ativos = list(set(Ativos))
         return sorted(Ativos)
 
-    def GetAllAtivosPorCorretora_Cripto(self, corretora = ''):
-        if not len(corretora) > 0: corretora = self.HMI.ComboBox_Corretoras.currentText()
+    def GetAllAtivosPorCorretora_Cripto(self, corretora):
         AtivosEstoque = []
         Ativos = []
 
@@ -1241,7 +1238,7 @@ class DBManager:
                 Ativos.append(col.replace("EstoqueDe¨",""))
         Ativos = sorted(Ativos)
         for ativo in Ativos:
-            AtivosEstoque.append((ativo, self.GetEstoque(ativo, corretora, "Cripto")))
+            AtivosEstoque.append((ativo, self.GetEstoque("Cripto", corretora, ativo)))
         return AtivosEstoque
 
     def GetAllAtivos_Bolsa(self):
@@ -1289,8 +1286,7 @@ class DBManager:
         TiposDeATivo = list(map(lambda x: x[0], retorno))
         return TiposDeATivo
 
-    def GetSubtiposDeAtivo(self, TipoDeAtivo = ''):
-        if not len(TipoDeAtivo)>0: TipoDeAtivo = self.HMI.ComboBox_TipoDeAtivo.currentText()
+    def GetSubtiposDeAtivo(self, TipoDeAtivo):
         retorno, _ = self.GetDataDB("SELECT * FROM SubtiposDeAtivo")
         retorno = list(filter(lambda x: str(x).find(TipoDeAtivo)>-1, retorno))
         subtipos = list(map(lambda x: x[1], retorno))
@@ -1335,12 +1331,10 @@ class DBManager:
             Ativos = list(map(lambda x: x[0], retorno))
         return Ativos
 
-    def GetCustosDasOperacoes(self, ativo = '', corretora = '', BolsaOuCripto = ''):
+    def GetCustosDasOperacoes(self, ativo: str, corretora: str, BolsaOuCripto: str):
         CustoDaOperacao = 0
-        if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
+        ativo = ativo.replace(" ","_")
         corretora = corretora.replace(" ","_")
-        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
 
         if BolsaOuCripto == "Bolsa" and len(ativo)>0:
             try:
@@ -1353,7 +1347,7 @@ class DBManager:
             except: CustoDaOperacao = 0
         return CustoDaOperacao
 
-    def GetCustoDeOperacao(self, idx_operação = -1, ativo = '', corretora = '', BolsaOuCripto = ''): # Alguém vai precisar disso?
+    def GetCustoDeOperacao(self, BolsaOuCripto: str, corretora: str, ativo: str, idx_operação = -1): # Alguém vai precisar disso?
         CustoDaOperacao = 0
         if BolsaOuCripto == "Cripto":
             TableName = "OPs¨"+corretora+"¨Cripto¨Refinado"
@@ -1371,12 +1365,10 @@ class DBManager:
             CustoDaOperacao = ValorDaTaxa * PrecoMedioDaMoedaDaTaxa
         return CustoDaOperacao
 
-    def GetEstoque(self, ativo = '', corretora = '', BolsaOuCripto = ''):
+    def GetEstoque(self, BolsaOuCripto: str, corretora: str, ativo: str):
         estoque = 0.
-        if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
+        ativo = ativo.replace(" ","_")
         corretora = corretora.replace(" ","_")
-        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
 
         if BolsaOuCripto == "Bolsa":
             if len(ativo)>0 and len(corretora)>0:
@@ -1793,10 +1785,8 @@ class DBManager:
         if cotacao == 0.: cotacao = -1
         return cotacao
 
-    def GetPatrimonioTotalCorretora(self, corretora = '', BolsaOuCripto = ''):
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
+    def GetPatrimonioTotalCorretora(self, corretora, BolsaOuCripto):
         corretora = corretora.replace(" ","_")
-        if not len(BolsaOuCripto)>0: BolsaOuCripto = self.HMI.BolsaOuCripto
         Patrimonio = 0.
         if BolsaOuCripto == "Bolsa":
             try:
@@ -1806,18 +1796,21 @@ class DBManager:
                 # Pegar estoque, multiplicar pela cotação atual, somar ao resultado
                 ativos = self.GetAtivos(corretora, BolsaOuCripto)
                 for ativo in ativos:
-                    Estoque = float(self.GetEstoque(ativo, corretora, BolsaOuCripto))
+                    Estoque = float(self.GetEstoque(BolsaOuCripto, corretora, ativo))
                     Cotacao = self.GetCotacao(ativo)
                     if not (Cotacao > 0. and Estoque >= 0.): return -1
                     Patrimonio += Estoque*Cotacao
-                    # Patrimonio -= self.GetCustosDasOperacoes(ativo, corretora, BolsaOuCripto)
+                    # Patrimonio -= self.GetCustosDasOperacoes(ativo,
+                    #                                          corretora,
+                    #                                          BolsaOuCripto,
+                    #                                          )
             except: Patrimonio = -2
 
         elif BolsaOuCripto == "Cripto":
             try:
                 ativos = self.GetAtivos(corretora, BolsaOuCripto)
                 for ativo in ativos:
-                    Estoque = float(self.GetEstoque(ativo, corretora, BolsaOuCripto))
+                    Estoque = float(self.GetEstoque(BolsaOuCripto, corretora, ativo))
                     if ativo == self.GetUserCoinCurrency(): Cotacao = 1.
                     else: Cotacao = self.GetCotacao(ativo)
                     if Cotacao == -1: return -1
@@ -1892,10 +1885,9 @@ class DBManager:
                 valor = float(row[2])
         return round(valor, 2)
 
-    def GetDataUltimaOPRegistrada(self, corretora = ''):
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
+    def GetDataUltimaOPRegistrada(self, BolsaOuCripto, corretora):
         corretora = corretora.replace(" ","_")
-        ativos = self.GetAtivos()
+        ativos = self.GetAtivos(BolsaOuCripto, corretora)
         folha = []
         for ativo in ativos: folha.append(self.GetAllOperacoes('', ativo))
         datas = []

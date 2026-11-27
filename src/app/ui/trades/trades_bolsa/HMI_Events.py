@@ -185,7 +185,10 @@ class HMI_Events:
             self.HMI.TextBox_Obs.setStyleSheet("background-color: "+BackgroundLineEdit+"; color: "+FontColorLineEdit+";")
             self.HMI.TipoDeOperacao = "Venda"
             if "Desdobramento;" in self.HMI.TextBox_Obs.text() or "Grupamento;" in self.HMI.TextBox_Obs.text():
-                self.HMI.TextBox_Qqt.setText(str(int(self.HMI.DBManager.GetEstoque(self.HMI.ComboBox_Ativos.currentText()))))
+                self.HMI.TextBox_Qqt.setText(str(int(self.HMI.DBManager.GetEstoque(self.HMI.BolsaOuCripto,
+                                                                                   self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                   self.HMI.ComboBox_Ativos.currentText(),
+                                                                                   ))))
                 self.HMI.TextBox_Preco.setText(str(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText())))
                 self.HMI.TextBox_Corretagem.setText("0")
                 self.HMI.TextBox_TaxaB3.setText("0")
@@ -195,7 +198,10 @@ class HMI_Events:
             if not "Desdobramento;" in self.HMI.TextBox_Obs.text():
                 self.HMI.TextBox_Obs.setText("Desdobramento; "+self.HMI.TextBox_Obs.text().replace("Grupamento; ","").replace("Grupamento;","").replace("Bonificação; ","").replace("Bonificação;",""))
                 if self.HMI.TipoDeOperacao == "Venda":
-                    self.HMI.TextBox_Qqt.setText(str(int(self.HMI.DBManager.GetEstoque(self.HMI.ComboBox_Ativos.currentText()))))
+                    self.HMI.TextBox_Qqt.setText(str(int(self.HMI.DBManager.GetEstoque(self.HMI.BolsaOuCripto,
+                                                                                       self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                       self.HMI.ComboBox_Ativos.currentText(),
+                                                                                       ))))
                     self.HMI.TextBox_Preco.setText(str(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText())))
                     self.HMI.TextBox_Corretagem.setText("0")
                     self.HMI.TextBox_TaxaB3.setText("0")
@@ -209,7 +215,10 @@ class HMI_Events:
             if not "Grupamento;" in self.HMI.TextBox_Obs.text():
                 self.HMI.TextBox_Obs.setText("Grupamento; "+self.HMI.TextBox_Obs.text().replace("Desdobramento; ","").replace("Desdobramento;","").replace("Bonificação; ","").replace("Bonificação;",""))
                 if self.HMI.TipoDeOperacao == "Venda":
-                    self.HMI.TextBox_Qqt.setText(str(int(self.HMI.DBManager.GetEstoque(self.HMI.ComboBox_Ativos.currentText()))))
+                    self.HMI.TextBox_Qqt.setText(str(int(self.HMI.DBManager.GetEstoque(self.HMI.BolsaOuCripto,
+                                                                                       self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                       self.HMI.ComboBox_Ativos.currentText(),
+                                                                                       ))))
                     self.HMI.TextBox_Preco.setText(str(self.HMI.DBManager.GetPrecoMedio(self.HMI.ComboBox_Ativos.currentText())))
                     self.HMI.TextBox_Corretagem.setText("0")
                     self.HMI.TextBox_TaxaB3.setText("0")

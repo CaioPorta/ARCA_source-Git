@@ -120,7 +120,9 @@ class HMI_PageBuilders:
         self.HMI.TextBox_Msg2.setFont(self.HMI.font16)
         self.HMI.TextBox_Msg2.setEnabled(False)
         self.HMI.TextBox_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.HMI.TextBox_Msg2.setText(CorretoraCoin+' ~'+str(self.HMI.DBManager.GetPatrimonioTotalCorretora()))
+        self.HMI.TextBox_Msg2.setText(CorretoraCoin+' ~'+str(self.HMI.DBManager.GetPatrimonioTotalCorretora(self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                                            self.HMI.BolsaOuCripto,
+                                                                                                            )))
         if self.HMI.ShowValues:
             self.HMI.TextBox_Msg2.setEchoMode(QLineEdit.Normal)
         else:
@@ -171,7 +173,7 @@ class HMI_PageBuilders:
         self.HMI.TextBox_Msg4.setStyleSheet('color: green')
         self.HMI.TextBox_Msg4.setFont(self.HMI.font16)
         self.HMI.TextBox_Msg4.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.HMI.TextBox_Msg4.setText(self.HMI.DBManager.GetDataUltimaOPRegistrada(self.HMI.ComboBox_Corretoras.currentText()))
+        self.HMI.TextBox_Msg4.setText(self.HMI.DBManager.GetDataUltimaOPRegistrada(self.HMI.BolsaOuCripto, self.HMI.ComboBox_Corretoras.currentText()))
 
         self.HMI.Label_Msg5 = QLabel()
         self.HMI.Label_Msg5.setText("Último depósito/saque:")
@@ -474,7 +476,9 @@ class HMI_PageBuilders:
         self.HMI.ComboBox_Ativos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.ComboBox_Ativos.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(255, 255, 255);")
         self.HMI.ComboBox_Ativos.activated[str].connect(lambda pct: self.HMI.UpdatePage())
-        ativos = self.HMI.DBManager.GetAtivos()
+        ativos = self.HMI.DBManager.GetAtivos(self.ComboBox_Corretoras.currentText(),
+                                              self.BolsaOuCripto
+                                              )
         for idx, ativo in enumerate(ativos):
             self.HMI.ComboBox_Ativos.addItem(ativo)
         if self.HMI.idxAtivo < len(ativos):
@@ -495,7 +499,10 @@ class HMI_PageBuilders:
         self.HMI.Label_Msg2.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.HMI.TextBox_Msg2 = QLineEdit()
-        self.HMI.TextBox_Msg2.setText(str(self.HMI.DBManager.GetEstoque()))
+        self.HMI.TextBox_Msg2.setText(str(self.HMI.DBManager.GetEstoque(self.HMI.BolsaOuCripto,
+                                                                        self.HMI.ComboBox_Corretoras.currentText(),
+                                                                        self.HMI.ComboBox_Ativos.currentText(),
+                                                                        )))
         if self.HMI.ShowValues:
             self.HMI.TextBox_Msg2.setEchoMode(QLineEdit.Normal)
         else:
@@ -862,12 +869,12 @@ class HMI_PageBuilders:
         self.HMI.ComboBox_SubtipoDeAtivo.setFont(self.HMI.font16)
         self.HMI.ComboBox_SubtipoDeAtivo.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.ComboBox_SubtipoDeAtivo.setStyleSheet("background-color: rgb(10, 10, 10); color: rgb(255, 255, 255); border: none")
-        for idx, SubTipo in enumerate(self.HMI.DBManager.GetSubtiposDeAtivo()):
+        for idx, SubTipo in enumerate(self.HMI.DBManager.GetSubtiposDeAtivo(self.HMI.ComboBox_TipoDeAtivo.currentText())):
             self.HMI.ComboBox_SubtipoDeAtivo.addItem(SubTipo)
             try:
                 if SubTipo == self.HMI.TextBox_SubTipoAtivo.text(): self.HMI.idxSubtipoDeAtivo = idx
             except:pass
-        if self.HMI.idxSubtipoDeAtivo < len(self.HMI.DBManager.GetSubtiposDeAtivo()):
+        if self.HMI.idxSubtipoDeAtivo < len(self.HMI.DBManager.GetSubtiposDeAtivo(self.HMI.ComboBox_TipoDeAtivo.currentText())):
             self.HMI.ComboBox_SubtipoDeAtivo.setCurrentIndex(self.HMI.idxSubtipoDeAtivo)
         line_edit = self.HMI.ComboBox_SubtipoDeAtivo.lineEdit()
         line_edit.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -1007,13 +1014,13 @@ class HMI_PageBuilders:
         self.HMI.ComboBox_SubtipoDeAtivo.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HMI.ComboBox_SubtipoDeAtivo.setStyleSheet("background-color: rgb(10, 10, 10) ; color: rgb(255, 255, 255); border: none")
         subtipodeativo = self.HMI.DBManager.GetSubtipoDeAtivoDeAtivo(self.HMI.ComboBox_Ativos.currentText())
-        for idx, SubTipo in enumerate(self.HMI.DBManager.GetSubtiposDeAtivo()):
+        for idx, SubTipo in enumerate(self.HMI.DBManager.GetSubtiposDeAtivo(self.HMI.ComboBox_TipoDeAtivo.currentText())):
             self.HMI.ComboBox_SubtipoDeAtivo.addItem(SubTipo)
             try:
                 if SubTipo == subtipodeativo: self.HMI.idxSubtipoDeAtivo = idx
             except Exception as e:
                 print(e, traceback.format_exception(None, e, e.__traceback__))
-        if self.HMI.idxSubtipoDeAtivo < len(self.HMI.DBManager.GetSubtiposDeAtivo()):
+        if self.HMI.idxSubtipoDeAtivo < len(self.HMI.DBManager.GetSubtiposDeAtivo(self.HMI.ComboBox_TipoDeAtivo.currentText())):
             self.HMI.ComboBox_SubtipoDeAtivo.setCurrentIndex(self.HMI.idxSubtipoDeAtivo)
         line_edit = self.HMI.ComboBox_SubtipoDeAtivo.lineEdit()
         line_edit.setAlignment(Qt.AlignmentFlag.AlignCenter)

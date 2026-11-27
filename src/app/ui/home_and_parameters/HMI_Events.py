@@ -991,7 +991,7 @@ class HMI_Events:
                                     retorno = retorno[0][0]
                                     return str(retorno)
                                 # Update Conta Corrente em Table ContaCorrente_Corretora_BolsaOuCripto
-                                Valor = self.DBManager.GetEstoque(ativo = UserCoin, corretora = corretora, BolsaOuCripto = "Cripto")
+                                Valor = self.DBManager.GetEstoque(BolsaOuCripto = "Cripto", corretora = corretora, ativo = UserCoin)
                                 self.DBManager.ModifyDB("UPDATE Corretoras SET ContaCorrente = (?) Where rowid = "+GetRowId(corretora), [(Valor)])
 
                                 # Verificar se os dois ativos estão na Cotações (DB). Se não estiverem, coloque e atualize a cotação se for encontrado online.

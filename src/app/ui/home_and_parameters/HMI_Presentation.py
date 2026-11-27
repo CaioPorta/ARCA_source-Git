@@ -24,11 +24,13 @@ class HMI_Presentation:
             corretora = self.ComboBox_Corretoras.currentText()
             self.idxCorretora = self.ComboBox_Corretoras.currentIndex()
             self.Label_Title2.setText(corretora)
-            self.TextBox_Msg2.setText(UserCoin+' ~'+str(self.DBManager.GetPatrimonioTotalCorretora()))
+            self.TextBox_Msg2.setText(UserCoin+' ~'+str(self.DBManager.GetPatrimonioTotalCorretora(self.ComboBox_Corretoras.currentText(),
+                                                                                                   self.BolsaOuCripto,
+                                                                                                   )))
             Investido = round(self.DBManager.GetTotalInvestidoEmCorretora(corretora, "Bolsa"), 2)
             self.TextBox_Msg6.setText(UserCoin+' ~'+str(Investido))
             self.TextBox_Msg3.setText(UserCoin+' '+str(self.DBManager.GetValorEmContaCorrente()))
-            self.TextBox_Msg4.setText(self.DBManager.GetDataUltimaOPRegistrada())
+            self.TextBox_Msg4.setText(self.DBManager.GetDataUltimaOPRegistrada(self.BolsaOuCripto, self.ComboBox_Corretoras.currentText()))
             valor = round(self.DBManager.GetUltimoDepositoOuSaqueRegistrado(corretora),2)
             self.TextBox_Msg5.setText(UserCoin+' '+str(valor))
             if valor >= 0: self.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: green;}')
@@ -37,11 +39,13 @@ class HMI_Presentation:
             UserCoin = self.DBManager.GetCorretoraCoinCurrency()
             corretora = self.ComboBox_Corretoras.currentText()
             self.Label_Title2.setText(corretora)
-            self.TextBox_Msg2.setText(UserCoin+' ~'+str(self.DBManager.GetPatrimonioTotalCorretora()))
+            self.TextBox_Msg2.setText(UserCoin+' ~'+str(self.DBManager.GetPatrimonioTotalCorretora(self.ComboBox_Corretoras.currentText(),
+                                                                                                   self.BolsaOuCripto,
+                                                                                                   )))
             Investido = round(self.DBManager.GetTotalInvestidoEmCorretora(corretora, "Cripto"), 2)
             self.TextBox_Msg6.setText(UserCoin+' ~'+str(Investido))
             self.TextBox_Msg3.setText(UserCoin+' '+str(self.DBManager.GetValorEmContaCorrente()))
-            self.TextBox_Msg4.setText(self.DBManager.GetDataUltimaOPRegistrada())
+            self.TextBox_Msg4.setText(self.DBManager.GetDataUltimaOPRegistrada(self.BolsaOuCripto, self.ComboBox_Corretoras.currentText()))
             valor = self.DBManager.GetUltimoDepositoOuSaqueRegistrado()
             self.TextBox_Msg5.setText(UserCoin+' '+str(valor))
             if valor >= 0: self.TextBox_Msg5.setStyleSheet('QLineEdit {background-color: black; color: green;}')
@@ -56,20 +60,24 @@ class HMI_Presentation:
             self.HMI_Trades.HMI_Trades_Bolsa.CreateTable_23_1() # Table_Operacoes_Realizadas_com_AtivoHeader
             self.HMI_Trades.HMI_Trades_Bolsa.CreateTable_23_2() # Table_Operacoes_Realizadas_com_Ativo (Criada com uma thread)
             self.idxAtivo = self.ComboBox_Ativos.currentIndex()
-            self.TextBox_Msg2.setText(str(self.DBManager.GetEstoque()))
+
+            self.TextBox_Msg2.setText(str(self.DBManager.GetEstoque(self.BolsaOuCripto,
+                                                                    corretora = self.HMI.ComboBox_Corretoras.currentText(),
+                                                                    ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_"),
+                                                                    )))
         elif self.PageID== PAGE_BY_NAME['InformarDepositosSaqBolsa'].page_id:
             self.ComboBox_Dia.clear()
             for idx, dia in enumerate(range(1,monthrange(int(self.ComboBox_Ano.currentText()),int(self.ComboBox_Mes.currentText()))[1]+1)):
                 self.ComboBox_Dia.addItem(str(dia))
         elif self.PageID== PAGE_BY_NAME['AdicionarNovoAtivo'].page_id:
             self.ComboBox_SubtipoDeAtivo.clear()
-            for idx, Subtipo in enumerate(self.DBManager.GetSubtiposDeAtivo()):
+            for idx, Subtipo in enumerate(self.DBManager.GetSubtiposDeAtivo(self.ComboBox_TipoDeAtivo.currentText())):
                 self.ComboBox_SubtipoDeAtivo.addItem(Subtipo)
                 try:
                     if Subtipo == self.TextBox_SubtipoDeAtivo.text(): self.idxSubtipoDeAtivo = idx
                 except Exception as e:
                     print(e, traceback.format_exception(None, e, e.__traceback__))
-            if self.idxSubtipoDeAtivo < len(self.DBManager.GetSubtiposDeAtivo()):
+            if self.idxSubtipoDeAtivo < len(self.DBManager.GetSubtiposDeAtivo(self.ComboBox_TipoDeAtivo.currentText())):
                 self.ComboBox_SubtipoDeAtivo.setCurrentIndex(self.idxSubtipoDeAtivo)
             self.ComboBox_SetorAtivo.clear()
             for idx, Setor in enumerate(self.DBManager.GetSetoresDeAtivo()):
@@ -84,13 +92,13 @@ class HMI_Presentation:
                 self.ComboBox_SetorAtivo.setCurrentIndex(self.ComboBox_SetorAtivo.count()-1)
         elif self.PageID== PAGE_BY_NAME['RenomearAtivo'].page_id:
             self.ComboBox_SubtipoDeAtivo.clear()
-            for idx, Subtipo in enumerate(self.DBManager.GetSubtiposDeAtivo()):
+            for idx, Subtipo in enumerate(self.DBManager.GetSubtiposDeAtivo(self.ComboBox_TipoDeAtivo.currentText())):
                 self.ComboBox_SubtipoDeAtivo.addItem(Subtipo)
                 try:
                     if Subtipo == self.TextBox_SubtipoDeAtivo.text(): self.idxSubtipoDeAtivo = idx
                 except Exception as e:
                     print(e, traceback.format_exception(None, e, e.__traceback__))
-            if self.idxSubtipoDeAtivo < len(self.DBManager.GetSubtiposDeAtivo()):
+            if self.idxSubtipoDeAtivo < len(self.DBManager.GetSubtiposDeAtivo(self.ComboBox_TipoDeAtivo.currentText())):
                 self.ComboBox_SubtipoDeAtivo.setCurrentIndex(self.idxSubtipoDeAtivo)
             self.ComboBox_SetorAtivo.clear()
             for idx, Setor in enumerate(self.DBManager.GetSetoresDeAtivo()):

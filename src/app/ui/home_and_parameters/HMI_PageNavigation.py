@@ -1312,7 +1312,9 @@ class HMI_PageNavigation:
                                         self.DBManager.UpdatePatrimonioRendimento()
                                     self.AcabouDeRegistrarNovoAtivo = True
                                     self.ComboBox_Ativos.clear()
-                                    ativos = self.DBManager.GetAtivos()
+                                    ativos = self.DBManager.GetAtivos(self.ComboBox_Corretoras.currentText(),
+                                                                      self.BolsaOuCripto
+                                                                      )
                                     for idx, ativo in enumerate(ativos):
                                         self.ComboBox_Ativos.addItem(ativo)
                                         if ativo == self.TextBox_NomeNovoAtivo.text():

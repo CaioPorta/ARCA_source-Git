@@ -110,7 +110,9 @@ class HMI_PageBuilders:
         self.HMI.TextBox_Msg2.setFont(self.HMI.font16)
         self.HMI.TextBox_Msg2.setEnabled(False)
         self.HMI.TextBox_Msg2.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.HMI.TextBox_Msg2.setText(UserCoin+' ~'+str(self.HMI.DBManager.GetPatrimonioTotalCorretora()))
+        self.HMI.TextBox_Msg2.setText(UserCoin+' ~'+str(self.HMI.DBManager.GetPatrimonioTotalCorretora(self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                                       self.HMI.BolsaOuCripto,
+                                                                                                       )))
         if self.HMI.ShowValues:
             self.HMI.TextBox_Msg2.setEchoMode(QLineEdit.Normal)
         else:
@@ -161,7 +163,7 @@ class HMI_PageBuilders:
         self.HMI.TextBox_Msg4.setStyleSheet('color: green')
         self.HMI.TextBox_Msg4.setFont(self.HMI.font16)
         self.HMI.TextBox_Msg4.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.HMI.TextBox_Msg4.setText(self.HMI.DBManager.GetDataUltimaOPRegistrada(self.HMI.ComboBox_Corretoras.currentText()))
+        self.HMI.TextBox_Msg4.setText(self.HMI.DBManager.GetDataUltimaOPRegistrada(self.HMI.BolsaOuCripto, self.HMI.ComboBox_Corretoras.currentText()))
 
         self.HMI.Label_Msg5 = QLabel()
         self.HMI.Label_Msg5.setText("Último depósito/saque:")
