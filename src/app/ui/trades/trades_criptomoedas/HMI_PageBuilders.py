@@ -147,7 +147,9 @@ class HMI_PageBuilders:
         self.HMI.TextBox_Msg3.setFont(self.HMI.font16)
         self.HMI.TextBox_Msg3.setEnabled(False)
         self.HMI.TextBox_Msg3.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.HMI.TextBox_Msg3.setText(UserCoin+' '+str(self.HMI.DBManager.GetValorEmContaCorrente(self.HMI.ComboBox_Corretoras.currentText(), "Cripto")))
+        self.HMI.TextBox_Msg3.setText(UserCoin+' '+str(self.HMI.DBManager.GetValorEmContaCorrente("Cripto",
+                                                                                                  self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                                  )))
         if self.HMI.ShowValues:
             self.HMI.TextBox_Msg3.setEchoMode(QLineEdit.Normal)
         else:

@@ -157,7 +157,9 @@ class HMI_PageBuilders:
         self.HMI.TextBox_Msg3.setFont(self.HMI.font16)
         self.HMI.TextBox_Msg3.setEnabled(False)
         self.HMI.TextBox_Msg3.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.HMI.TextBox_Msg3.setText(CorretoraCoin+' '+str(self.HMI.DBManager.GetValorEmContaCorrente(self.HMI.ComboBox_Corretoras.currentText())))
+        self.HMI.TextBox_Msg3.setText(CorretoraCoin+' '+str(self.HMI.DBManager.GetValorEmContaCorrente(self.HMI.BolsaOuCripto,
+                                                                                                       self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                                       )))
         if self.HMI.ShowValues:
             self.HMI.TextBox_Msg3.setEchoMode(QLineEdit.Normal)
         else:
@@ -173,7 +175,9 @@ class HMI_PageBuilders:
         self.HMI.TextBox_Msg4.setStyleSheet('color: green')
         self.HMI.TextBox_Msg4.setFont(self.HMI.font16)
         self.HMI.TextBox_Msg4.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.HMI.TextBox_Msg4.setText(self.HMI.DBManager.GetDataUltimaOPRegistrada(self.HMI.BolsaOuCripto, self.HMI.ComboBox_Corretoras.currentText()))
+        self.HMI.TextBox_Msg4.setText(self.HMI.DBManager.GetDataUltimaOPRegistrada(self.HMI.BolsaOuCripto,
+                                                                                   self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                   ))
 
         self.HMI.Label_Msg5 = QLabel()
         self.HMI.Label_Msg5.setText("Último depósito/saque:")
@@ -748,7 +752,9 @@ class HMI_PageBuilders:
         self.HMI.Label_Msg1.setFont(self.HMI.font16)
 
         self.HMI.TextBox_Msg2 = QLineEdit()
-        self.HMI.TextBox_Msg2.setText(CorretoraCoin+' '+str(self.HMI.DBManager.GetValorEmContaCorrente(self.HMI.ComboBox_Corretoras.currentText())))
+        self.HMI.TextBox_Msg2.setText(CorretoraCoin+' '+str(self.HMI.DBManager.GetValorEmContaCorrente(self.HMI.BolsaOuCripto,
+                                                                                                       self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                                       )))
         if self.HMI.ShowValues:
             self.HMI.TextBox_Msg2.setEchoMode(QLineEdit.Normal)
         else:

@@ -172,10 +172,10 @@ class WorkerThread(QThread):
             ContaCorrente = 0
             corretoras = self.HMI.DBManager.GetCorretoras("Bolsa")
             for corretora in corretoras:
-                ContaCorrente += float(self.HMI.DBManager.GetValorEmContaCorrente(corretora, "Bolsa"))
+                ContaCorrente += float(self.HMI.DBManager.GetValorEmContaCorrente("Bolsa", corretora))
             corretoras = self.HMI.DBManager.GetCorretoras("Cripto")
             for corretora in corretoras:
-                ContaCorrente += float(self.HMI.DBManager.GetValorEmContaCorrente(corretora, "Cripto"))
+                ContaCorrente += float(self.HMI.DBManager.GetValorEmContaCorrente("Cripto", corretora))
             self.HMI.SumContasCorrentes = ContaCorrente
             self.HMI.HMI_ARCA.MontanteEmAplicacao = round(self.HMI.DBManager.GetMontanteNasCorretoras() - ContaCorrente, 2)
             if self.HMI.PageID == PAGE_BY_NAME['ARCA'].page_id and self.HMI.PageIDAux == '':

@@ -1787,7 +1787,7 @@ class DBManager:
         if BolsaOuCripto == "Bolsa":
             try:
                 # Pegar valor em conta-corrente
-                Patrimonio = float(self.GetValorEmContaCorrente(corretora, "Bolsa"))
+                Patrimonio = float(self.GetValorEmContaCorrente("Bolsa", corretora))
                 # Para cada ativo faça:
                 # Pegar estoque, multiplicar pela cotação atual, somar ao resultado
                 ativos = self.GetAtivos(corretora, BolsaOuCripto)
@@ -1841,12 +1841,12 @@ class DBManager:
         self.SumContasCorrentes = 0
         for corretora in corretorasBolsa:
             corretora = corretora.replace("¨Bolsa","")
-            valor = self.GetValorEmContaCorrente(corretora, "Bolsa")
+            valor = self.GetValorEmContaCorrente("Bolsa", corretora)
             resposta.append((corretora, valor))
             self.SumContasCorrentes += valor
         for corretora in corretorasCripto:
             corretora = corretora.replace("¨Cripto","")
-            valor = self.GetValorEmContaCorrente(corretora, "Cripto")
+            valor = self.GetValorEmContaCorrente("Cripto", corretora)
             resposta.append((corretora, valor))
             self.SumContasCorrentes += valor
         for banco in self.GetBancos():
@@ -1858,8 +1858,7 @@ class DBManager:
             self.SumContasCorrentes += valor
         return resposta
 
-    def GetValorEmContaCorrente(self, corretora = '', BolsaOuCripto = ''):
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
+    def GetValorEmContaCorrente(self, BolsaOuCripto: str, corretora: str):
         corretora = corretora.replace(" ","_")
         valor = 0.
 
@@ -1872,7 +1871,7 @@ class DBManager:
                 #     valor = valor*self.GetCotacao(currency)
         return round(valor, 2)
 
-    def GetValorEmContaCorrente_Banco(self, Banco):
+    def GetValorEmContaCorrente_Banco(self, Banco: str):
         Banco = Banco.replace(" ","_")
         retorno, _ = self.GetDataDB("SELECT * FROM Bancos")
         valor = 0.
@@ -1881,7 +1880,7 @@ class DBManager:
                 valor = float(row[2])
         return round(valor, 2)
 
-    def GetDataUltimaOPRegistrada(self, BolsaOuCripto, corretora):
+    def GetDataUltimaOPRegistrada(self, BolsaOuCripto: str, corretora: str):
         corretora = corretora.replace(" ","_")
         ativos = self.GetAtivos(BolsaOuCripto, corretora)
         folha = []
@@ -1896,12 +1895,11 @@ class DBManager:
         if len(datas)>0: return max(datas)
         else: return "Não há nenhum registro"
 
-    def GetDepositosESaques(self, corretora = ''):
+    def GetDepositosESaques(self, BolsaOuCripto: str, corretora: str):
         retorno = 0
-        if not len(corretora)>0: corretora = self.HMI.ComboBox_Corretoras.currentText()
         corretora = corretora.replace(" ","_")
         if len(corretora)>0:
-            retorno, _ = self.GetDataDB("SELECT * FROM ¨"+corretora+"¨"+self.HMI.BolsaOuCripto+"¨DepSaq")
+            retorno, _ = self.GetDataDB("SELECT * FROM ¨"+corretora+"¨"+BolsaOuCripto+"¨DepSaq")
             if len(retorno)>0: return retorno[::-1]
         return [(datetime.now().strftime('%Y-%m-%d %H:%M:%S'),0)]
 
@@ -2055,7 +2053,7 @@ class DBManager:
             saques = list(map(lambda x: x[12], SaqueRows))
             Soma -= sum(saques)
             corretora = corretoraCriptoRefinado.replace("¨Cripto¨Refinado","").replace("OPs¨","")
-            Soma -= self.GetValorEmContaCorrente(corretora, "Cripto")
+            Soma -= self.GetValorEmContaCorrente("Cripto", corretora)
         return Soma
 
     def GetDataForAcoesENegocios(self): # Desenvolver

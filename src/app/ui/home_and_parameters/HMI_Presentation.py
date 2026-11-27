@@ -29,7 +29,9 @@ class HMI_Presentation:
                                                                                                    )))
             Investido = round(self.DBManager.GetTotalInvestidoEmCorretora(corretora, "Bolsa"), 2)
             self.TextBox_Msg6.setText(UserCoin+' ~'+str(Investido))
-            self.TextBox_Msg3.setText(UserCoin+' '+str(self.DBManager.GetValorEmContaCorrente()))
+            self.TextBox_Msg3.setText(UserCoin+' '+str(self.DBManager.GetValorEmContaCorrente(self.HMI.BolsaOuCripto,
+                                                                                              self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                              )))
             self.TextBox_Msg4.setText(self.DBManager.GetDataUltimaOPRegistrada(self.BolsaOuCripto, self.ComboBox_Corretoras.currentText()))
             valor = round(self.DBManager.GetUltimoDepositoOuSaqueRegistrado(corretora),2)
             self.TextBox_Msg5.setText(UserCoin+' '+str(valor))
@@ -44,7 +46,9 @@ class HMI_Presentation:
                                                                                                    )))
             Investido = round(self.DBManager.GetTotalInvestidoEmCorretora(corretora, "Cripto"), 2)
             self.TextBox_Msg6.setText(UserCoin+' ~'+str(Investido))
-            self.TextBox_Msg3.setText(UserCoin+' '+str(self.DBManager.GetValorEmContaCorrente()))
+            self.TextBox_Msg3.setText(UserCoin+' '+str(self.DBManager.GetValorEmContaCorrente(self.HMI.BolsaOuCripto,
+                                                                                              self.HMI.ComboBox_Corretoras.currentText(),
+                                                                                              )))
             self.TextBox_Msg4.setText(self.DBManager.GetDataUltimaOPRegistrada(self.BolsaOuCripto, self.ComboBox_Corretoras.currentText()))
             valor = self.DBManager.GetUltimoDepositoOuSaqueRegistrado()
             self.TextBox_Msg5.setText(UserCoin+' '+str(valor))

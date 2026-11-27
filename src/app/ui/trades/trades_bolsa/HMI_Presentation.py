@@ -207,7 +207,7 @@ class HMI_Presentation:
         #Create Thread
         HHeader = ['Data',
                    'Movimentação']
-        self.data_24_1 = self.HMI.DBManager.GetDepositosESaques()
+        self.data_24_1 = self.HMI.DBManager.GetDepositosESaques(self.HMI.BolsaOuCripto, self.HMI.ComboBox_Corretoras.currentText())
         self.HMI.Table_DepositosESaques.setRowCount(len(self.data_24_1))
         self.HMI.Table_DepositosESaques.setColumnCount(len(HHeader))
         for i, item in enumerate(self.data_24_1):
