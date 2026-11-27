@@ -1736,8 +1736,8 @@ class DBManager:
                 return [(datetime.now().strftime('%Y-%m-%d %H:%M:%S'),0,0,0,0,0,0,0)]
             return [(datetime.now().strftime('%Y-%m-%d %H:%M:%S'),0,0,0,0,0)] # Tamanho 6
 
-    def GetModoCotacao(self, ativo = ''):
-        if not len(ativo)>0: ativo = self.HMI.ComboBox_Ativos.currentText().replace(" ","_")
+    def GetModoCotacao(self, ativo: str):
+        ativo = ativo.replace(" ","_")
         Modo = 'Manual'
         try:
             ativo = ativo.replace(" ","_")

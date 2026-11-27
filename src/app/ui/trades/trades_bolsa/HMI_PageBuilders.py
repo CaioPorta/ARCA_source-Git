@@ -1120,7 +1120,7 @@ class HMI_PageBuilders:
         self.HMI.Label_Msg9.setFont(self.HMI.font14)
         self.HMI.Label_Msg9.setAlignment(Qt.AlignmentFlag.AlignRight)
 
-        Modo = self.HMI.DBManager.GetModoCotacao()
+        Modo = self.HMI.DBManager.GetModoCotacao(self.HMI.ComboBox_Ativos.currentText())
         self.HMI.TextBox_Modo = QLineEdit(Modo)
         self.HMI.TextBox_Modo.setFixedWidth(int(self.HMI.frameGeometry().width()/7*0.9))
         self.HMI.TextBox_Modo.setStyleSheet("background-color: black; color: "+FontColorLineEdit+";")
@@ -1427,7 +1427,7 @@ class HMI_PageBuilders:
             self.HMI.Label_Msg9.setFont(self.HMI.font14)
             self.HMI.Label_Msg9.setAlignment(Qt.AlignmentFlag.AlignRight)
 
-            Modo = self.HMI.DBManager.GetModoCotacao()
+            Modo = self.HMI.DBManager.GetModoCotacao(self.HMI.ComboBox_Ativos.currentText())
             self.HMI.TextBox_Modo = QLineEdit(Modo)
             self.HMI.TextBox_Modo.setFixedWidth(int(self.HMI.frameGeometry().width()/7*0.9))
             self.HMI.TextBox_Modo.setStyleSheet("background-color: black; color: "+FontColorLineEdit+";")
